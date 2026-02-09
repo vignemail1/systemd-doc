@@ -2,5 +2,9 @@ arrange:
   - index.md
   - introduction
   - unites
+  - gestion-services
+  - journal-logging
+  - securite
   - outils
+  - cas-pratiques
   - ...

@@ -9,7 +9,10 @@ _.python.venv = { path = ".venv", create = true }
 
 [tasks.install]
 description = "Installer les dépendances Python"
-run = "pip install -r requirements.txt"
+run = """
+  pip install --upgrade pip
+  pip install -r requirements.txt
+"""
 
 [tasks.dev]
 description = "Démarrer le serveur de développement MkDocs"
