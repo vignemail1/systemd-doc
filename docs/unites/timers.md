@@ -23,7 +23,7 @@ Persistent=true
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ## Section [Timer]
 
@@ -41,7 +41,7 @@ Déclenchés relativement à un événement :
 
 ```ini
 OnActiveSec=5min
-```text
+```
 
 **OnBootSec**
 
@@ -49,7 +49,7 @@ OnActiveSec=5min
 
 ```ini
 OnBootSec=10min
-```text
+```
 
 **OnStartupSec**
 
@@ -57,7 +57,7 @@ OnBootSec=10min
 
 ```ini
 OnStartupSec=1h
-```text
+```
 
 **OnUnitActiveSec**
 
@@ -65,7 +65,7 @@ OnStartupSec=1h
 
 ```ini
 OnUnitActiveSec=1h  # Toutes les heures après la dernière exécution
-```text
+```
 
 **OnUnitInactiveSec**
 
@@ -73,7 +73,7 @@ OnUnitActiveSec=1h  # Toutes les heures après la dernière exécution
 
 ```ini
 OnUnitInactiveSec=30min
-```text
+```
 
 #### Timers en temps réel (absolus)
 
@@ -90,7 +90,7 @@ OnCalendar=weekly               # Chaque lundi à 00:00
 OnCalendar=monthly              # Le 1er de chaque mois à 00:00
 OnCalendar=*-*-* 04:00:00       # Chaque jour à 4h
 OnCalendar=*:0/15               # Toutes les 15 minutes
-```text
+```
 
 ### Format OnCalendar
 
@@ -98,7 +98,7 @@ La syntaxe `OnCalendar` est très flexible :
 
 ```text
 Jour Mois Année Heure:Minute:Seconde
-```text
+```
 
 #### Exemples
 
@@ -135,7 +135,7 @@ OnCalendar=*-*-* *:00,30:00     # Toutes les 30 minutes
 # Plusieurs horaires
 OnCalendar=Mon,Wed,Fri 08:00:00
 OnCalendar=Tue,Thu 10:00:00
-```text
+```
 
 #### Tester une expression calendar
 
@@ -148,7 +148,7 @@ systemd-analyze calendar "Mon,Fri *-*-* 09:00:00"
 #   Normalized form: Mon,Fri *-*-* 09:00:00
 #   Next elapse: Mon 2026-02-09 09:00:00 CET
 #          From now: 18h left
-```text
+```
 
 ### Options de configuration
 
@@ -160,7 +160,7 @@ systemd-analyze calendar "Mon,Fri *-*-* 09:00:00"
 AccuracySec=1min   # Défaut
 AccuracySec=1s     # Précision maximale
 AccuracySec=1h     # Moins précis, économise la batterie
-```text
+```
 
 **RandomizedDelaySec**
 
@@ -168,7 +168,7 @@ AccuracySec=1h     # Moins précis, économise la batterie
 
 ```ini
 RandomizedDelaySec=5min  # Délai aléatoire jusqu'à 5min
-```text
+```
 
 Utile pour :
 
@@ -182,7 +182,7 @@ Utile pour :
 ```ini
 Persistent=true    # Rattrape les exécutions manquées
 Persistent=false   # Ignore les exécutions manquées (défaut)
-```text
+```
 
 **WakeSystem**
 
@@ -190,7 +190,7 @@ Persistent=false   # Ignore les exécutions manquées (défaut)
 
 ```ini
 WakeSystem=true
-```text
+```
 
 **RemainAfterElapse**
 
@@ -198,7 +198,7 @@ WakeSystem=true
 
 ```ini
 RemainAfterElapse=false  # Défaut: le timer reste actif
-```text
+```
 
 **Unit**
 
@@ -206,7 +206,7 @@ RemainAfterElapse=false  # Défaut: le timer reste actif
 
 ```ini
 Unit=myservice.service
-```text
+```
 
 ## Exemples complets
 
@@ -224,7 +224,7 @@ Persistent=true
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/backup.service
@@ -235,7 +235,7 @@ Description=Backup Service
 Type=oneshot
 ExecStart=/usr/local/bin/backup.sh
 User=backup
-```text
+```
 
 Activation :
 
@@ -245,7 +245,7 @@ systemctl start backup.timer
 
 # Vérifier
 systemctl list-timers
-```text
+```
 
 ### Nettoyage hebdomadaire
 
@@ -261,7 +261,7 @@ RandomizedDelaySec=1h
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/cleanup.service
@@ -272,7 +272,7 @@ Description=Cleanup Old Files
 Type=oneshot
 ExecStart=/usr/bin/find /tmp -mtime +7 -delete
 ExecStart=/usr/bin/find /var/log -name '*.old' -delete
-```text
+```
 
 ### Monitoring toutes les 5 minutes
 
@@ -288,7 +288,7 @@ AccuracySec=1s
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/monitor.service
@@ -298,7 +298,7 @@ Description=System Monitoring
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/check-system.sh
-```text
+```
 
 ### Synchronisation horaire
 
@@ -313,7 +313,7 @@ RandomizedDelaySec=10min
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ### Tâche en semaine
 
@@ -328,7 +328,7 @@ Persistent=true
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ### Multiple schedules
 
@@ -348,7 +348,7 @@ Persistent=true
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ## Gestion des timers
 
@@ -373,7 +373,7 @@ systemctl list-timers backup.timer
 
 # Forcer l'exécution immédiate du service
 systemctl start backup.service
-```text
+```
 
 ### Informations détaillées
 
@@ -384,7 +384,7 @@ systemctl show backup.timer
 # Propriétés importantes
 systemctl show backup.timer -p NextElapseUSecRealtime
 systemctl show backup.timer -p LastTriggerUSec
-```text
+```
 
 ### Output de list-timers
 
@@ -394,7 +394,7 @@ $ systemctl list-timers
 NEXT                         LEFT     LAST                         PASSED  UNIT              ACTIVATES
 Mon 2026-02-09 03:00:00 CET  8h left  Sun 2026-02-08 03:00:00 CET  16h ago cleanup.timer     cleanup.service
 Mon 2026-02-09 00:00:00 CET  5h left  Sun 2026-02-08 00:00:00 CET  19h ago backup.timer      backup.service
-```text
+```
 
 ## Cas d'usage avancés
 
@@ -411,7 +411,7 @@ OnUnitActiveSec=6h
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ```ini
 # restart-app.service
@@ -421,7 +421,7 @@ Description=Restart Application Service
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/systemctl restart myapp.service
-```text
+```
 
 ### Healthcheck avec retry
 
@@ -437,7 +437,7 @@ AccuracySec=1s
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ```ini
 # healthcheck.service
@@ -450,7 +450,7 @@ ExecStart=/usr/local/bin/healthcheck.sh
 Restart=on-failure
 RestartSec=5s
 StartLimitBurst=3
-```text
+```
 
 ### Rotation de logs personnalisée
 
@@ -466,7 +466,7 @@ RandomizedDelaySec=12h
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ## Migration depuis cron
 
@@ -484,7 +484,7 @@ WantedBy=timers.target
 
 # Tous les lundis à 8h
 0 8 * * 1 /usr/local/bin/weekly.sh
-```text
+```
 
 **systemd equivalents** :
 
@@ -500,7 +500,7 @@ OnCalendar=*:0/15
 # weekly.timer
 [Timer]
 OnCalendar=Mon *-*-* 08:00:00
-```text
+```
 
 ### Avantages de la migration
 
@@ -531,7 +531,7 @@ journalctl -u backup.timer
 
 # Logs du service
 journalctl -u backup.service
-```text
+```
 
 ### Tester une expression calendar
 
@@ -541,14 +541,14 @@ systemd-analyze calendar "Mon..Fri 09:00"
 
 # Voir les prochaines occurrences
 systemd-analyze calendar "*/15 * * * *" --iterations=10
-```text
+```
 
 ### Vérifier la configuration
 
 ```bash
 systemd-analyze verify backup.timer
 systemd-analyze verify backup.service
-```text
+```
 
 ## Monitoring et alertes
 
@@ -560,7 +560,7 @@ systemd-analyze verify backup.service
 Type=oneshot
 ExecStart=/usr/local/bin/backup.sh
 OnFailure=failure-notification@%n.service
-```text
+```
 
 ```ini
 # failure-notification@.service
@@ -570,7 +570,7 @@ Description=Send notification for %i
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/send-alert.sh "Service %i failed"
-```text
+```
 
 ### Métriques
 
@@ -583,7 +583,7 @@ systemctl show backup.timer -p NextElapseUSecRealtime
 
 # Nombre d'exécutions
 journalctl -u backup.service --since "1 month ago" | grep -c "Finished"
-```text
+```
 
 ## Bonnes pratiques
 

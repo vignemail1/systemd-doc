@@ -26,7 +26,7 @@ ProtectHome=yes
 # Chemins en lecture seule
 ReadOnlyPaths=/
 ReadWritePaths=/var/lib/myapp
-```text
+```
 
 ## Utilisateurs et groupes
 
@@ -35,13 +35,13 @@ ReadWritePaths=/var/lib/myapp
 ```bash
 # Créer un utilisateur système
 sudo useradd -r -s /usr/sbin/nologin -d /var/lib/myapp myapp
-```text
+```
 
 ```ini
 [Service]
 User=myapp
 Group=myapp
-```text
+```
 
 ### Utilisateur dynamique
 
@@ -53,7 +53,7 @@ DynamicUser=yes
 StateDirectory=myapp
 CacheDirectory=myapp
 LogsDirectory=myapp
-```text
+```
 
 Avantages :
 
@@ -69,7 +69,7 @@ Avantages :
 User=myapp
 Group=myapp
 SupplementaryGroups=ssl-cert docker
-```text
+```
 
 ## Isolation du système de fichiers
 
@@ -84,7 +84,7 @@ ProtectSystem=no       # Aucune protection
 ProtectSystem=yes      # /usr et /boot en lecture seule
 ProtectSystem=full     # + /etc en lecture seule
 ProtectSystem=strict   # Tout en lecture seule
-```text
+```
 
 **strict** est le plus sécurisé. Nécessite de définir explicitement les chemins écritables.
 
@@ -98,7 +98,7 @@ ProtectHome=no         # Accès complet
 ProtectHome=yes        # /home, /root, /run/user inaccessibles
 ProtectHome=read-only  # Accès en lecture seule
 ProtectHome=tmpfs      # Monté en tmpfs vide
-```text
+```
 
 ### PrivateTmp
 
@@ -107,7 +107,7 @@ Isole `/tmp` et `/var/tmp` :
 ```ini
 [Service]
 PrivateTmp=yes
-```text
+```
 
 Crée un namespace `/tmp` unique pour le service.
 
@@ -124,7 +124,7 @@ ReadOnlyPaths=/
 ReadWritePaths=/var/lib/myapp
 ReadWritePaths=/var/log/myapp
 ReadWritePaths=/run/myapp
-```text
+```
 
 ### InaccessiblePaths
 
@@ -135,7 +135,7 @@ Rend des chemins complètement inaccessibles :
 InaccessiblePaths=/home
 InaccessiblePaths=/root
 InaccessiblePaths=/proc/kcore
-```text
+```
 
 ### TemporaryFileSystem
 
@@ -145,7 +145,7 @@ Monte un tmpfs à un emplacement :
 [Service]
 TemporaryFileSystem=/var:ro
 BindReadOnlyPaths=/var/lib/myapp
-```text
+```
 
 ## Répertoires gérés
 
@@ -166,7 +166,7 @@ CacheDirectoryMode=0750
 
 # Nettoyage automatique
 RuntimeDirectoryPreserve=no      # Supprimé à l'arrêt
-```text
+```
 
 ## Isolation réseau
 
@@ -177,7 +177,7 @@ Isole complètement du réseau :
 ```ini
 [Service]
 PrivateNetwork=yes
-```text
+```
 
 Le service n'a accès qu'à l'interface loopback.
 
@@ -195,7 +195,7 @@ RestrictAddressFamilies=AF_UNIX
 
 # Bloquer tout
 RestrictAddressFamilies=none
-```text
+```
 
 ### IPAddressAllow / IPAddressDeny
 
@@ -209,7 +209,7 @@ IPAddressDeny=any
 
 # Ou bloquer certaines IPs
 IPAddressDeny=192.168.1.100
-```text
+```
 
 ## Capacités Linux
 
@@ -221,7 +221,7 @@ Les capacités décomposent les privilèges root en permissions granulaires.
 [Service]
 CapabilityBoundingSet=
 AmbientCapabilities=
-```text
+```
 
 ### Autoriser des capacités spécifiques
 
@@ -230,7 +230,7 @@ AmbientCapabilities=
 # Bind sur ports < 1024
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-```text
+```
 
 ### Capacités courantes
 
@@ -250,7 +250,7 @@ User=www-data
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 NoNewPrivileges=yes
-```text
+```
 
 Permet de binder sur le port 80/443 sans être root.
 
@@ -267,7 +267,7 @@ SystemCallFilter=@system-service
 
 # Bloquer syscalls dangereux
 SystemCallFilter=~@privileged @resources @obsolete
-```text
+```
 
 ### Groupes de syscalls
 
@@ -289,14 +289,14 @@ SystemCallFilter=~@privileged @resources @obsolete
 SystemCallFilter=@system-service
 SystemCallFilter=~@privileged @resources @obsolete @debug
 SystemCallErrorNumber=EPERM
-```text
+```
 
 ### Bloquer des syscalls spécifiques
 
 ```ini
 [Service]
 SystemCallFilter=~ptrace personality
-```text
+```
 
 ## Limitations diverses
 
@@ -307,7 +307,7 @@ Empêche l'obtention de nouveaux privilèges :
 ```ini
 [Service]
 NoNewPrivileges=yes
-```text
+```
 
 Bloquer setuid, setgid, file capabilities.
 
@@ -318,7 +318,7 @@ Protège `/proc/sys`, `/sys` en lecture seule :
 ```ini
 [Service]
 ProtectKernelTunables=yes
-```text
+```
 
 ### ProtectKernelModules
 
@@ -327,7 +327,7 @@ Empêche le chargement de modules noyau :
 ```ini
 [Service]
 ProtectKernelModules=yes
-```text
+```
 
 ### ProtectControlGroups
 
@@ -336,7 +336,7 @@ Protège la hiérarchie cgroups :
 ```ini
 [Service]
 ProtectControlGroups=yes
-```text
+```
 
 ### ProtectKernelLogs
 
@@ -345,7 +345,7 @@ Bloquer l'accès aux logs noyau :
 ```ini
 [Service]
 ProtectKernelLogs=yes
-```text
+```
 
 ### ProtectHostname
 
@@ -354,7 +354,7 @@ Empêche la modification du hostname :
 ```ini
 [Service]
 ProtectHostname=yes
-```text
+```
 
 ### ProtectClock
 
@@ -363,7 +363,7 @@ Empêche la modification de l'horloge :
 ```ini
 [Service]
 ProtectClock=yes
-```text
+```
 
 ### ProtectProc
 
@@ -373,7 +373,7 @@ Masque les informations `/proc` :
 [Service]
 ProtectProc=invisible    # Masquer les autres processus
 ProtectProc=noaccess    # Bloquer accès /proc
-```text
+```
 
 ### ProcSubset
 
@@ -382,7 +382,7 @@ Limiter le contenu de `/proc` :
 ```ini
 [Service]
 ProcSubset=pid    # Seulement /proc/PID
-```text
+```
 
 ### PrivateDevices
 
@@ -391,7 +391,7 @@ Isole `/dev` :
 ```ini
 [Service]
 PrivateDevices=yes
-```text
+```
 
 Accès seulement à /dev/null, /dev/zero, /dev/urandom.
 
@@ -402,7 +402,7 @@ Namespace utilisateur :
 ```ini
 [Service]
 PrivateUsers=yes
-```text
+```
 
 Map UID/GID du service vers des IDs non-privilégiés.
 
@@ -413,7 +413,7 @@ Isole IPC (shared memory, semaphores) :
 ```ini
 [Service]
 PrivateIPC=yes
-```text
+```
 
 ## Restriction d'exécution
 
@@ -424,7 +424,7 @@ Empêche changement de personnalité :
 ```ini
 [Service]
 LockPersonality=yes
-```text
+```
 
 ### MemoryDenyWriteExecute
 
@@ -433,7 +433,7 @@ Bloquer W^X (write XOR execute) :
 ```ini
 [Service]
 MemoryDenyWriteExecute=yes
-```text
+```
 
 Empêche les pages mémoire à la fois écritables et exécutables.
 
@@ -444,7 +444,7 @@ Bloquer le scheduling temps réel :
 ```ini
 [Service]
 RestrictRealtime=yes
-```text
+```
 
 ### RestrictSUIDSGID
 
@@ -453,7 +453,7 @@ Bloquer création fichiers SUID/SGID :
 ```ini
 [Service]
 RestrictSUIDSGID=yes
-```text
+```
 
 ### RestrictNamespaces
 
@@ -465,7 +465,7 @@ RestrictNamespaces=yes
 
 # Ou autoriser certains types
 RestrictNamespaces=uts ipc
-```text
+```
 
 ## Exemple : Service ultra-sécurisé
 
@@ -534,7 +534,7 @@ TasksMax=100
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ## Audit de sécurité
 
@@ -549,7 +549,7 @@ systemd-analyze security --no-pager myapp.service
 
 # Seulement les warnings
 systemd-analyze security myapp.service | grep -E 'WARN|UNSAFE'
-```text
+```
 
 ### Vérifier les capacités
 
@@ -557,13 +557,13 @@ systemd-analyze security myapp.service | grep -E 'WARN|UNSAFE'
 # Capacités d'un service
 systemctl show myapp.service -p CapabilityBoundingSet
 systemctl show myapp.service -p AmbientCapabilities
-```text
+```
 
 ### Vérifier les protections actives
 
 ```bash
 systemctl show myapp.service | grep -E '(Protect|Private|Restrict)'
-```text
+```
 
 ## Bonnes pratiques
 
@@ -571,13 +571,13 @@ systemctl show myapp.service | grep -E '(Protect|Private|Restrict)'
 
    ```ini
    NoNewPrivileges=yes
-```text
+   ```
 
 2. **Privilèges minimaux**
 
    ```ini
    CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-```text
+   ```
 
 3. **Isolation maximale**
 
@@ -585,31 +585,31 @@ systemctl show myapp.service | grep -E '(Protect|Private|Restrict)'
    ProtectSystem=strict
    PrivateTmp=yes
    PrivateDevices=yes
-```text
+   ```
 
 4. **Utilisateurs dédiés**
 
    ```ini
    DynamicUser=yes
-```text
+   ```
 
 5. **Bloquer syscalls dangereux**
 
    ```ini
    SystemCallFilter=@system-service
-```text
+   ```
 
 6. **Auditer régulièrement**
 
    ```bash
    systemd-analyze security
-```text
+   ```
 
 7. **Tester après changements**
 
    ```bash
    systemctl restart myapp
    journalctl -u myapp -f
-```text
+   ```
 
 La sécurité systemd permet de créer des services robustes et isolés, réduisant considérablement la surface d'attaque.

@@ -61,7 +61,7 @@ SyslogIdentifier=myapp
 [Install]
 WantedBy=multi-user.target
 Also=myapp-worker.service
-```text
+```
 
 ### Étapes de création
 
@@ -74,13 +74,13 @@ sudo useradd -r -s /usr/sbin/nologin -d /opt/myapp myapp
 # Créer les répertoires
 sudo mkdir -p /opt/myapp /var/lib/myapp /var/log/myapp
 sudo chown -R myapp:myapp /opt/myapp /var/lib/myapp /var/log/myapp
-```text
+```
 
 #### 2. Écrire le unit file
 
 ```bash
 sudo nano /etc/systemd/system/myapp.service
-```text
+```
 
 #### 3. Valider la syntaxe
 
@@ -90,13 +90,13 @@ systemd-analyze verify /etc/systemd/system/myapp.service
 
 # Voir le fichier tel que systemd le comprend
 systemctl cat myapp.service
-```text
+```
 
 #### 4. Recharger systemd
 
 ```bash
 sudo systemctl daemon-reload
-```text
+```
 
 #### 5. Activer et démarrer
 
@@ -109,7 +109,7 @@ sudo systemctl start myapp.service
 
 # Vérifier
 sudo systemctl status myapp.service
-```text
+```
 
 ## Modification de services
 
@@ -120,7 +120,7 @@ Plutôt que de modifier directement un unit file système, utilisez des drop-ins
 ```bash
 # Créer un override
 sudo systemctl edit nginx.service
-```text
+```
 
 Cela crée `/etc/systemd/system/nginx.service.d/override.conf` :
 
@@ -129,7 +129,7 @@ Cela crée `/etc/systemd/system/nginx.service.d/override.conf` :
 Environment="NGINX_OPTS=-g 'daemon off;'"
 MemoryMax=4G
 Restart=always
-```text
+```
 
 Avantages :
 
@@ -152,7 +152,7 @@ sudo nano /etc/systemd/system/nginx.service
 # Recharger
 sudo systemctl daemon-reload
 sudo systemctl restart nginx.service
-```text
+```
 
 ### Voir les modifications
 
@@ -165,7 +165,7 @@ systemctl cat nginx.service
 
 # Voir seulement les drop-ins
 systemctl show nginx.service -p FragmentPath -p DropInPaths
-```text
+```
 
 ## Débogage
 
@@ -189,7 +189,7 @@ SystemdLogLevel=debug
 systemctl daemon-reload
 systemctl restart myapp.service
 journalctl -u myapp.service -n 100
-```text
+```
 
 ### Vérifier les dépendances
 
@@ -202,7 +202,7 @@ systemctl list-dependencies --reverse myapp.service
 
 # Voir les services requis non démarrés
 systemctl list-dependencies myapp.service | grep -E '●|×'
-```text
+```
 
 ### Analyser les temps de démarrage
 
@@ -212,7 +212,7 @@ systemd-analyze blame | grep myapp
 
 # Chaîne critique
 systemd-analyze critical-chain myapp.service
-```text
+```
 
 ### Tester manuellement
 
@@ -227,7 +227,7 @@ sudo systemd-run --unit=myapp-test \
   --setenv=ENV_VAR=value \
 
   /usr/local/bin/myapp
-```text
+```
 
 ## Reload vs Restart
 
@@ -235,7 +235,7 @@ sudo systemd-run --unit=myapp-test \
 
 ```bash
 systemctl reload nginx.service
-```text
+```
 
 Envoie un signal (généralement SIGHUP) pour recharger la configuration sans interrompre le service.
 
@@ -246,13 +246,13 @@ Configuration :
 ExecReload=/bin/kill -HUP $MAINPID
 # ou
 ExecReload=/usr/sbin/nginx -s reload
-```text
+```
 
 ### Restart (redémarrage complet)
 
 ```bash
 systemctl restart nginx.service
-```text
+```
 
 Arrête puis redémarre le service. Provoque une interruption.
 
@@ -260,7 +260,7 @@ Arrête puis redémarre le service. Provoque une interruption.
 
 ```bash
 systemctl try-restart nginx.service
-```text
+```
 
 Redémarre seulement si le service est déjà actif.
 
@@ -268,7 +268,7 @@ Redémarre seulement si le service est déjà actif.
 
 ```bash
 systemctl reload-or-restart nginx.service
-```text
+```
 
 Tente un reload, sinon fait un restart.
 
@@ -291,7 +291,7 @@ WorkingDirectory=/var/lib/myapp/%i
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 Utilisation :
 
@@ -306,7 +306,7 @@ systemctl enable myapp@1.service myapp@2.service
 
 # Voir toutes les instances
 systemctl list-units 'myapp@*'
-```text
+```
 
 Variables disponibles :
 
@@ -327,7 +327,7 @@ Variables disponibles :
 Description=Clear and concise description
 Documentation=https://docs.example.com/myapp
 Documentation=man:myapp(8)
-```text
+```
 
 ### 2. Utiliser des utilisateurs dédiés
 
@@ -336,7 +336,7 @@ Documentation=man:myapp(8)
 User=myapp
 Group=myapp
 DynamicUser=yes  # Crée automatiquement l'utilisateur
-```text
+```
 
 ### 3. Définir des timeouts
 
@@ -345,7 +345,7 @@ DynamicUser=yes  # Crée automatiquement l'utilisateur
 TimeoutStartSec=30s
 TimeoutStopSec=10s
 TimeoutSec=40s  # Définit les deux
-```text
+```
 
 ### 4. Gérer les échecs
 
@@ -355,7 +355,7 @@ Restart=on-failure
 RestartSec=5s
 StartLimitBurst=3
 StartLimitIntervalSec=60s
-```text
+```
 
 ### 5. Limiter les ressources
 
@@ -365,7 +365,7 @@ MemoryMax=2G
 CPUQuota=200%
 TasksMax=500
 IOWeight=500
-```text
+```
 
 ### 6. Sécuriser le service
 
@@ -377,7 +377,7 @@ ProtectSystem=strict
 ProtectHome=yes
 ReadOnlyPaths=/
 ReadWritePaths=/var/lib/myapp
-```text
+```
 
 ### 7. Logger correctement
 
@@ -387,7 +387,7 @@ StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=myapp
 SyslogLevel=info
-```text
+```
 
 ### 8. Tester avant production
 
@@ -407,7 +407,7 @@ systemctl restart myapp.service
 
 # Tester l'arrêt
 systemctl stop myapp.service
-```text
+```
 
 ## Automatisation
 
@@ -438,7 +438,7 @@ EOF
 
 systemctl daemon-reload
 systemctl enable ${NAME}.service
-```text
+```
 
 ### Utiliser systemd-run pour tests
 
@@ -453,6 +453,6 @@ systemd-run --unit=test-app \
 
 # Service qui s'autodétruit après exécution
 systemd-run --scope /usr/bin/mycommand
-```text
+```
 
 La maîtrise de la gestion des services systemd permet de créer des services robustes, sécurisés et facilement maintenables.

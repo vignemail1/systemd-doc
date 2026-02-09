@@ -34,7 +34,7 @@ Priority=100
 
 [Install]
 WantedBy=swap.target
-```text
+```
 
 ## Section [Swap]
 
@@ -56,7 +56,7 @@ What=/dev/disk/by-label/swap
 
 # Fichier
 What=/swapfile
-```text
+```
 
 **Priority**
 
@@ -66,7 +66,7 @@ What=/swapfile
 Priority=100   # Priorité haute
 Priority=10    # Priorité basse
 Priority=-1    # Priorité par défaut du noyau
-```text
+```
 
 Valeurs typiques : -1 à 32767 (plus haut = prioritaire)
 
@@ -76,7 +76,7 @@ Valeurs typiques : -1 à 32767 (plus haut = prioritaire)
 
 ```ini
 Options=discard  # Activer TRIM sur SSD
-```text
+```
 
 **TimeoutSec**
 
@@ -84,7 +84,7 @@ Options=discard  # Activer TRIM sur SSD
 
 ```ini
 TimeoutSec=30s
-```text
+```
 
 ## Création et configuration
 
@@ -102,7 +102,7 @@ mkswap /dev/sda2
 
 # Obtenir l'UUID
 blkid /dev/sda2
-```text
+```
 
 #### 2. Créer le swap unit
 
@@ -117,7 +117,7 @@ Priority=100
 
 [Install]
 WantedBy=swap.target
-```text
+```
 
 #### 3. Activer
 
@@ -128,7 +128,7 @@ systemctl start dev-sda2.swap
 # Vérifier
 swapon --show
 free -h
-```text
+```
 
 ### Fichier swap
 
@@ -146,7 +146,7 @@ chmod 600 /swapfile
 
 # Formater
 mkswap /swapfile
-```text
+```
 
 #### 2. Créer le swap unit
 
@@ -161,7 +161,7 @@ Priority=50
 
 [Install]
 WantedBy=swap.target
-```text
+```
 
 #### 3. Activer
 
@@ -171,7 +171,7 @@ systemctl start swapfile.swap
 
 # Vérifier
 swapon --show
-```text
+```
 
 ### Swap multiple avec priorités
 
@@ -188,7 +188,7 @@ Options=discard
 
 [Install]
 WantedBy=swap.target
-```text
+```
 
 ```ini
 # Partition lente (HDD) - priorité basse
@@ -202,7 +202,7 @@ Priority=10
 
 [Install]
 WantedBy=swap.target
-```text
+```
 
 Le noyau utilisera le swap NVMe en priorité.
 
@@ -216,7 +216,7 @@ dnf install zram-generator
 
 # Ou systemd-zram (Debian/Ubuntu)
 apt install systemd-zram-generator
-```text
+```
 
 Configuration `/etc/systemd/zram-generator.conf` :
 
@@ -224,7 +224,7 @@ Configuration `/etc/systemd/zram-generator.conf` :
 [zram0]
 zram-size = ram / 2
 compression-algorithm = zstd
-```text
+```
 
 Activation automatique au boot.
 
@@ -251,7 +251,7 @@ systemctl disable dev-sda2.swap
 
 # Voir l'état
 systemctl status dev-sda2.swap
-```text
+```
 
 ### Commandes swapon/swapoff
 
@@ -274,7 +274,7 @@ swapoff -a
 
 # Activer tout le swap
 swapon -a
-```text
+```
 
 ### Informations détaillées
 
@@ -293,7 +293,7 @@ for pid in /proc/[0-9]*; do
     echo "$pid: $swap kB"
   fi
 done
-```text
+```
 
 ## Configuration système
 
@@ -313,9 +313,10 @@ vm.swappiness=10
 
 # Appliquer
 sysctl -p
-```text
+```
 
 **Valeurs typiques** :
+
 - `60` : Défaut (utilise le swap modérément)
 - `10` : Serveurs (minimise l'utilisation du swap)
 - `100` : Swap agressif
@@ -328,9 +329,10 @@ Contrôle la réclamation de mémoire cache.
 ```bash
 # Permanent
 vm.vfs_cache_pressure=50
-```text
+```
 
 **Valeurs** :
+
 - `100` : Défaut
 - `50` : Conserve le cache plus longtemps
 - `200` : Libère le cache agressivement
@@ -343,7 +345,7 @@ vm.vfs_cache_pressure=50
 # /etc/fstab
 UUID=abc-123  none  swap  sw,pri=100  0 0
 /swapfile     none  swap  sw,pri=50   0 0
-```text
+```
 
 ### Équivalent systemd
 
@@ -358,7 +360,7 @@ Priority=100
 
 [Install]
 WantedBy=swap.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/swapfile.swap
@@ -371,7 +373,7 @@ Priority=50
 
 [Install]
 WantedBy=swap.target
-```text
+```
 
 **Note** : systemd peut générer automatiquement des swap units depuis fstab.
 
@@ -396,7 +398,7 @@ Swap = 2-4 Go
 # Workstations
 # Swap pour hibernation
 Swap = RAM + quelques Go
-```text
+```
 
 ## Monitoring et tuning
 
@@ -412,7 +414,7 @@ sar -S 1 10  # 10 mesures par seconde
 # Voir si le swap est actif
 vmstat 1 | awk '{print $7, $8}'
 # si = swap in, so = swap out
-```text
+```
 
 ### Logs
 
@@ -422,7 +424,7 @@ journalctl -u '*.swap'
 
 # Événements OOM
 journalctl -k | grep -i "out of memory"
-```text
+```
 
 ### Vider le swap
 
@@ -432,7 +434,7 @@ sudo swapoff -a
 
 # Réactiver
 sudo swapon -a
-```text
+```
 
 ⚠️ **Attention** : Nécessite suffisamment de RAM libre.
 
@@ -456,7 +458,7 @@ journalctl -u dev-sda2.swap
 
 # Tester manuellement
 sudo swapon /dev/sda2
-```text
+```
 
 ### Permissions fichier swap
 
@@ -466,7 +468,7 @@ ls -l /swapfile
 
 # Doit être 600
 chmod 600 /swapfile
-```text
+```
 
 ### Performances dégradées
 
@@ -481,7 +483,7 @@ Options=discard
 
 # Vérifier swappiness
 cat /proc/sys/vm/swappiness
-```text
+```
 
 ## Sécurité
 
@@ -498,7 +500,7 @@ cryptsetup luksOpen /dev/sda2 swap_crypt
 
 # Formater
 mkswap /dev/mapper/swap_crypt
-```text
+```
 
 ```ini
 # /etc/systemd/system/dev-mapper-swap_crypt.swap
@@ -512,7 +514,7 @@ What=/dev/mapper/swap_crypt
 
 [Install]
 WantedBy=swap.target
-```text
+```
 
 #### Swap éphémère
 
@@ -521,7 +523,7 @@ Chiffrement avec clé aléatoire (perdue au reboot) :
 ```text
 # /etc/crypttab
 swap /dev/sda2 /dev/urandom swap,cipher=aes-xts-plain64,size=256
-```text
+```
 
 ## Bonnes pratiques
 
@@ -529,20 +531,20 @@ swap /dev/sda2 /dev/urandom swap,cipher=aes-xts-plain64,size=256
 
    ```ini
    What=/dev/disk/by-uuid/...
-```text
+   ```
 
 2. **Définir des priorités**
 
    ```ini
    Priority=100  # SSD
    Priority=10   # HDD
-```text
+   ```
 
 3. **TRIM sur SSD**
 
    ```ini
    Options=discard
-```text
+   ```
 
 4. **Ajuster swappiness**
 
@@ -552,15 +554,16 @@ swap /dev/sda2 /dev/urandom swap,cipher=aes-xts-plain64,size=256
    
    # Desktop
    vm.swappiness=60
-```text
+   ```
 
 5. **Monitorer l'utilisation**
 
    ```bash
    watch -n 1 'free -h && swapon --show'
-```text
+   ```
 
 6. **Dimensionnement approprié**
+
    - Serveur : 2-4 Go minimum
    - Desktop : RAM pour hibernation
 
@@ -569,13 +572,13 @@ swap /dev/sda2 /dev/urandom swap,cipher=aes-xts-plain64,size=256
    ```bash
    # Désactiver COW
    chattr +C /swapfile
-```text
+   ```
 
 8. **Sécuriser le swap**
 
    ```bash
    # Permissions strictes
    chmod 600 /swapfile
-```text
+   ```
 
 Le swap reste important même sur des systèmes avec beaucoup de RAM, agissant comme filet de sécurité contre l'OOM killer et permettant l'hibernation.

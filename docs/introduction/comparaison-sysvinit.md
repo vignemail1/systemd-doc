@@ -28,7 +28,7 @@ S02syslog
 S03sshd
 S04apache2
 S05postgresql
-```text
+```
 
 **Problèmes** :
 
@@ -52,7 +52,7 @@ Requires=network.target
 [Service]
 Type=forking
 ExecStart=/usr/sbin/httpd
-```text
+```
 
 **Avantages** :
 
@@ -95,7 +95,7 @@ case "$1" in
     fi
     ;;
 esac
-```text
+```
 
 **Problèmes** :
 
@@ -121,7 +121,7 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 **Avantages** :
 
@@ -140,7 +140,7 @@ WantedBy=multi-user.target
 S10networking   # Démarre en premier
 S20sshd        # Démarre après networking
 S30apache      # Démarre après sshd
-```text
+```
 
 **Limitations** :
 
@@ -157,7 +157,7 @@ Description=Apache Web Server
 After=network.target postgresql.service
 Requires=network.target
 Wants=postgresql.service
-```text
+```
 
 **Avantages** :
 
@@ -177,7 +177,7 @@ logger -t myapp "Application started"
 # Consultation
 tail -f /var/log/syslog
 grep myapp /var/log/syslog
-```text
+```
 
 **Problèmes** :
 
@@ -196,7 +196,7 @@ journalctl -u myapp
 journalctl -u myapp --since "1 hour ago"
 journalctl -u myapp -p err
 journalctl -f  # Suivi temps réel
-```text
+```
 
 **Avantages** :
 
@@ -222,7 +222,7 @@ Avec SysVinit, la supervision nécessite des outils externes :
 
 */5 * * * * /etc/init.d/myapp status || /etc/init.d/myapp start
 
-```text
+```
 
 **Problèmes** :
 
@@ -240,7 +240,7 @@ Restart=on-failure
 RestartSec=5s
 StartLimitBurst=3
 StartLimitIntervalSec=60s
-```text
+```
 
 **Avantages** :
 
@@ -261,7 +261,7 @@ Tous les services activés démarrent au boot, qu'ils soient utilisés ou non.
 update-rc.d myservice defaults
 
 # Le service démarre à chaque boot
-```text
+```
 
 **Problèmes** :
 
@@ -281,7 +281,7 @@ systemd peut démarrer des services uniquement quand ils sont sollicités :
 ListenStream=22
 
 # sshd.service démarre automatiquement à la première connexion
-```text
+```
 
 **Path activation** :
 
@@ -289,7 +289,7 @@ ListenStream=22
 # Démarre un service quand un fichier est créé
 [Path]
 PathExists=/tmp/trigger
-```text
+```
 
 **Avantages** :
 
@@ -311,7 +311,7 @@ Startup finished in 45.234s (kernel) + 58.721s (userspace) = 103.955s
 # systemd
 $ systemd-analyze time
 Startup finished in 4.521s (kernel) + 8.234s (userspace) = 12.755s
-```text
+```
 
 **Gain** : ~8x plus rapide avec systemd.
 
@@ -325,7 +325,7 @@ $ systemd-analyze blame
 3.112s nginx.service
 1.892s networking.service
 
-```text
+```
 
 Cette analyse n'existe pas avec SysVinit.
 
@@ -359,7 +359,7 @@ Cette analyse n'existe pas avec SysVinit.
 
 # Changer de runlevel
 init 3
-```text
+```
 
 ### systemd : targets
 
@@ -373,7 +373,7 @@ reboot.target         # Redémarrage
 
 # Changer de target
 systemctl isolate multi-user.target
-```text
+```
 
 **Avantages systemd** :
 
@@ -391,7 +391,7 @@ systemd maintient une compatibilité partielle avec SysVinit :
 # Ces commandes fonctionnent encore
 service myapp start      # Redirigé vers systemctl
 /etc/init.d/myapp start  # Script appelé si existe
-```text
+```
 
 ### Conversion d'un script init
 

@@ -21,7 +21,7 @@ Arrêt complet du système.
 systemctl isolate poweroff.target
 # Équivalent à
 systemctl poweroff
-```text
+```
 
 ### rescue.target
 
@@ -31,9 +31,10 @@ Mode rescue (équivalent au runlevel 1 / single user mode).
 systemctl isolate rescue.target
 # Équivalent à
 systemctl rescue
-```text
+```
 
 **Caractéristiques** :
+
 - Shell root uniquement
 - Services minimum
 - Pas de réseau
@@ -45,9 +46,10 @@ Mode multi-utilisateur sans interface graphique (équivalent au runlevel 3).
 
 ```bash
 systemctl isolate multi-user.target
-```text
+```
 
 **Services typiques** :
+
 - Réseau
 - SSH
 - Serveurs (web, base de données...)
@@ -61,9 +63,10 @@ Mode graphique complet (équivalent au runlevel 5).
 systemctl isolate graphical.target
 # Équivalent à
 systemctl set-default graphical.target
-```text
+```
 
 **Dépendances** :
+
 - Requiert `multi-user.target`
 - Ajoute le display manager (GDM, SDDM, LightDM...)
 - Interface graphique complète
@@ -76,7 +79,7 @@ Redémarrage du système.
 systemctl isolate reboot.target
 # Équivalent à
 systemctl reboot
-```text
+```
 
 ## Targets de synchronisation
 
@@ -87,7 +90,7 @@ Indique que le réseau est disponible (basique).
 ```ini
 [Unit]
 After=network.target
-```text
+```
 
 !!! warning "Attention"
     `network.target` signifie seulement que le réseau est *initialisé*, pas nécessairement *connecté*. Pour une connexion réseau complète, utilisez `network-online.target`.
@@ -100,7 +103,7 @@ Indique que le réseau est réellement connecté et opérationnel.
 [Unit]
 After=network-online.target
 Wants=network-online.target
-```text
+```
 
 Utilisé pour les services qui nécessitent une connexion réseau active (NFS, services cloud...).
 
@@ -111,7 +114,7 @@ Indique que l'horloge système est synchronisée.
 ```ini
 [Unit]
 After=time-sync.target
-```text
+```
 
 ### local-fs.target
 
@@ -120,7 +123,7 @@ Tous les systèmes de fichiers locaux sont montés.
 ```ini
 [Unit]
 After=local-fs.target
-```text
+```
 
 ### remote-fs.target
 
@@ -130,7 +133,7 @@ Systèmes de fichiers distants montés (NFS, CIFS...).
 [Unit]
 After=remote-fs.target
 Requires=remote-fs.target
-```text
+```
 
 ### basic.target
 
@@ -139,7 +142,7 @@ Services système de base démarrés (sockets, timers, paths, slices...).
 ```ini
 [Unit]
 After=basic.target
-```text
+```
 
 ### sysinit.target
 
@@ -177,7 +180,7 @@ Requires=basic.target
 Conflicts=rescue.target
 After=basic.target rescue.target
 AllowIsolate=yes
-```text
+```
 
 ### Options spécifiques
 
@@ -187,7 +190,7 @@ AllowIsolate=yes
 
 ```ini
 AllowIsolate=yes
-```text
+```
 
 **Conflicts**
 
@@ -195,7 +198,7 @@ AllowIsolate=yes
 
 ```ini
 Conflicts=rescue.target shutdown.target
-```text
+```
 
 ## Créer un target personnalisé
 
@@ -210,7 +213,7 @@ After=multi-user.target
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 Services associés :
 
@@ -229,7 +232,7 @@ WantedBy=webstack.target
 [Unit]
 Description=MariaDB Database
 WantedBy=webstack.target
-```text
+```
 
 Activation :
 
@@ -238,7 +241,7 @@ systemctl enable webstack.target
 systemctl start webstack.target
 
 # Démarre automatiquement nginx, php-fpm et mariadb
-```text
+```
 
 ### Exemple : target de développement
 
@@ -252,7 +255,7 @@ AllowIsolate=yes
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ```ini
 # docker.service
@@ -266,7 +269,7 @@ WantedBy=dev-environment.target
 # redis.service
 [Install]
 WantedBy=dev-environment.target
-```text
+```
 
 ## Gestion des targets
 
@@ -282,7 +285,7 @@ systemctl rescue
 
 # Emergency mode (shell root minimal)
 systemctl emergency
-```text
+```
 
 ### Target par défaut
 
@@ -296,7 +299,7 @@ systemctl set-default graphical.target
 
 # Réinitialiser au défaut
 systemctl set-default graphical.target
-```text
+```
 
 ### Lister les targets
 
@@ -311,7 +314,7 @@ systemctl list-units --type=target --state=active
 # Dépendances d'un target
 systemctl list-dependencies graphical.target
 systemctl list-dependencies --reverse graphical.target
-```text
+```
 
 ### Analyser un target
 
@@ -324,7 +327,7 @@ systemctl show multi-user.target
 
 # Services requis par le target
 systemctl show -p Wants,Requires multi-user.target
-```text
+```
 
 ## Targets et boot
 
@@ -332,37 +335,29 @@ systemctl show -p Wants,Requires multi-user.target
 
 Au boot, dans GRUB, ajouter à la ligne kernel :
 
-```text
+```ini
 systemd.unit=rescue.target
 systemd.unit=multi-user.target
 systemd.unit=emergency.target
-```text
+```
 
 Ou de manière persistante :
 
 ```bash
 systemctl set-default rescue.target
-```text
+```
 
 ### Ordre de démarrage
 
 ```text
-
 1. sysinit.target
-
    ↓
-
 2. basic.target
-
    ↓
-
 3. multi-user.target
-
    ↓
-
 4. graphical.target (si défaut)
-
-```text
+```
 
 ### Analyser le boot
 
@@ -372,7 +367,7 @@ systemd-analyze critical-chain
 
 # Visualiser le graphe de démarrage
 systemd-analyze dot | dot -Tsvg > boot.svg
-```text
+```
 
 ## Bonnes pratiques
 
@@ -383,14 +378,14 @@ Pour une dépendance souple :
 ```ini
 [Install]
 WantedBy=multi-user.target  # Recommandé
-```text
+```
 
 Plutôt que :
 
 ```ini
 [Unit]
 Requires=multi-user.target   # Trop strict
-```text
+```
 
 ### 2. Créer des targets métier
 
@@ -401,7 +396,7 @@ Grouper les services par fonction :
 [Unit]
 Description=Monitoring Stack
 Requires=prometheus.service grafana.service
-```text
+```
 
 ### 3. Utiliser AllowIsolate avec précaution
 
@@ -413,7 +408,7 @@ AllowIsolate=yes  # multi-user, graphical, rescue
 
 # Pas pour les targets de service
 AllowIsolate=no   # network, sockets, timers
-```text
+```
 
 ### 4. Documenter les targets personnalisés
 
@@ -422,7 +417,7 @@ AllowIsolate=no   # network, sockets, timers
 Description=Production Web Services Stack
 Documentation=https://wiki.example.com/webstack
 Documentation=man:nginx(8)
-```text
+```
 
 ### 5. Tester avant de set-default
 
@@ -432,7 +427,7 @@ systemctl isolate my-custom.target
 
 # Si OK, définir par défaut
 systemctl set-default my-custom.target
-```text
+```
 
 ## Dépannage
 
@@ -447,7 +442,7 @@ journalctl -u my.target
 
 # Vérifier les dépendances
 systemctl list-dependencies my.target
-```text
+```
 
 ### Impossible de basculer
 
@@ -457,7 +452,7 @@ systemctl show my.target -p AllowIsolate
 
 # Voir les conflits
 systemctl show my.target -p Conflicts
-```text
+```
 
 ### Services ne démarrent pas avec le target
 
@@ -471,7 +466,7 @@ systemctl enable myservice.service
 
 # Vérifier les liens symboliques
 ls -l /etc/systemd/system/my.target.wants/
-```text
+```
 
 ## Targets avancés
 
@@ -499,6 +494,6 @@ Modes de veille.
 systemctl hibernate
 systemctl suspend
 systemctl hybrid-sleep
-```text
+```
 
 Les targets sont essentiels pour comprendre et contrôler le comportement de systemd. Ils permettent de structurer le démarrage du système et de créer des groupes logiques de services.

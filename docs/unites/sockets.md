@@ -13,15 +13,11 @@ L'activation par socket offre plusieurs avantages :
 
 ## Fonctionnement
 
-```text
-
 1. systemd crée et écoute sur le socket
 2. Une connexion arrive
 3. systemd démarre le service associé
 4. systemd passe le socket au service
 5. Le service traite la connexion
-
-```text
 
 ## Structure d'un fichier socket
 
@@ -35,7 +31,7 @@ Accept=no
 
 [Install]
 WantedBy=sockets.target
-```text
+```
 
 ## Section [Socket]
 
@@ -53,7 +49,7 @@ ListenStream=[::]:8080
 
 # Unix socket
 ListenStream=/run/myapp.sock
-```text
+```
 
 **ListenDatagram**
 
@@ -65,7 +61,7 @@ ListenDatagram=514
 
 # Unix datagram
 ListenDatagram=/run/myapp.sock
-```text
+```
 
 **ListenSequentialPacket**
 
@@ -73,7 +69,7 @@ ListenDatagram=/run/myapp.sock
 
 ```ini
 ListenSequentialPacket=/run/myapp.sock
-```text
+```
 
 **ListenFIFO**
 
@@ -81,7 +77,7 @@ ListenSequentialPacket=/run/myapp.sock
 
 ```ini
 ListenFIFO=/run/myapp.fifo
-```text
+```
 
 **ListenSpecial**
 
@@ -89,7 +85,7 @@ ListenFIFO=/run/myapp.fifo
 
 ```ini
 ListenSpecial=/dev/special
-```text
+```
 
 **ListenNetlink**
 
@@ -97,7 +93,7 @@ ListenSpecial=/dev/special
 
 ```ini
 ListenNetlink=kobject-uevent 1
-```text
+```
 
 **ListenMessageQueue**
 
@@ -105,7 +101,7 @@ ListenNetlink=kobject-uevent 1
 
 ```ini
 ListenMessageQueue=/myqueue
-```text
+```
 
 ### Options de socket
 
@@ -116,7 +112,7 @@ ListenMessageQueue=/myqueue
 ```ini
 Accept=yes  # Une instance par connexion (inetd-style)
 Accept=no   # Service unique gère toutes les connexions (défaut)
-```text
+```
 
 **SocketUser** / **SocketGroup**
 
@@ -125,7 +121,7 @@ Accept=no   # Service unique gère toutes les connexions (défaut)
 ```ini
 SocketUser=www-data
 SocketGroup=www-data
-```text
+```
 
 **SocketMode**
 
@@ -133,7 +129,7 @@ SocketGroup=www-data
 
 ```ini
 SocketMode=0660
-```text
+```
 
 **Backlog**
 
@@ -141,7 +137,7 @@ SocketMode=0660
 
 ```ini
 Backlog=256
-```text
+```
 
 **BindIPv6Only**
 
@@ -150,7 +146,7 @@ Backlog=256
 ```ini
 BindIPv6Only=both      # IPv4 et IPv6 (défaut)
 BindIPv6Only=ipv6-only # Uniquement IPv6
-```text
+```
 
 **Broadcast**
 
@@ -158,7 +154,7 @@ BindIPv6Only=ipv6-only # Uniquement IPv6
 
 ```ini
 Broadcast=yes
-```text
+```
 
 **PassCredentials**
 
@@ -166,7 +162,7 @@ Broadcast=yes
 
 ```ini
 PassCredentials=yes
-```text
+```
 
 **PassSecurity**
 
@@ -174,7 +170,7 @@ PassCredentials=yes
 
 ```ini
 PassSecurity=yes
-```text
+```
 
 **RemoveOnStop**
 
@@ -182,7 +178,7 @@ PassSecurity=yes
 
 ```ini
 RemoveOnStop=yes
-```text
+```
 
 **MaxConnections**
 
@@ -190,7 +186,7 @@ RemoveOnStop=yes
 
 ```ini
 MaxConnections=64
-```text
+```
 
 **Service**
 
@@ -198,7 +194,7 @@ MaxConnections=64
 
 ```ini
 Service=myapp.service
-```text
+```
 
 ## Exemples
 
@@ -215,7 +211,7 @@ Accept=no
 
 [Install]
 WantedBy=sockets.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/webapp.service
@@ -226,7 +222,7 @@ Description=Web Application
 Type=simple
 ExecStart=/usr/bin/webapp
 StandardInput=socket
-```text
+```
 
 Activation :
 
@@ -235,7 +231,7 @@ systemctl enable webapp.socket
 systemctl start webapp.socket
 
 # Le service webapp.service démarrera automatiquement à la première connexion
-```text
+```
 
 ### Socket Unix avec permissions
 
@@ -253,7 +249,7 @@ RemoveOnStop=yes
 
 [Install]
 WantedBy=sockets.target
-```text
+```
 
 ### Socket SSH par connexion (Accept=yes)
 
@@ -268,7 +264,7 @@ Accept=yes
 
 [Install]
 WantedBy=sockets.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/sshd@.service
@@ -280,7 +276,7 @@ Type=simple
 ExecStart=-/usr/sbin/sshd -i
 StandardInput=socket
 StandardError=journal
-```text
+```
 
 ### Socket UDP syslog
 
@@ -295,7 +291,7 @@ Broadcast=yes
 
 [Install]
 WantedBy=sockets.target
-```text
+```
 
 ### Socket Docker
 
@@ -314,7 +310,7 @@ SocketGroup=docker
 
 [Install]
 WantedBy=sockets.target
-```text
+```
 
 ### Socket avec plusieurs ports
 
@@ -331,7 +327,7 @@ Accept=no
 
 [Install]
 WantedBy=sockets.target
-```text
+```
 
 ## Intégration avec les services
 
@@ -342,7 +338,7 @@ Pour qu'un service reçoive le socket, utilisez :
 ```ini
 [Service]
 StandardInput=socket
-```text
+```
 
 Ou l'API systemd pour récupérer les file descriptors :
 
@@ -356,7 +352,7 @@ if (n > 0) {
     int fd = SD_LISTEN_FDS_START + 0;  // Premier socket
     // Utiliser fd...
 }
-```text
+```
 
 **En Python** :
 
@@ -366,7 +362,7 @@ import systemd.daemon
 fds = systemd.daemon.listen_fds()
 if fds:
     sock = socket.fromfd(fds[0], socket.AF_INET, socket.SOCK_STREAM)
-```text
+```
 
 **En Go** :
 
@@ -378,7 +374,7 @@ if len(listeners) > 0 {
     ln := listeners[0]
     // Utiliser ln...
 }
-```text
+```
 
 ## Gestion des sockets
 
@@ -402,7 +398,7 @@ systemctl status myapp.socket
 
 # Voir les connexions actives
 systemctl show myapp.socket -p NAccepted,NConnections
-```text
+```
 
 ### Dépendances
 
@@ -423,7 +419,7 @@ L'activation par socket permet de redémarrer un service sans perdre de connexio
 systemctl restart myapp.service
 
 # Le socket reste actif et buffer les connexions
-```text
+```
 
 ### Dépendances parallélisées
 
@@ -432,7 +428,7 @@ Sans socket :
 ```text
 service-a.service (démarre) 
   → attend que service-b.service soit prêt
-```text
+```
 
 Avec socket :
 
@@ -440,7 +436,7 @@ Avec socket :
 service-a.socket (instantané)
 service-b.socket (instantané)
   → Les deux services peuvent démarrer en parallèle
-```text
+```
 
 ### Socket pour services gourmands
 
@@ -450,7 +446,7 @@ Pour des services qui consomment beaucoup de ressources mais rarement utilisés 
 # Le service ne se lance que quand nécessaire
 [Socket]
 ListenStream=/run/heavy-service.sock
-```text
+```
 
 ## Surveillance et métriques
 
@@ -458,7 +454,7 @@ ListenStream=/run/heavy-service.sock
 
 ```bash
 systemctl show myapp.socket
-```text
+```
 
 Propriétés intéressantes :
 
@@ -471,19 +467,21 @@ Propriétés intéressantes :
 ```bash
 journalctl -u myapp.socket
 journalctl -u myapp.socket -u myapp.service  # Socket + service
-```text
+```
 
 ## Limitations et considérations
 
 ### Quand utiliser l'activation par socket ?
 
 **Bon pour** :
+
 - Services utilisés occasionnellement
 - Optimisation du temps de boot
 - Services avec dépendances complexes
 - Redémarrages sans interruption
 
 **Moins bon pour** :
+
 - Services à haute fréquence (overhead de démarrage)
 - Services qui doivent être toujours actifs
 - Services avec initialisation longue
@@ -496,7 +494,7 @@ La première connexion peut être plus lente (temps de démarrage du service). P
 [Service]
 # Força le démarrage immédiat si nécessaire
 ExecStartPre=/usr/bin/warmup.sh
-```text
+```
 
 ## Sécurité
 
@@ -506,7 +504,7 @@ ExecStartPre=/usr/bin/warmup.sh
 [Socket]
 MaxConnections=100
 MaxConnectionsPerSource=10
-```text
+```
 
 ### Filtrage par IP
 
@@ -516,7 +514,7 @@ Utiliser `IPAddressAllow` / `IPAddressDeny` :
 [Socket]
 IPAddressAllow=192.168.1.0/24
 IPAddressDeny=any
-```text
+```
 
 ### Permissions Unix socket
 
@@ -525,7 +523,7 @@ IPAddressDeny=any
 SocketMode=0660        # Permissions
 SocketUser=myapp       # Propriétaire
 SocketGroup=www-data   # Groupe
-```text
+```
 
 ## Débogage
 
@@ -542,7 +540,7 @@ systemctl start myapp.service
 
 # Erreurs dans les logs
 journalctl -u myapp.socket -u myapp.service
-```text
+```
 
 ### Problème : permission denied
 
@@ -553,7 +551,7 @@ ls -l /run/myapp.sock
 
 # Ajuster dans le fichier socket
 SocketMode=0666
-```text
+```
 
 ### Tester manuellement
 
@@ -565,6 +563,6 @@ telnet localhost 8080
 
 # Unix socket
 socat - UNIX-CONNECT:/run/myapp.sock
-```text
+```
 
 L'activation par socket est une fonctionnalité puissante de systemd qui permet d'optimiser les performances et la gestion des services. Elle est particulièrement utile pour les services occasionnellement utilisés ou avec des dépendances complexes.

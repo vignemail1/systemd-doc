@@ -141,7 +141,7 @@ graph TB
     style run fill:#90CAF9
     style usr fill:#BBDEFB
     style root fill:#E3F2FD
-```text
+```
 
 **Ordre de priorité** : `/etc` > `/run` > `/usr/lib`
 
@@ -174,7 +174,7 @@ graph LR
     style resolved fill:#C8E6C9
     style networkd fill:#C8E6C9
     style timesyncd fill:#C8E6C9
-```text
+```
 
 ### Données runtime
 
@@ -183,7 +183,7 @@ graph LR
   ├── system/                 # État runtime du système
   ├── sessions/               # Sessions utilisateur actives
   └── units/                  # État des unités
-```text
+```
 
 ### Données persistantes
 
@@ -192,7 +192,7 @@ graph LR
   ├── catalog/                # Catalogues de messages du journal
   ├── coredump/               # Core dumps des applications
   └── timesync/               # Données de synchronisation horaire
-```text
+```
 
 ## Gestion des cgroups
 
@@ -236,7 +236,7 @@ graph TB
     style nginx fill:#FFF3E0
     style postgres fill:#FFF3E0
     style user1000 fill:#FFF3E0
-```text
+```
 
 Chaque service systemd s'exécute dans son propre cgroup, permettant une isolation et un contrôle précis.
 
@@ -309,6 +309,6 @@ graph TB
     style udevd fill:#C5CAE9
     style timesyncd fill:#C5CAE9
     style tools fill:#B2DFDB
-```text
+```
 
 Cette architecture modulaire et intégrée fait de systemd un système d'initialisation puissant et flexible, capable de gérer tous les aspects du cycle de vie d'un système Linux moderne.

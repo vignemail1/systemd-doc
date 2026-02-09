@@ -62,17 +62,17 @@ systemd est organisé autour de plusieurs composants :
       ┌───────────┼───────────┐
       │           │           │
       ▼           ▼           ▼
-┌──────────┐ ┌─────────┐ ┌──────────┐
+┌──────────┐ ┌──────────┐ ┌──────────┐
 │ systemctl│ │journalctl│ │ autres   │
-│          │ │         │ │ outils   │
-└──────────┘ └─────────┘ └──────────┘
+│          │ │          │ │ outils   │
+└──────────┘ └──────────┘ └──────────┘
       │           │           │
       ▼           ▼           ▼
 ┌──────────────────────────────────────┐
 │  Services, Sockets, Timers, etc.     │
 │  (Unités systemd)                    │
 └──────────────────────────────────────┘
-```text
+```
 
 ### Composants principaux
 
@@ -120,7 +120,7 @@ journalctl -f                        # Suivre les logs en temps réel
 # État du système
 systemctl list-units                 # Lister les unités actives
 systemctl list-unit-files            # Lister tous les fichiers d'unités
-```text
+```
 
 ## Ressources officielles
 

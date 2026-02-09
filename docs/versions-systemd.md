@@ -8,7 +8,7 @@ Ce document récapitule les versions minimales de systemd nécessaires pour chaq
 systemctl --version
 # Ou
 systemd --version
-```text
+```
 
 ## Services
 
@@ -339,7 +339,7 @@ Vérifier la version cgroups :
 stat -fc %T /sys/fs/cgroup/
 # cgroup2fs = cgroups v2 (unified)
 # tmpfs = cgroups v1 (legacy)
-```text
+```
 
 Activer cgroups v2 (si supporté) :
 
@@ -349,7 +349,7 @@ systemd.unified_cgroup_hierarchy=1
 
 # Ou
 cgroup_no_v1=all
-```text
+```
 
 ## Références
 

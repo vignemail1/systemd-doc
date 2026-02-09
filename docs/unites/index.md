@@ -87,7 +87,7 @@ Les noms d'unités suivent des conventions strictes :
 
 ```text
 <nom>[@<instance>].<type>
-```text
+```
 
 ### Exemples
 
@@ -108,7 +108,7 @@ Description=Getty on %I
 
 [Service]
 ExecStart=/sbin/agetty %I
-```text
+```
 
 Instances :
 
@@ -131,7 +131,7 @@ Unités créées ou modifiées par l'administrateur système.
 │   └── custom.conf
 └── multi-user.target.wants/   # Dépendances
     └── myapp.service -> /etc/systemd/system/myapp.service
-```text
+```
 
 ### 2. `/run/systemd/system/` (priorité moyenne)
 
@@ -147,7 +147,7 @@ Unités fournies par les packages des distributions.
 ├── nginx.service
 ├── postgresql.service
 └── ...
-```text
+```
 
 !!! warning "Ordre de priorité"
     Si un fichier d'unité existe dans plusieurs emplacements, celui dans `/etc` prend toujours la priorité.
@@ -171,7 +171,7 @@ Requires=...
 # Comportement lors de l'activation
 WantedBy=...
 RequiredBy=...
-```text
+```
 
 ### Section `[Unit]`
 
@@ -202,7 +202,7 @@ systemctl list-units --type=timer
 
 # Unités en échec
 systemctl list-units --state=failed
-```text
+```
 
 ### Inspecter une unité
 
@@ -215,7 +215,7 @@ systemctl show nginx.service
 
 # Voir les dépendances
 systemctl list-dependencies nginx.service
-```text
+```
 
 ### Gérer les unités
 
@@ -240,7 +240,7 @@ systemctl enable myapp.service
 
 # Désactiver
 systemctl disable myapp.service
-```text
+```
 
 ## États d'une unité
 
@@ -268,6 +268,7 @@ Une unité peut être dans plusieurs états :
 Plus précis, varie selon le type d'unité :
 
 **Pour les services** :
+
 - `running` : Processus en cours d'exécution
 - `exited` : Processus terminé avec succès (normal pour Type=oneshot)
 - `dead` : Arrêté
@@ -286,7 +287,7 @@ systemctl list-dependencies nginx.service
 
 # Dépendances inverses (qui dépend de cette unité)
 systemctl list-dependencies --reverse nginx.service
-```text
+```
 
 ## Overrides et drop-ins
 
@@ -298,7 +299,7 @@ systemctl edit nginx.service
 
 # Crée automatiquement :
 # /etc/systemd/system/nginx.service.d/override.conf
-```text
+```
 
 **Avantage** : Les mises à jour du package n'écrasent pas vos modifications.
 
@@ -313,7 +314,7 @@ systemctl mask bluetooth.service
 
 # Démasquer
 systemctl unmask bluetooth.service
-```text
+```
 
 ## Validation
 
@@ -321,7 +322,7 @@ Vérifier la syntaxe d'un fichier d'unité :
 
 ```bash
 systemd-analyze verify myapp.service
-```text
+```
 
 Détecte les erreurs de syntaxe et dépendances circulaires.
 

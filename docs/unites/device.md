@@ -21,7 +21,7 @@ Les device units sont nommés d'après le chemin sysfs du périphérique :
 /sys/devices/... → sys-devices-....device
 /dev/sda → dev-sda.device
 /dev/disk/by-uuid/... → dev-disk-by\x2duuid-....device
-```text
+```
 
 Les caractères spéciaux sont échappés avec `\xNN` (code hexadécimal).
 
@@ -36,7 +36,7 @@ systemctl list-units --type=device --all
 
 # Rechercher un device spécifique
 systemctl list-units --type=device | grep sda
-```text
+```
 
 Exemple de sortie :
 
@@ -44,7 +44,7 @@ Exemple de sortie :
 dev-sda.device           loaded active plugged Samsung_SSD
 dev-sda1.device          loaded active plugged Samsung_SSD 1
 dev-disk-by\x2duuid-...  loaded active plugged Samsung_SSD
-```text
+```
 
 ## Inspecter un device unit
 
@@ -56,7 +56,7 @@ systemctl show dev-sda.device
 # Voir les dépendances
 systemctl list-dependencies dev-sda.device
 systemctl list-dependencies --reverse dev-sda.device
-```text
+```
 
 Propriétés intéressantes :
 
@@ -82,7 +82,7 @@ ExecStart=/usr/bin/myapp --device /dev/ttyUSB0
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 **BindsTo** : Le service s'arrête automatiquement si le device disparaît.
 
@@ -93,7 +93,7 @@ WantedBy=multi-user.target
 Description=Service requiring specific disk
 Requires=dev-disk-by\x2duuid-12345678.device
 After=dev-disk-by\x2duuid-12345678.device
-```text
+```
 
 ### Par label
 
@@ -101,7 +101,7 @@ After=dev-disk-by\x2duuid-12345678.device
 [Unit]
 Requires=dev-disk-by\x2dlabel-BACKUP.device
 After=dev-disk-by\x2dlabel-BACKUP.device
-```text
+```
 
 ## Obtenir le nom d'un device unit
 
@@ -114,7 +114,7 @@ systemd-escape -p --suffix=device /dev/sda
 
 systemd-escape -p --suffix=device /dev/disk/by-uuid/abc-123
 # Output: dev-disk-by\x2duuid-abc\x2d123.device
-```text
+```
 
 ### Depuis udevadm
 
@@ -124,7 +124,7 @@ udevadm info /dev/sda
 
 # Voir le SYSTEMD_WANTS (services à démarrer)
 udevadm info /dev/sda | grep SYSTEMD
-```text
+```
 
 ## Règles udev personnalisées
 
@@ -137,7 +137,7 @@ Bien que les device units soient automatiques, vous pouvez influencer leur compo
 # Démarrer backup.service quand le disque USB est connecté
 SUBSYSTEM=="block", ENV{ID_SERIAL}="My_USB_Drive", \
   ENV{SYSTEMD_WANTS}+="usb-backup.service"
-```text
+```
 
 ```ini
 # /etc/systemd/system/usb-backup.service
@@ -147,14 +147,14 @@ Description=Backup to USB Drive
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/backup-to-usb.sh
-```text
+```
 
 Recharger les règles :
 
 ```bash
 udevadm control --reload-rules
 udevadm trigger
-```text
+```
 
 ### Taguer des devices
 
@@ -163,7 +163,7 @@ udevadm trigger
 # Taguer les caméras
 SUBSYSTEM=="video4linux", TAG+="systemd", \
   ENV{SYSTEMD_ALIAS}+="/dev/camera"
-```text
+```
 
 Crée un alias `/dev/camera` utilisable dans les services.
 
@@ -173,7 +173,7 @@ Crée un alias `/dev/camera` utilisable dans les services.
 # Marquer un device comme amovible
 SUBSYSTEM=="block", ENV{ID_SERIAL}="External_Disk", \
   ENV{SYSTEMD_READY}="1"
-```text
+```
 
 ## Cas d'usage pratiques
 
@@ -194,7 +194,7 @@ ExecStop=/usr/bin/umount /mnt/backup
 
 [Install]
 WantedBy=dev-disk-by\x2dlabel-BACKUP.device
-```text
+```
 
 Le service se lance automatiquement quand le disque est connecté.
 
@@ -214,7 +214,7 @@ Restart=on-failure
 
 [Install]
 WantedBy=dev-ttyUSB0.device
-```text
+```
 
 ### Surveillance de périphériques multiples
 
@@ -228,7 +228,7 @@ After=dev-ttyUSB0.device dev-ttyUSB1.device
 [Service]
 Type=simple
 ExecStart=/usr/bin/myapp
-```text
+```
 
 Le service ne démarre que si **tous** les devices sont présents.
 
@@ -243,7 +243,7 @@ SUBSYSTEM=="usb", ACTION=="add", \
 
 SUBSYSTEM=="usb", ACTION=="remove", \
   RUN+="/usr/local/bin/usb-notify.sh 'USB device removed'"
-```text
+```
 
 ## Débogage
 
@@ -261,7 +261,7 @@ systemctl list-units --type=device | grep sda
 
 # Ou avec systemd-escape
 systemd-escape -p --suffix=device /dev/sda
-```text
+```
 
 ### Vérifier les dépendances
 
@@ -271,7 +271,7 @@ systemctl list-dependencies --reverse dev-sda.device
 
 # Services démarrés par un device
 systemctl show dev-sda.device -p Wants
-```text
+```
 
 ### Surveiller les événements
 
@@ -284,7 +284,7 @@ journalctl -f -u systemd-udevd
 
 # Logs d'un device spécifique
 journalctl -f /dev/sda
-```text
+```
 
 ### Tester une règle udev
 
@@ -298,7 +298,7 @@ udevadm trigger
 
 # Vérifier les propriétés
 udevadm info --query=property /dev/sda
-```text
+```
 
 ## Limitations
 
@@ -310,7 +310,7 @@ Les device units existent uniquement quand le matériel est connecté. Pour des 
 [Unit]
 # Plutôt que Requires=
 Wants=dev-ttyUSB0.device
-```text
+```
 
 ### Identification instable
 
@@ -322,7 +322,7 @@ dev-serial-by\x2did-usb\x2dFTDI_....device
 
 # Plutôt que
 dev-ttyUSB0.device
-```text
+```
 
 ### Droits d'accès
 
@@ -331,23 +331,23 @@ Les règles udev doivent définir les permissions :
 ```udev
 SUBSYSTEM=="usb", ATTR{idVendor}=="1234", \
   OWNER="myuser", GROUP="mygroup", MODE="0660"
-```text
+```
 
 ## Bonnes pratiques
 
 1. **Utiliser des identifiants stables**
 
-   ```bash
+   ```text
    # Préférer by-uuid, by-id, by-path
    /dev/disk/by-uuid/...
    /dev/serial/by-id/...
-```text
+   ```
 
 2. **BindsTo pour dépendances strictes**
 
    ```ini
    BindsTo=dev-ttyUSB0.device
-```text
+   ```
 
    Arrête le service si le device disparaît.
 
@@ -355,7 +355,7 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="1234", \
 
    ```ini
    Wants=dev-sda.device
-```text
+   ```
 
    Le service peut démarrer sans le device.
 
@@ -364,7 +364,7 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="1234", \
    ```ini
    [Unit]
    Description=App requiring /dev/ttyUSB0 (FTDI USB-Serial)
-```text
+   ```
 
 5. **Utiliser udev pour la logique complexe**
    - Règles udev pour la détection
@@ -374,6 +374,6 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="1234", \
 
    ```bash
    udevadm test /sys/class/.../.../
-```text
+   ```
 
 Les device units offrent une intégration transparente entre le matériel et les services systemd, permettant une gestion automatique et élégante des périphériques.

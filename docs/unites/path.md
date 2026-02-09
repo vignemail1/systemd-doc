@@ -21,7 +21,7 @@ Unit=myapp-reload.service
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ## Section [Path]
 
@@ -34,7 +34,7 @@ WantedBy=multi-user.target
 ```ini
 [Path]
 PathExists=/tmp/trigger-file
-```text
+```
 
 Utilisé pour : déclenchement manuel, fichiers de verrouillage.
 
@@ -45,7 +45,7 @@ Utilisé pour : déclenchement manuel, fichiers de verrouillage.
 ```ini
 [Path]
 PathExistsGlob=/var/spool/mail/*
-```text
+```
 
 **PathChanged**
 
@@ -54,7 +54,7 @@ PathExistsGlob=/var/spool/mail/*
 ```ini
 [Path]
 PathChanged=/etc/myapp/
-```text
+```
 
 Détecte les changements de métadonnées (permissions, propriétaire) mais pas le contenu.
 
@@ -65,7 +65,7 @@ Détecte les changements de métadonnées (permissions, propriétaire) mais pas 
 ```ini
 [Path]
 PathModified=/etc/myapp/config.yaml
-```text
+```
 
 Détecte les modifications réelles du contenu du fichier.
 
@@ -76,7 +76,7 @@ Détecte les modifications réelles du contenu du fichier.
 ```ini
 [Path]
 DirectoryNotEmpty=/var/spool/myapp
-```text
+```
 
 Utilisé pour : traitement de files d'attente, spool directories.
 
@@ -88,7 +88,7 @@ Utilisé pour : traitement de files d'attente, spool directories.
 
 ```ini
 Unit=my-handler.service
-```text
+```
 
 **MakeDirectory**
 
@@ -97,7 +97,7 @@ Unit=my-handler.service
 ```ini
 MakeDirectory=yes
 DirectoryMode=0755
-```text
+```
 
 **TriggerLimitBurst** / **TriggerLimitIntervalSec**
 
@@ -106,7 +106,7 @@ DirectoryMode=0755
 ```ini
 TriggerLimitBurst=5
 TriggerLimitIntervalSec=60s
-```text
+```
 
 Protège contre les boucles infinies.
 
@@ -126,7 +126,7 @@ Unit=nginx-reload.service
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/nginx-reload.service
@@ -137,7 +137,7 @@ Description=Reload Nginx Configuration
 Type=oneshot
 ExecStart=/usr/sbin/nginx -t
 ExecStart=/usr/sbin/nginx -s reload
-```text
+```
 
 Activation :
 
@@ -146,7 +146,7 @@ systemctl enable nginx-config-watch.path
 systemctl start nginx-config-watch.path
 
 # Nginx se recharge automatiquement quand la config change
-```text
+```
 
 ### Traitement de files d'attente
 
@@ -161,7 +161,7 @@ MakeDirectory=yes
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/process-queue.service
@@ -172,7 +172,7 @@ Description=Process Upload Queue
 Type=oneshot
 ExecStart=/usr/local/bin/process-uploads.sh
 User=processor
-```text
+```
 
 ### Déclenchement manuel
 
@@ -187,7 +187,7 @@ Unit=backup.service
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 Utilisation :
 
@@ -196,7 +196,7 @@ Utilisation :
 touch /tmp/trigger-backup
 
 # Le service backup.service se lance automatiquement
-```text
+```
 
 ### Surveillance de certificats
 
@@ -212,7 +212,7 @@ Unit=ssl-cert-reload.service
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/ssl-cert-reload.service
@@ -223,7 +223,7 @@ Description=Reload Services After Cert Change
 Type=oneshot
 ExecStart=/usr/bin/systemctl reload nginx.service
 ExecStart=/usr/bin/systemctl reload postfix.service
-```text
+```
 
 ### Surveillance de logs
 
@@ -240,7 +240,7 @@ TriggerLimitIntervalSec=300s
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/error-alert.service
@@ -250,7 +250,7 @@ Description=Send Error Alert
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/send-alert.sh "Errors detected in log"
-```text
+```
 
 ### Hot-reload d'application
 
@@ -266,7 +266,7 @@ Unit=myapp-reload.service
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/myapp-reload.service
@@ -276,7 +276,7 @@ Description=Reload My Application
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/systemctl reload myapp.service
-```text
+```
 
 ### Traitement batch de fichiers
 
@@ -291,7 +291,7 @@ Unit=file-processor.service
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/file-processor.service
@@ -302,7 +302,7 @@ Description=Process CSV Files
 Type=oneshot
 ExecStart=/usr/local/bin/process-csv-files.sh
 User=processor
-```text
+```
 
 ## Gestion des path units
 
@@ -326,7 +326,7 @@ systemctl status mywatch.path
 
 # Voir les chemins surveillés
 systemctl show mywatch.path -p Paths
-```text
+```
 
 ### Tester un path unit
 
@@ -342,7 +342,7 @@ journalctl -u mywatch.service -f
 echo "test" >> /path/to/watched/file
 
 # Observer l'activation du service
-```text
+```
 
 ## Cas d'usage avancés
 
@@ -354,7 +354,7 @@ PathModified=/etc/app/config1.yaml
 PathModified=/etc/app/config2.yaml
 PathModified=/etc/app/includes/
 Unit=app-reload.service
-```text
+```
 
 Tout changement déclenche le même service.
 
@@ -366,14 +366,14 @@ Tout changement déclenche le même service.
 [Path]
 DirectoryNotEmpty=/var/spool/stage1
 Unit=process-stage1.service
-```text
+```
 
 ```ini
 # process-stage1.service déplace vers stage2
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/stage1-to-stage2.sh
-```text
+```
 
 ```ini
 # Stage 2: Traitement
@@ -381,7 +381,7 @@ ExecStart=/usr/local/bin/stage1-to-stage2.sh
 [Path]
 DirectoryNotEmpty=/var/spool/stage2
 Unit=process-stage2.service
-```text
+```
 
 ### Avec dépendances
 
@@ -397,7 +397,7 @@ Unit=myapp-reload.service
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 Le path unit ne démarre qu'après le service principal.
 
@@ -416,7 +416,7 @@ echo 524288 | sudo tee /proc/sys/fs/inotify/max_user_watches
 
 # Permanent (/etc/sysctl.conf)
 fs.inotify.max_user_watches=524288
-```text
+```
 
 ### Performance
 
@@ -441,7 +441,7 @@ Attention aux services qui modifient les fichiers surveillés :
 [Path]
 TriggerLimitBurst=3
 TriggerLimitIntervalSec=60s
-```text
+```
 
 ## Débogage
 
@@ -462,7 +462,7 @@ journalctl -u mywatch.path
 
 # Tester manuellement le service
 systemctl start mywatch.service
-```text
+```
 
 ### Déclenchements trop fréquents
 
@@ -475,7 +475,7 @@ journalctl -u mywatch.service
 [Path]
 TriggerLimitBurst=5
 TriggerLimitIntervalSec=120s
-```text
+```
 
 ### Service ne s'exécute pas
 
@@ -489,7 +489,7 @@ systemctl status mywatch.service
 
 # Logs du service
 journalctl -u mywatch.service -n 50
-```text
+```
 
 ## Comparaison avec d'autres approches
 
@@ -502,9 +502,10 @@ journalctl -u mywatch.service -n 50
 while inotifywait -e modify /etc/myapp/config.yaml; do
     systemctl reload myapp.service
 done
-```text
+```
 
 **Path units** :
+
 - Intégration systemd native
 - Logs dans journald
 - Gestion automatique du cycle de vie
@@ -517,9 +518,10 @@ done
 ```ini
 [Timer]
 OnUnitActiveSec=5min
-```text
+```
 
 **Path units** : Réaction immédiate (inotify)
+
 - Plus réactif
 - Moins de charge système
 - Mais ne fonctionne pas sur tous les FS
@@ -531,40 +533,40 @@ OnUnitActiveSec=5min
    ```ini
    [Service]
    Type=oneshot
-```text
+   ```
 
 2. **Toujours définir des limites**
 
    ```ini
    TriggerLimitBurst=5
    TriggerLimitIntervalSec=60s
-```text
+   ```
 
 3. **Créer les répertoires si nécessaire**
 
    ```ini
    MakeDirectory=yes
    DirectoryMode=0755
-```text
+   ```
 
 4. **Surveiller les répertoires plutôt que les fichiers individuels**
 
    ```ini
    PathModified=/etc/myapp/
-```text
+   ```
 
 5. **Documenter clairement**
 
    ```ini
    [Unit]
    Description=Clear description of what triggers this
-```text
+   ```
 
 6. **Tester les limites inotify**
 
    ```bash
    cat /proc/sys/fs/inotify/max_user_watches
-```text
+   ```
 
 7. **Logger les déclenchements**
 
@@ -572,6 +574,6 @@ OnUnitActiveSec=5min
    [Service]
    Type=oneshot
    ExecStartPre=/usr/bin/logger "Path triggered: processing"
-```text
+   ```
 
 Les path units sont un outil puissant pour réagir aux changements du système de fichiers, permettant une automatisation élégante de nombreuses tâches administratives.

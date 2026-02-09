@@ -34,7 +34,7 @@ Options=defaults,noatime
 
 [Install]
 WantedBy=local-fs.target
-```text
+```
 
 ## Section [Mount]
 
@@ -57,7 +57,7 @@ What=/dev/disk/by-label/DATA
 # Partage réseau
 What=//server/share
 What=server:/export/nfs
-```text
+```
 
 **Where**
 
@@ -65,7 +65,7 @@ What=server:/export/nfs
 
 ```ini
 Where=/mnt/data
-```text
+```
 
 **Type**
 
@@ -80,7 +80,7 @@ Type=ntfs
 Type=cifs
 Type=nfs
 Type=tmpfs
-```text
+```
 
 ### Options facultatives
 
@@ -92,7 +92,7 @@ Type=tmpfs
 Options=defaults,noatime,nodiratime
 Options=ro,noexec,nosuid
 Options=uid=1000,gid=1000,umask=022
-```text
+```
 
 **SloppyOptions**
 
@@ -100,7 +100,7 @@ Options=uid=1000,gid=1000,umask=022
 
 ```ini
 SloppyOptions=yes
-```text
+```
 
 **DirectoryMode**
 
@@ -108,7 +108,7 @@ SloppyOptions=yes
 
 ```ini
 DirectoryMode=0755
-```text
+```
 
 **TimeoutSec**
 
@@ -116,7 +116,7 @@ DirectoryMode=0755
 
 ```ini
 TimeoutSec=30s
-```text
+```
 
 ## Exemples de mount units
 
@@ -136,14 +136,14 @@ Options=defaults,noatime
 
 [Install]
 WantedBy=local-fs.target
-```text
+```
 
 Activation :
 
 ```bash
 systemctl enable mnt-data.mount
 systemctl start mnt-data.mount
-```text
+```
 
 ### Partage NFS
 
@@ -162,7 +162,7 @@ Options=defaults,_netdev,noatime
 
 [Install]
 WantedBy=remote-fs.target
-```text
+```
 
 **Option importante** : `_netdev` indique que c'est un système de fichiers réseau.
 
@@ -183,19 +183,19 @@ Options=credentials=/etc/samba/credentials,uid=1000,gid=1000,_netdev
 
 [Install]
 WantedBy=remote-fs.target
-```text
+```
 
 Fichier de credentials (`/etc/samba/credentials`) :
 
-```text
+```ini
 username=myuser
 password=mypassword
 domain=WORKGROUP
-```text
+```
 
 ```bash
 chmod 600 /etc/samba/credentials
-```text
+```
 
 ### tmpfs (RAM disk)
 
@@ -212,7 +212,7 @@ Options=size=1G,mode=1777
 
 [Install]
 WantedBy=local-fs.target
-```text
+```
 
 ### Bind mount
 
@@ -231,7 +231,7 @@ Options=bind
 
 [Install]
 WantedBy=local-fs.target
-```text
+```
 
 ## Automount Units (.automount)
 
@@ -263,7 +263,7 @@ TimeoutIdleSec=300
 
 [Install]
 WantedBy=local-fs.target
-```text
+```
 
 **Important** : Doit être accompagné d'une unité `.mount` correspondante.
 
@@ -275,7 +275,7 @@ WantedBy=local-fs.target
 
 ```ini
 Where=/mnt/data
-```text
+```
 
 **DirectoryMode**
 
@@ -283,7 +283,7 @@ Where=/mnt/data
 
 ```ini
 DirectoryMode=0755
-```text
+```
 
 **TimeoutIdleSec**
 
@@ -292,7 +292,7 @@ DirectoryMode=0755
 ```ini
 TimeoutIdleSec=300   # 5 minutes
 TimeoutIdleSec=0     # Jamais démonter (défaut)
-```text
+```
 
 ## Exemple complet automount
 
@@ -309,7 +309,7 @@ What=server:/export/data
 Where=/mnt/nfs
 Type=nfs
 Options=defaults,_netdev,noatime
-```text
+```
 
 ```ini
 # /etc/systemd/system/mnt-nfs.automount
@@ -322,7 +322,7 @@ TimeoutIdleSec=600
 
 [Install]
 WantedBy=remote-fs.target
-```text
+```
 
 Activation :
 
@@ -332,7 +332,7 @@ systemctl enable mnt-nfs.automount
 systemctl start mnt-nfs.automount
 
 # Le .mount sera activé automatiquement à l'accès
-```text
+```
 
 ### Données externes avec automount
 
@@ -346,7 +346,7 @@ What=/dev/disk/by-uuid/external-backup-uuid
 Where=/mnt/backup
 Type=ext4
 Options=defaults,noatime
-```text
+```
 
 ```ini
 # /etc/systemd/system/mnt-backup.automount
@@ -359,7 +359,7 @@ TimeoutIdleSec=600
 
 [Install]
 WantedBy=local-fs.target
-```text
+```
 
 ## Gestion des mounts
 
@@ -384,7 +384,7 @@ systemctl status mnt-data.mount
 # Recharger si modification
 systemctl daemon-reload
 systemctl restart mnt-data.mount
-```text
+```
 
 ### Commandes automount
 
@@ -399,7 +399,7 @@ systemctl start mnt-data.automount
 # Désactiver
 systemctl stop mnt-data.automount
 systemctl disable mnt-data.automount
-```text
+```
 
 ## Conversion depuis fstab
 
@@ -409,7 +409,7 @@ systemctl disable mnt-data.automount
 # /etc/fstab
 UUID=abc-123 /mnt/data ext4 defaults,noatime 0 2
 //server/share /mnt/smb cifs credentials=/etc/creds 0 0
-```text
+```
 
 ### Équivalent systemd
 
@@ -426,7 +426,7 @@ Options=defaults,noatime
 
 [Install]
 WantedBy=local-fs.target
-```text
+```
 
 ```ini
 # /etc/systemd/system/mnt-smb.mount
@@ -442,7 +442,7 @@ Options=credentials=/etc/creds,_netdev
 
 [Install]
 WantedBy=remote-fs.target
-```text
+```
 
 ### Outil de conversion
 
@@ -452,7 +452,7 @@ systemd peut générer des units depuis fstab :
 # systemd génère automatiquement des .mount depuis /etc/fstab
 # Visible avec:
 systemctl list-units --type=mount --all
-```text
+```
 
 ## Dépendances
 
@@ -467,7 +467,7 @@ Requires=mnt-data.mount
 
 [Service]
 ExecStart=/usr/bin/myapp
-```text
+```
 
 ### Cascade de montages
 
@@ -480,7 +480,7 @@ Description=Data Partition
 What=/dev/sdb1
 Where=/mnt/data
 Type=ext4
-```text
+```
 
 ```ini
 # /etc/systemd/system/mnt-data-www.mount
@@ -494,7 +494,7 @@ What=/mnt/data/www
 Where=/var/www
 Type=none
 Options=bind
-```text
+```
 
 ## Sécurité
 
@@ -503,7 +503,7 @@ Options=bind
 ```ini
 [Mount]
 Options=nodev,nosuid,noexec
-```text
+```
 
 **nodev**
 
@@ -522,14 +522,14 @@ Options=nodev,nosuid,noexec
 ```ini
 [Mount]
 Options=ro
-```text
+```
 
 ### Restrictions d'accès
 
 ```ini
 [Mount]
 Options=uid=1000,gid=1000,umask=077
-```text
+```
 
 ## Dépannage
 
@@ -548,7 +548,7 @@ blkid
 
 # Vérifier les permissions
 ls -ld /mnt/data
-```text
+```
 
 ### Automount ne fonctionne pas
 
@@ -565,7 +565,7 @@ ls /mnt/data
 # Logs
 journalctl -u mnt-data.automount
 journalctl -u mnt-data.mount
-```text
+```
 
 ### Démontage impossible
 
@@ -579,7 +579,7 @@ fuser -km /mnt/data
 
 # Forcer le démontage
 umount -l /mnt/data  # Lazy unmount
-```text
+```
 
 ## Bonnes pratiques
 
@@ -587,15 +587,16 @@ umount -l /mnt/data  # Lazy unmount
 
    ```ini
    What=/dev/disk/by-uuid/...
-```text
+   ```
 
 2. **Option _netdev** pour montages réseau
 
    ```ini
    Options=_netdev
-```text
+   ```
 
 3. **Automount pour ressources lentes**
+
    - NFS, CIFS
    - Disques externes
    - Ressources rarement utilisées
@@ -605,19 +606,19 @@ umount -l /mnt/data  # Lazy unmount
    ```ini
    After=network-online.target
    Wants=network-online.target
-```text
+   ```
 
 5. **Timeout raisonnable**
 
    ```ini
    TimeoutSec=30s
-```text
+   ```
 
 6. **Documenter**
 
    ```ini
    [Unit]
    Description=Clear description of what is mounted
-```text
+   ```
 
 Les mount et automount units offrent une gestion moderne et flexible des systèmes de fichiers, avec une meilleure intégration dans systemd que le traditionnel /etc/fstab.

@@ -9,6 +9,7 @@ systemd fournit une suite complète d'outils pour gérer et administrer le syst�
 L'outil central de contrôle de systemd.
 
 **Fonctions** :
+
 - Gérer les unités (start, stop, enable, disable...)
 - Voir l'état du système
 - Contrôler les targets
@@ -18,13 +19,14 @@ L'outil central de contrôle de systemd.
 systemctl status nginx.service
 systemctl restart postgresql.service
 systemctl list-units --type=service
-```text
+```
 
 ### journalctl
 
 Consultation et analyse des logs systemd.
 
 **Fonctions** :
+
 - Lire les logs structurés
 - Filtrer par unité, priorité, période
 - Suivre les logs en temps réel
@@ -34,13 +36,14 @@ Consultation et analyse des logs systemd.
 journalctl -u nginx.service
 journalctl --since "1 hour ago"
 journalctl -f
-```text
+```
 
 ### systemd-analyze
 
 Analyse des performances et débogage.
 
 **Fonctions** :
+
 - Temps de boot
 - Chaînes critiques
 - Vérification de configuration
@@ -50,7 +53,7 @@ Analyse des performances et débogage.
 systemd-analyze time
 systemd-analyze blame
 systemd-analyze critical-chain
-```text
+```
 
 ## Outils réseau
 
@@ -59,6 +62,7 @@ systemd-analyze critical-chain
 Gestion de la configuration réseau.
 
 **Fonctions** :
+
 - Configuration des interfaces
 - DHCP client
 - Routage statique
@@ -71,6 +75,7 @@ Gestion de la configuration réseau.
 Résolution DNS avec cache.
 
 **Fonctions** :
+
 - Cache DNS
 - Support DNSSEC
 - mDNS et LLMNR
@@ -85,6 +90,7 @@ Résolution DNS avec cache.
 Gestion des sessions utilisateur.
 
 **Fonctions** :
+
 - Suivi des connexions
 - Gestion de l'alimentation
 - Contrôle d'accès aux périphériques
@@ -97,6 +103,7 @@ Gestion des sessions utilisateur.
 Synchronisation horaire SNTP.
 
 **Fonctions** :
+
 - Client NTP léger
 - Synchronisation automatique
 - Alternative à ntpd/chrony
@@ -108,6 +115,7 @@ Synchronisation horaire SNTP.
 Gestion des périphériques.
 
 **Fonctions** :
+
 - Détection matériel
 - Chargement de modules
 - Création de nœuds /dev
@@ -124,7 +132,7 @@ Configuration du nom d'hôte.
 ```bash
 hostnamectl set-hostname myserver
 hostnamectl status
-```text
+```
 
 ### localectl
 
@@ -133,7 +141,7 @@ Configuration locale et clavier.
 ```bash
 localectl set-locale LANG=fr_FR.UTF-8
 localectl set-keymap fr
-```text
+```
 
 ### timedatectl
 
@@ -142,7 +150,7 @@ Configuration date, heure et fuseau horaire.
 ```bash
 timedatectl set-timezone Europe/Paris
 timedatectl set-ntp true
-```text
+```
 
 ## Outils avancés
 
@@ -152,7 +160,7 @@ Conteneurs légers (alternative à chroot).
 
 ```bash
 systemd-nspawn -D /var/lib/machines/container
-```text
+```
 
 ### systemd-boot (bootctl)
 
@@ -161,7 +169,7 @@ Gestionnaire de démarrage UEFI.
 ```bash
 bootctl status
 bootctl install
-```text
+```
 
 ### systemd-tmpfiles
 
@@ -170,7 +178,7 @@ Gestion des fichiers temporaires.
 ```bash
 systemd-tmpfiles --create
 systemd-tmpfiles --clean
-```text
+```
 
 ### systemd-sysusers
 
@@ -178,7 +186,7 @@ Création d'utilisateurs et groupes système.
 
 ```bash
 systemd-sysusers
-```text
+```
 
 ## Outils de débogage
 
@@ -189,7 +197,7 @@ Arbre des cgroups.
 ```bash
 systemd-cgls
 systemd-cgls system.slice
-```text
+```
 
 ### systemd-cgtop
 
@@ -197,7 +205,7 @@ Monitoring des ressources par cgroup.
 
 ```bash
 systemd-cgtop
-```text
+```
 
 ### coredumpctl
 
@@ -207,7 +215,7 @@ Gestion des core dumps.
 coredumpctl list
 coredumpctl info
 coredumpctl debug
-```text
+```
 
 ## Tableau récapitulatif
 

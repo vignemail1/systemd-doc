@@ -17,7 +17,7 @@ Déployer une application Flask/Django avec Gunicorn derrière Nginx.
 ├── venv/
 └── config/
     └── gunicorn.py
-```text
+```
 
 ### Service systemd
 
@@ -63,7 +63,7 @@ CPUQuota=200%
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ### Configuration Gunicorn
 
@@ -82,7 +82,7 @@ keepalive = 2
 accesslog = '/var/log/webapp/access.log'
 errorlog = '/var/log/webapp/error.log'
 loglevel = 'info'
-```text
+```
 
 ### Nginx
 
@@ -107,7 +107,7 @@ server {
         alias /opt/webapp/static;
     }
 }
-```text
+```
 
 ### Déploiement
 
@@ -129,7 +129,7 @@ sudo systemctl start webapp.service
 # Vérifier
 sudo systemctl status webapp.service
 curl -I http://localhost
-```text
+```
 
 ## Base de données PostgreSQL personnalisée
 
@@ -171,7 +171,7 @@ CPUQuota=400%
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ### Initialisation
 
@@ -190,7 +190,7 @@ EOF
 # Démarrer
 sudo systemctl enable postgresql@prod.service
 sudo systemctl start postgresql@prod.service
-```text
+```
 
 ## Service avec sauvegarde automatique
 
@@ -213,7 +213,7 @@ LogsDirectory=myapp
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ### Service de sauvegarde
 
@@ -233,7 +233,7 @@ ExecStart=/usr/local/bin/myapp-backup.sh
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=myapp-backup
-```text
+```
 
 ### Timer de sauvegarde
 
@@ -255,7 +255,7 @@ RandomizedDelaySec=30min
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ### Script de sauvegarde
 
@@ -276,7 +276,7 @@ tar -czf "$BACKUP_DIR/myapp-${DATE}.tar.gz" /var/lib/myapp/
 find "$BACKUP_DIR" -name "myapp-*.tar.gz" -mtime +$RETENTION_DAYS -delete
 
 echo "Backup completed: myapp-${DATE}.tar.gz"
-```text
+```
 
 ### Activation
 
@@ -287,7 +287,7 @@ sudo systemctl start myapp-backup.timer
 
 # Vérifier
 systemctl list-timers --all
-```text
+```
 
 ## Surveillance et restart automatique
 
@@ -311,7 +311,7 @@ ExecStartPost=/usr/local/bin/register-health-check.sh
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ### Service de health check
 
@@ -326,7 +326,7 @@ ExecStart=/usr/local/bin/health-check.sh %i
 
 # Si échec, logger et redémarrer
 ExecStartPost=/bin/sh -c 'if [ $EXIT_STATUS -ne 0 ]; then systemctl restart %i; fi'
-```text
+```
 
 ### Timer de health check
 
@@ -341,7 +341,7 @@ OnUnitActiveSec=30s
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ### Script health check
 
@@ -359,7 +359,7 @@ else
     echo "$SERVICE: Health check FAILED"
     exit 1
 fi
-```text
+```
 
 ## Stack Docker avec systemd
 
@@ -388,7 +388,7 @@ RestartSec=10s
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ### Mise à jour automatique des images
 
@@ -403,7 +403,7 @@ Type=oneshot
 WorkingDirectory=/opt/docker-app
 ExecStart=/usr/bin/docker compose pull
 ExecStartPost=/usr/bin/systemctl restart docker-app.service
-```text
+```
 
 ```ini
 # /etc/systemd/system/docker-app-update.timer
@@ -416,7 +416,7 @@ Persistent=yes
 
 [Install]
 WantedBy=timers.target
-```text
+```
 
 ## Service multi-instances
 
@@ -447,7 +447,7 @@ CPUQuota=100%
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ### Target pour toutes les instances
 
@@ -459,7 +459,7 @@ Wants=worker@1.service worker@2.service worker@3.service worker@4.service
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ### Gestion
 
@@ -476,7 +476,7 @@ systemctl list-units 'worker@*'
 # Ajouter une nouvelle instance
 sudo systemctl enable worker@5.service
 sudo systemctl start worker@5.service
-```text
+```
 
 ## Service avec notifications
 
@@ -504,7 +504,7 @@ ExecStartPre=/usr/local/bin/notify.sh "Critical App restarting after failure"
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 ### Script de notification
 
@@ -526,7 +526,7 @@ echo "$MESSAGE" | mail -s "System Alert" admin@example.com
 
 # Syslog
 logger -t systemd-notify "$MESSAGE"
-```text
+```
 
 ## Bonnes pratiques récapitulatives
 
@@ -581,6 +581,6 @@ StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
-```text
+```
 
 Ces cas pratiques couvrent les scénarios les plus courants et servent de base pour créer vos propres services systemd robustes et maintenables.
