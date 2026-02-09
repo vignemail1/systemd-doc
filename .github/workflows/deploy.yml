@@ -27,9 +27,7 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@v2
         with:
-          version: latest
-          install: true
-          cache: true
+          experimental: true
 
       - name: Installer les dépendances
         run: mise run install
