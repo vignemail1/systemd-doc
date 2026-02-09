@@ -60,9 +60,6 @@ plugins:
       fallback_to_build_date: true
 
 markdown_extensions:
-  # Support Graphviz
-  - inline_graphviz
-  
   # Python Markdown
   - abbr
   - admonition
