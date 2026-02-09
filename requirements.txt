@@ -13,3 +13,6 @@ pymdown-extensions>=10.7
 # Autres plugins utiles
 mkdocs-minify-plugin>=0.8.0
 mkdocs-git-revision-date-localized-plugin>=1.2.4
+
+# Outils de linting et qualité
+markdownlint-cli2>=0.12.0

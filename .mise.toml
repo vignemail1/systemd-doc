@@ -29,3 +29,25 @@ depends = ["install"]
 [tasks.clean]
 description = "Nettoyer les fichiers générés"
 run = "rm -rf site/"
+
+[tasks.lint]
+description = "Vérifier la syntaxe Markdown"
+run = """
+  if command -v markdownlint-cli2 &> /dev/null; then
+    markdownlint-cli2 'docs/**/*.md'
+  else
+    echo "markdownlint-cli2 not found. Install with: npm install -g markdownlint-cli2"
+    exit 1
+  fi
+"""
+
+[tasks.lint-fix]
+description = "Corriger automatiquement les problèmes Markdown"
+run = """
+  if command -v markdownlint-cli2 &> /dev/null; then
+    markdownlint-cli2 --fix 'docs/**/*.md'
+  else
+    echo "markdownlint-cli2 not found. Install with: npm install -g markdownlint-cli2"
+    exit 1
+  fi
+"""

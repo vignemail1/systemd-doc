@@ -1,0 +1,80 @@
+# Configuration markdownlint pour la documentation systemd
+# https://github.com/DavidAnson/markdownlint
+
+# MD004: Liste style (dash, asterisk, or plus)
+MD004:
+  style: dash
+
+# MD007: Indentation des listes (3 espaces pour MkDocs)
+MD007:
+  indent: 3
+  start_indented: false
+
+# MD012: Plusieurs lignes vides consécutives
+MD012:
+  maximum: 1
+
+# MD013: Longueur de ligne (désactivé pour le code)
+MD013:
+  line_length: 120
+  code_blocks: false
+  tables: false
+
+# MD022: Les en-têtes doivent être entourés de lignes vides
+MD022:
+  lines_above: 1
+  lines_below: 1
+
+# MD024: Plusieurs en-têtes avec le même contenu
+MD024:
+  siblings_only: true
+
+# MD025: Un seul titre de niveau 1
+MD025: true
+
+# MD026: Pas de ponctuation à la fin des en-têtes
+MD026:
+  punctuation: ".,;:!"
+
+# MD029: Ordre des listes numérotées
+MD029:
+  style: ordered
+
+# MD030: Espaces après marqueur de liste
+MD030:
+  ul_single: 1
+  ol_single: 1
+  ul_multi: 1
+  ol_multi: 1
+
+# MD031: Les blocs de code doivent être entourés de lignes vides
+MD031:
+  list_items: true
+
+# MD032: Les listes doivent être entourées de lignes vides
+MD032: true
+
+# MD033: HTML inline (autorisé pour MkDocs extensions)
+MD033:
+  allowed_elements:
+    - br
+    - sub
+    - sup
+
+# MD034: Liens nus (désactivé)
+MD034: false
+
+# MD040: Langage de bloc de code
+MD040: true
+
+# MD046: Style de bloc de code
+MD046:
+  style: fenced
+
+# MD049: Style d'emphase
+MD049:
+  style: asterisk
+
+# MD050: Style de strong
+MD050:
+  style: asterisk
