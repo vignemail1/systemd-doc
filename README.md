@@ -84,11 +84,12 @@ mise run lint
 # Correction automatique avec markdownlint
 mise run lint-fix
 
-# Correction automatique des erreurs courantes (MD031, MD032, MD049, MD060, MD040)
-mise run fix-markdown
+# Correction automatique des erreurs courantes
+mise run fix-markdown          # Fichiers avec erreurs
+mise run fix-markdown-all      # Tous les fichiers
 
-# Corriger tous les fichiers Markdown
-mise run fix-markdown-all
+# Correction spécifique des fins de blocs
+mise run fix-fence-endings
 ```
 
 ### Erreurs corrigées automatiquement
@@ -100,8 +101,27 @@ Le script `scripts/fix-markdown.py` corrige :
 - **MD049** : Remplacement `_emphase_` par `*emphase*`
 - **MD060** : Espaces manquants autour des pipes dans tableaux
 - **MD040** : Langage manquant dans les blocs de code
+- **Fins de blocs** : Corrige `\`\`\`text` en `\`\`\`` (fermeture propre)
 
 Voir [scripts/README.md](scripts/README.md) pour plus de détails.
+
+### Problème courant : fins de blocs incorrectes
+
+❌ **Incorrect** :
+```markdown
+\`\`\`ini
+Requires=postgresql.service
+\`\`\`text
+```
+
+✅ **Correct** :
+```markdown
+\`\`\`ini
+Requires=postgresql.service
+\`\`\`
+```
+
+Le script corrige automatiquement ce genre d'erreur.
 
 ### Règles de formatage
 
@@ -114,6 +134,12 @@ La documentation suit les règles MkDocs :
 - **Une ligne vide** maximum entre les sections
 - **Emphase** : `*texte*` au lieu de `_texte_`
 - **Tableaux** : Espaces autour des `|`
+- **Blocs de code** : Fermeture avec `\`\`\`` seul (pas de texte après)
+
+### Règles désactivées
+
+- **MD013** : Longueur de ligne (désactivée)
+- **MD036** : Emphase comme en-tête (désactivée)
 
 ## 📏 Structure du projet
 
@@ -128,6 +154,7 @@ systemd-doc/
 │   └── index.md             # Page d'accueil
 ├── scripts/                # Scripts utilitaires
 │   ├── fix-markdown.py      # Correction Markdown automatique
+│   ├── fix-fence-endings.py # Correction fins de blocs
 │   └── README.md            # Documentation scripts
 ├── .github/workflows/      # GitHub Actions
 ├── mkdocs.yml              # Configuration MkDocs
@@ -151,6 +178,7 @@ Gestionnaire d'environnement avec tâches prédéfinies :
 - `lint-fix` : Correction automatique markdownlint
 - `fix-markdown` : Correction erreurs courantes
 - `fix-markdown-all` : Correction tous fichiers
+- `fix-fence-endings` : Correction fins de blocs spécifique
 
 ### MkDocs (mkdocs.yml)
 
@@ -166,7 +194,7 @@ Gestionnaire d'environnement avec tâches prédéfinies :
 
 1. Créer ou modifier un fichier `.md` dans `docs/`
 2. Utiliser la syntaxe Markdown avec les extensions MkDocs
-3. Exécuter `mise run fix-markdown` pour formater
+3. Exécuter `mise run fix-markdown-all` pour formater
 4. Tester avec `mise run dev`
 5. Vérifier avec `mise run lint`
 6. Commiter et pusher
@@ -179,6 +207,7 @@ Gestionnaire d'environnement avec tâches prédéfinies :
 - **Format** : Respect des règles markdownlint
 - **Diagrammes** : Utiliser Mermaid pour les schémas
 - **Versions** : Indiquer versions minimums systemd si pertinent
+- **Blocs de code** : Toujours fermer avec `\`\`\`` seul
 
 ## 📦 Déploiement
 
