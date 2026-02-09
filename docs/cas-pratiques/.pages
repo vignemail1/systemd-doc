@@ -1,4 +1,5 @@
 title: Cas pratiques
 arrange:
   - index.md
+  - limitation-ressources-utilisateurs.md
   - ...

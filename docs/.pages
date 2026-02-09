@@ -7,4 +7,5 @@ arrange:
   - securite
   - outils
   - cas-pratiques
+  - versions-systemd.md
   - ...
