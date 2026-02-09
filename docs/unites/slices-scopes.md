@@ -1,516 +1,552 @@
 # Slices et Scopes
 
-Les **slices** (`.slice`) et **scopes** (`.scope`) sont des unités spéciales qui organisent hiérarchiquement les processus pour la gestion des ressources via cgroups.
+Les **slices** et **scopes** sont des unités spéciales de systemd qui organisent les processus de manière hiérarchique et permettent de gérer les ressources via les cgroups v2.
+
+## Cgroups et systemd
+
+Les **cgroups** (control groups) sont une fonctionnalité du noyau Linux qui permet de :
+
+- **Limiter** les ressources (CPU, mémoire, I/O)
+- **Prioriser** l'allocation des ressources
+- **Mesurer** l'utilisation des ressources
+- **Contrôler** les processus de manière groupée
+
+systemd organise tous les processus dans une hiérarchie de cgroups via slices, scopes et services.
 
 ## Slices (.slice)
 
-Les slices créent une hiérarchie de groupes de ressources. Elles servent à :
-
-- **Organiser** les services en groupes logiques
-- **Limiter** les ressources (CPU, mémoire, I/O) par groupe
-- **Isoler** différents types de charges de travail
-- **Monitorer** l'utilisation des ressources par groupe
+Les **slices** organisent les unités en arbre hiérarchique pour la gestion des ressources. Chaque service, scope ou slice enfant hérite des limites de son slice parent.
 
 ### Hiérarchie par défaut
 
-systemd crée automatiquement trois slices racines :
-
 ```
 -.slice (root)
-├── system.slice       # Services système
-├── user.slice          # Sessions utilisateur
-└── machine.slice       # Conteneurs et VMs
+├── system.slice (services système)
+│   ├── sshd.service
+│   ├── nginx.service
+│   └── postgresql.service
+├── user.slice (sessions utilisateur)
+│   ├── user-1000.slice
+│   │   ├── session-1.scope
+│   │   └── user@1000.service
+│   └── user-1001.slice
+└── machine.slice (conteneurs et VMs)
+    ├── docker-abc123.scope
+    └── systemd-nspawn@container.service
 ```
 
-### Nommage hiérarchique
+### Slices système
 
-Les slices utilisent une notation hiérarchique avec `-` :
+**-.slice**
+: Slice racine, contient tous les autres slices
 
+**system.slice**
+: Services système lancés par systemd
+
+**user.slice**
+: Services utilisateur et sessions
+
+**machine.slice**
+: Conteneurs et machines virtuelles
+
+### Visualiser la hiérarchie
+
+```bash
+# Arbre complet des cgroups
+systemd-cgls
+
+# Par slice
+systemd-cgls system.slice
+systemd-cgls user.slice
+
+# Avec utilisation ressources
+systemd-cgtop
+
+# Structure
+systemctl status
 ```
-parent-child.slice
-parent-child-grandchild.slice
 
-Exemples:
-system.slice
-system-app.slice
-system-app-web.slice
-```
+## Créer un slice personnalisé
 
-### Structure d'un fichier .slice
+### Structure d'un slice
 
 ```ini
+# /etc/systemd/system/myapp.slice
 [Unit]
-Description=Applications Slice
+Description=Slice for My Applications
 Before=slices.target
 
 [Slice]
 CPUQuota=50%
-MemoryLimit=4G
-TasksMax=500
-```
-
-## Section [Slice]
-
-Les options de ressources disponibles :
-
-### Limites CPU
-
-**CPUQuota**
-: Pourcentage de CPU alloué
-
-```ini
-CPUQuota=50%      # 50% d'un core
-CPUQuota=200%     # 2 cores complets
-CPUQuota=400%     # 4 cores complets
-```
-
-**CPUWeight**
-: Poids relatif du CPU (1-10000, défaut 100)
-
-```ini
-CPUWeight=100     # Poids normal
-CPUWeight=500     # 5x plus de CPU en cas de contention
-CPUWeight=1000    # 10x plus
-```
-
-**CPUAccounting**
-: Activer la comptabilité CPU
-
-```ini
-CPUAccounting=yes
-```
-
-### Limites mémoire
-
-**MemoryMax**
-: Limite maximale de mémoire (hard limit)
-
-```ini
 MemoryMax=2G
-MemoryMax=512M
-MemoryMax=50%     # 50% de la RAM
 ```
 
-**MemoryHigh**
-: Seuil d'avertissement (soft limit)
+### Slice pour services web
 
 ```ini
-MemoryHigh=1.5G
-```
-
-**MemorySwapMax**
-: Limite de swap
-
-```ini
-MemorySwapMax=1G
-MemorySwapMax=0   # Pas de swap
-```
-
-### Limites I/O
-
-**IOWeight**
-: Poids relatif des I/O (1-10000)
-
-```ini
-IOWeight=500
-```
-
-**IOReadBandwidthMax** / **IOWriteBandwidthMax**
-: Limite de bande passante I/O
-
-```ini
-IOReadBandwidthMax=/dev/sda 50M
-IOWriteBandwidthMax=/dev/sda 20M
-```
-
-### Limites de processus
-
-**TasksMax**
-: Nombre maximum de tâches (threads/processus)
-
-```ini
-TasksMax=500
-TasksMax=50%
-TasksMax=infinity
-```
-
-## Exemples de slices
-
-### Slice pour applications web
-
-```ini
-# /etc/systemd/system/system-webapps.slice
+# /etc/systemd/system/webservices.slice
 [Unit]
-Description=Web Applications Slice
+Description=Web Services Slice
 Before=slices.target
 
 [Slice]
+# Limites globales pour tous les services web
+CPUQuota=200%        # Max 2 cores
+MemoryMax=4G         # Max 4 Go RAM
+TasksMax=1000        # Max 1000 processus/threads
+```
+
+Utilisation dans un service :
+
+```ini
+# nginx.service
+[Unit]
+Description=Nginx Web Server
+
+[Service]
+Slice=webservices.slice
+ExecStart=/usr/sbin/nginx
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Tous les services du slice `webservices.slice` partagent les limites.
+
+### Slices imbriqués
+
+```ini
+# /etc/systemd/system/production.slice
+[Unit]
+Description=Production Services
+
+[Slice]
+CPUQuota=400%
+MemoryMax=16G
+```
+
+```ini
+# /etc/systemd/system/production-web.slice
+[Unit]
+Description=Production Web Services
+
+[Slice]
+Slice=production.slice
 CPUQuota=200%
 MemoryMax=8G
-TasksMax=1000
-CPUAccounting=yes
-MemoryAccounting=yes
 ```
 
-Utiliser dans un service :
-```ini
-# /etc/systemd/system/webapp.service
-[Service]
-Slice=system-webapps.slice
-ExecStart=/usr/bin/webapp
+Hiérarchie :
 ```
-
-### Slice pour bases de données
-
-```ini
-# /etc/systemd/system/system-databases.slice
-[Unit]
-Description=Database Services Slice
-Before=slices.target
-
-[Slice]
-CPUWeight=1000        # Haute priorité
-MemoryMax=16G
-MemoryHigh=14G        # Warning à 14G
-IOWeight=1000         # I/O prioritaire
-TasksMax=2000
-```
-
-### Slice pour tâches de fond
-
-```ini
-# /etc/systemd/system/system-background.slice
-[Unit]
-Description=Background Tasks Slice
-Before=slices.target
-
-[Slice]
-CPUQuota=25%          # Limité à 25%
-CPUWeight=10          # Basse priorité
-MemoryMax=2G
-IOWeight=10           # I/O basse priorité
-```
-
-### Slice utilisateur personnalisé
-
-```ini
-# /etc/systemd/system/user-developer.slice
-[Unit]
-Description=Developer User Slice
-Before=slices.target
-
-[Slice]
-CPUQuota=400%         # 4 cores
-MemoryMax=32G
-TasksMax=infinity
-```
-
-Assigner à un utilisateur :
-```bash
-# Dans /etc/systemd/system/user@1000.service.d/slice.conf
-[Service]
-Slice=user-developer.slice
-```
-
-### Hiérarchie multi-niveaux
-
-```ini
-# Slice parent
-# /etc/systemd/system/system-production.slice
-[Slice]
-MemoryMax=20G
-
-# Slice enfant
-# /etc/systemd/system/system-production-frontend.slice
-[Slice]
-MemoryMax=8G   # Max 8G du parent
-
-# Slice petit-enfant
-# /etc/systemd/system/system-production-frontend-nginx.slice
-[Slice]
-MemoryMax=4G   # Max 4G de son parent
+production.slice (4 cores, 16G)
+  └── production-web.slice (2 cores, 8G)
+      ├── nginx.service
+      └── php-fpm.service
 ```
 
 ## Scopes (.scope)
 
-Les scopes sont des unités créées **programmatiquement** (pas de fichiers manuels) pour grouper des processus externes lancés en dehors de systemd.
+Les **scopes** groupent des processus externes lancés en dehors de systemd. Contrairement aux services, les scopes ne sont **pas** démarrés par systemd mais par d'autres programmes.
 
-### Caractéristiques
+### Création de scopes
 
-- **Création dynamique** : Via D-Bus ou `systemd-run`
-- **Pas de configuration** : Pas de fichiers `.scope` manuels
-- **Sessions utilisateur** : Principalement utilisés pour les sessions
-- **Processus externes** : Pour grouper des processus non-systemd
+Les scopes sont créés **programmatiquement** via l'API D-Bus ou `systemd-run`.
 
 ### Exemples de scopes
 
-Scopes créés automatiquement :
-
-```bash
-# Sessions utilisateur
-session-1.scope
-session-2.scope
-
-# Processus de connexion
-user@1000.service
+**Sessions utilisateur**
+```
+user-1000.slice
+  └── session-1.scope
+      ├── bash (PID 1234)
+      └── vim (PID 1235)
 ```
 
-Lister les scopes :
-```bash
-systemctl list-units --type=scope
+**Conteneurs Docker**
+```
+machine.slice
+  └── docker-abc123.scope
+      └── processus du conteneur
+```
+
+**Applications graphiques**
+```
+user@1000.service
+  └── app-firefox-123.scope
+      └── firefox (tous les processus)
 ```
 
 ### Créer un scope avec systemd-run
 
 ```bash
-# Lancer un processus dans un scope
-systemd-run --scope \
-    --unit=myapp-scope \
-    --slice=system-webapps.slice \
-    --property=MemoryMax=1G \
-    --property=CPUQuota=50% \
-    /usr/bin/myapp
+# Lancer une commande dans un scope
+systemd-run --scope --unit=myapp \
+  --slice=user.slice \
+  --property=MemoryMax=1G \
+  --property=CPUQuota=100% \
+  /usr/bin/myapp
+
+# Vérifier
+systemctl status myapp.scope
 ```
 
-### Créer un scope via D-Bus (programmatique)
-
-En Python :
-```python
-import dbus
-
-bus = dbus.SystemBus()
-systemd = bus.get_object('org.freedesktop.systemd1',
-                         '/org/freedesktop/systemd1')
-manager = dbus.Interface(systemd, 'org.freedesktop.systemd1.Manager')
-
-# Créer un scope
-props = [
-    ('MemoryMax', dbus.UInt64(1024*1024*1024)),  # 1GB
-    ('CPUQuota', dbus.UInt64(50)),  # 50%
-]
-
-pids = [1234, 5678]  # PIDs à grouper
-
-manager.StartTransientUnit(
-    'myapp.scope',
-    'fail',
-    props,
-    [(pids, dbus.Array([], signature='(sv)'))]
-)
-```
-
-## Gestion des slices
-
-### Commandes de base
+### Scope pour un groupe de processus
 
 ```bash
-# Lister les slices
+# Lancer plusieurs processus dans le même scope
+systemd-run --scope --unit=build-job \
+  --property=CPUQuota=400% \
+  bash -c 'make -j4'
+```
+
+## Gestion des ressources
+
+### Options de limitation
+
+#### CPU
+
+**CPUWeight**
+: Poids relatif du CPU (1-10000, défaut: 100)
+
+```ini
+[Slice]
+CPUWeight=200  # Double priorité
+```
+
+**CPUQuota**
+: Quota absolu de CPU
+
+```ini
+[Slice]
+CPUQuota=50%    # 0.5 core
+CPUQuota=200%   # 2 cores
+CPUQuota=400%   # 4 cores
+```
+
+#### Mémoire
+
+**MemoryMin**
+: Mémoire minimale garantie
+
+```ini
+[Slice]
+MemoryMin=512M
+```
+
+**MemoryLow**
+: Mémoire protégée (soft limit)
+
+```ini
+[Slice]
+MemoryLow=1G
+```
+
+**MemoryHigh**
+: Seuil de throttling
+
+```ini
+[Slice]
+MemoryHigh=2G
+```
+
+**MemoryMax**
+: Limite stricte
+
+```ini
+[Slice]
+MemoryMax=4G
+```
+
+**MemorySwapMax**
+: Limite d'utilisation du swap
+
+```ini
+[Slice]
+MemorySwapMax=1G
+```
+
+#### I/O
+
+**IOWeight**
+: Poids relatif I/O (1-10000)
+
+```ini
+[Slice]
+IOWeight=500
+```
+
+**IOReadBandwidthMax** / **IOWriteBandwidthMax**
+: Limites de bande passante
+
+```ini
+[Slice]
+IOReadBandwidthMax=/dev/sda 50M
+IOWriteBandwidthMax=/dev/sda 10M
+```
+
+**IOReadIOPSMax** / **IOWriteIOPSMax**
+: Limites d'IOPS
+
+```ini
+[Slice]
+IOReadIOPSMax=/dev/sda 1000
+IOWriteIOPSMax=/dev/sda 500
+```
+
+#### Processus
+
+**TasksMax**
+: Nombre maximum de tâches (processus + threads)
+
+```ini
+[Slice]
+TasksMax=500
+```
+
+## Exemples pratiques
+
+### Slice pour environnement de développement
+
+```ini
+# /etc/systemd/system/development.slice
+[Unit]
+Description=Development Environment
+
+[Slice]
+CPUQuota=800%        # 8 cores max
+MemoryMax=32G        # 32 Go max
+TasksMax=5000        # Beaucoup de processus
+IOWeight=500         # Priorité I/O moyenne
+```
+
+Services associés :
+```ini
+# docker.service, postgresql.service, redis.service
+[Service]
+Slice=development.slice
+```
+
+### Slice pour base de données
+
+```ini
+# /etc/systemd/system/database.slice
+[Unit]
+Description=Database Services
+
+[Slice]
+CPUWeight=1000           # Haute priorité CPU
+MemoryMin=8G             # Mémoire garantie
+MemoryMax=32G            # Limite haute
+IOWeight=1000            # Haute priorité I/O
+IOReadIOPSMax=/dev/nvme0n1 50000
+IOWriteIOPSMax=/dev/nvme0n1 10000
+```
+
+### Slice pour jobs batch
+
+```ini
+# /etc/systemd/system/batch.slice
+[Unit]
+Description=Batch Processing Jobs
+
+[Slice]
+CPUWeight=50             # Basse priorité CPU
+MemoryMax=16G
+IOWeight=100             # Basse priorité I/O
+TasksMax=2000
+```
+
+### Limitation utilisateur
+
+```ini
+# /etc/systemd/system/user-1000.slice.d/50-limits.conf
+[Slice]
+CPUQuota=400%       # Max 4 cores pour cet utilisateur
+MemoryMax=8G        # Max 8 Go
+TasksMax=1000       # Max 1000 processus
+```
+
+## Commandes de gestion
+
+### Lister slices et scopes
+
+```bash
+# Tous les slices
 systemctl list-units --type=slice
 
-# Voir l'arborescence
+# Tous les scopes
+systemctl list-units --type=scope
+
+# Arbre complet
 systemd-cgls
 
-# Arborescence avec ressources
+# Par slice
+systemd-cgls system.slice
+```
+
+### Voir les ressources
+
+```bash
+# Vue en temps réel
 systemd-cgtop
 
-# Statut d'une slice
-systemctl status system-webapps.slice
+# Utilisation d'un slice
+systemctl status system.slice
 
 # Propriétés
-systemctl show system-webapps.slice
+systemctl show system.slice
+
+# Statistiques CPU/mémoire
+systemctl show system.slice -p CPUUsageNSec,MemoryCurrent
 ```
 
-### Voir la hiérarchie cgroups
+### Modifier dynamiquement
 
 ```bash
-# Arborescence complète
-systemd-cgls
+# Changer les limites temporairement
+systemctl set-property nginx.service CPUQuota=50%
+systemctl set-property nginx.service MemoryMax=2G
 
-# Slice spécifique
-systemd-cgls system-webapps.slice
-
-# Format arbre avec PID
-systemd-cgls -u webapp.service
+# Permanent
+systemctl set-property --runtime=false nginx.service CPUQuota=50%
 ```
 
-### Monitorer les ressources
+### Déplacer un service
 
 ```bash
-# Vue top-like des cgroups
+# Changer de slice
+systemctl set-property nginx.service Slice=webservices.slice
+
+# Redémarrer pour appliquer
+systemctl restart nginx.service
+```
+
+## Monitoring
+
+### systemd-cgtop
+
+Vue en temps réel des ressources par cgroup :
+
+```bash
 systemd-cgtop
 
-# Rafraîchissement automatique
-systemd-cgtop -d 1
+# Trier par mémoire
+systemd-cgtop --order=memory
 
 # Trier par CPU
 systemd-cgtop --order=cpu
 
-# Trier par mémoire
-systemd-cgtop --order=memory
+# Détail I/O
+systemd-cgtop --order=io
 ```
 
-## Assigner des services à des slices
+### systemd-cgls
 
-### Dans le fichier service
-
-```ini
-[Service]
-Slice=system-webapps.slice
-ExecStart=/usr/bin/webapp
-```
-
-### Avec un override
+Arbre des cgroups :
 
 ```bash
-systemctl edit webapp.service
-```
-
-Ajouter :
-```ini
-[Service]
-Slice=system-webapps.slice
-```
-
-### Temporairement avec systemd-run
-
-```bash
-systemd-run \
-    --slice=system-background.slice \
-    --unit=backup-temp \
-    /usr/local/bin/backup.sh
-```
-
-## Limites dynamiques
-
-Modifier les limites d'une slice en cours d'exécution :
-
-```bash
-# Changer la limite CPU
-systemctl set-property system-webapps.slice CPUQuota=100%
-
-# Changer la limite mémoire
-systemctl set-property system-webapps.slice MemoryMax=4G
-
-# Plusieurs propriétés
-systemctl set-property system-webapps.slice \
-    CPUQuota=200% \
-    MemoryMax=8G \
-    TasksMax=1000
-
-# --runtime : temporaire (jusqu'au reboot)
-systemctl set-property --runtime system-webapps.slice CPUQuota=50%
-```
-
-## Cas d'usage pratiques
-
-### Isolation de charges de travail
-
-```ini
-# Production slice - haute priorité
-[Slice]
-CPUWeight=1000
-MemoryMax=80%
-IOWeight=1000
-
-# Development slice - basse priorité
-[Slice]
-CPUWeight=100
-MemoryMax=20%
-IOWeight=100
-```
-
-### Limitation de services gourmands
-
-```ini
-# Slice pour compilation
-[Slice]
-CPUQuota=400%       # Max 4 cores
-MemoryMax=8G
-TasksMax=1000
-```
-
-Assigner :
-```bash
-systemctl set-property build-service.service \
-    Slice=system-build.slice
-```
-
-### Protection système
-
-```ini
-# Slice pour services critiques
-# /etc/systemd/system/system-critical.slice
-[Slice]
-CPUWeight=2000       # Priorité maximale
-MemoryMax=infinity   # Pas de limite
-IOWeight=2000
-```
-
-Services critiques (sshd, systemd-journald) assignés à cette slice.
-
-## Debugging et monitoring
-
-### Voir l'utilisation actuelle
-
-```bash
-# Vue d'ensemble
-systemd-cgtop
+# Arbre complet
+systemd-cgls
 
 # Slice spécifique
-systemctl status system-webapps.slice
+systemd-cgls system.slice
 
-# Métriques détaillées
-systemctl show system-webapps.slice | grep -E '(CPU|Memory|Tasks)'
+# Avec PIDs
+systemd-cgls --all
 ```
 
-### Identifier les processus
+### Métriques détaillées
 
 ```bash
-# Processus dans une slice
-systemd-cgls system-webapps.slice
+# CPU usage (en nanosecondes)
+systemctl show nginx.service -p CPUUsageNSec
 
-# PIDs dans un service
-systemctl show webapp.service -p MainPID -p ControlPID
+# Mémoire actuelle
+systemctl show nginx.service -p MemoryCurrent
+
+# Tâches actives
+systemctl show nginx.service -p TasksCurrent
+
+# I/O
+systemctl show nginx.service -p IOReadBytes,IOWriteBytes
 ```
 
-### Logs
+## Débogage
+
+### Vérifier les limites
 
 ```bash
-# Logs de tous les services d'une slice
-journalctl _SYSTEMD_SLICE=system-webapps.slice
+# Limites configurées
+systemctl show myapp.service | grep -E '(CPU|Memory|IO|Tasks)'
 
-# Dernière heure
-journalctl _SYSTEMD_SLICE=system-webapps.slice --since "1 hour ago"
+# Limites effectives (cgroup)
+cat /sys/fs/cgroup/system.slice/myapp.service/cpu.max
+cat /sys/fs/cgroup/system.slice/myapp.service/memory.max
 ```
+
+### Processus hors limite
+
+```bash
+# Voir si un service atteint ses limites
+journalctl -u myapp.service | grep -i "limit"
+
+# OOM kills
+journalctl -k | grep -i "oom"
+```
+
+### Cgroups v1 vs v2
+
+```bash
+# Vérifier la version
+stat -fc %T /sys/fs/cgroup/
+
+# cgroup2fs = v2 (unified hierarchy)
+# tmpfs = v1 (legacy)
+```
+
+systemd moderne utilise cgroups v2.
 
 ## Bonnes pratiques
 
-1. **Hiérarchie logique** : Organiser les slices par fonction (web, db, background)
-2. **Limites raisonnables** : Ne pas trop restreindre, laisser de la marge
-3. **Weights vs Quotas** : Préférer CPUWeight (partage) à CPUQuota (hard limit)
-4. **Monitoring** : Utiliser systemd-cgtop régulièrement
-5. **Testing** : Tester les limites avant production
-6. **Documentation** : Documenter pourquoi chaque limite existe
-7. **Accounting** : Activer *Accounting=yes pour le monitoring
+1. **Organiser par fonction**
+   ```
+   production.slice
+     ├── production-web.slice
+     ├── production-db.slice
+     └── production-cache.slice
+   ```
 
-## Limites et considérations
+2. **Définir MemoryMax**
+   ```ini
+   MemoryMax=4G  # Prévenir l'OOM
+   ```
 
-### Cgroups v2
+3. **Utiliser CPUWeight pour priorités**
+   ```ini
+   CPUWeight=1000  # Services critiques
+   CPUWeight=100   # Services normaux
+   CPUWeight=50    # Batch jobs
+   ```
 
-Systemd utilise cgroups v2 par défaut sur les systèmes récents. Vérifier :
+4. **Limiter TasksMax**
+   ```ini
+   TasksMax=500  # Prévenir fork bombs
+   ```
 
-```bash
-stat -fc %T /sys/fs/cgroup/
-# cgroup2fs = v2
-# tmpfs = v1
-```
+5. **Monitorer avec systemd-cgtop**
+   ```bash
+   systemd-cgtop --delay=1
+   ```
 
-### Overhead
+6. **Documenter les slices**
+   ```ini
+   [Unit]
+   Description=Clear purpose of this slice
+   ```
 
-Les limites de ressources ont un léger overhead. Ne pas créer trop de slices inutiles.
+7. **Tester les limites**
+   ```bash
+   systemd-run --scope --property=MemoryMax=100M stress --vm 1
+   ```
 
-### Héritage
-
-Les limites sont héritées hiérarchiquement. Une slice enfant ne peut pas dépasser son parent.
-
-Les slices et scopes sont essentiels pour la gestion avancée des ressources dans systemd, permettant une isolation et un contrôle précis de l'utilisation CPU, mémoire et I/O.
+Les slices et scopes permettent une gestion fine et hiérarchique des ressources système, essentielles pour des environnements multi-tenants ou avec des workloads variés.
