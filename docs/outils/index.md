@@ -1,279 +1,241 @@
 # Outils de l'écosystème systemd
 
-systemd fournit un ensemble complet d'outils en ligne de commande pour administrer et interagir avec le système. Ces outils offrent un contrôle granulaire sur tous les aspects du système.
+systemd fournit une suite complète d'outils pour gérer et administrer le système. Ces utilitaires couvrent tous les aspects de la gestion système, de la configuration réseau à la consultation des logs.
 
 ## Outils principaux
 
-### Gestion du système
+### systemctl
 
-**systemctl**
-: Outil principal de contrôle de systemd
+L'outil central de contrôle de systemd.
+
+**Fonctions** :
+- Gérer les unités (start, stop, enable, disable...)
+- Voir l'état du système
+- Contrôler les targets
+- Recharger la configuration
 
 ```bash
-systemctl start nginx.service
 systemctl status nginx.service
-systemctl enable nginx.service
+systemctl restart postgresql.service
+systemctl list-units --type=service
 ```
 
-Contrôle les services, targets, et toutes les unités systemd.
+### journalctl
 
-**systemd-analyze**
-: Analyse des performances et de la configuration
+Consultation et analyse des logs systemd.
+
+**Fonctions** :
+- Lire les logs structurés
+- Filtrer par unité, priorité, période
+- Suivre les logs en temps réel
+- Exporter les logs
+
+```bash
+journalctl -u nginx.service
+journalctl --since "1 hour ago"
+journalctl -f
+```
+
+### systemd-analyze
+
+Analyse des performances et débogage.
+
+**Fonctions** :
+- Temps de boot
+- Chaînes critiques
+- Vérification de configuration
+- Graphes de dépendances
 
 ```bash
 systemd-analyze time
 systemd-analyze blame
-systemd-analyze verify myapp.service
+systemd-analyze critical-chain
 ```
 
-Permet d'optimiser le temps de boot et vérifier les configurations.
+## Outils réseau
 
-### Journalisation
+### systemd-networkd
 
-**journalctl**
-: Consultation et filtrage des logs systemd
+Gestion de la configuration réseau.
+
+**Fonctions** :
+- Configuration des interfaces
+- DHCP client
+- Routage statique
+- VLAN, bridges, bonds
+
+**Commande associée** : `networkctl`
+
+### systemd-resolved
+
+Résolution DNS avec cache.
+
+**Fonctions** :
+- Cache DNS
+- Support DNSSEC
+- mDNS et LLMNR
+- Gestion de `/etc/resolv.conf`
+
+**Commandes associées** : `resolvectl`, `systemd-resolve`
+
+## Outils de gestion système
+
+### systemd-logind
+
+Gestion des sessions utilisateur.
+
+**Fonctions** :
+- Suivi des connexions
+- Gestion de l'alimentation
+- Contrôle d'accès aux périphériques
+- Support multi-seat
+
+**Commande associée** : `loginctl`
+
+### systemd-timesyncd
+
+Synchronisation horaire SNTP.
+
+**Fonctions** :
+- Client NTP léger
+- Synchronisation automatique
+- Alternative à ntpd/chrony
+
+**Commande associée** : `timedatectl`
+
+### systemd-udevd
+
+Gestion des périphériques.
+
+**Fonctions** :
+- Détection matériel
+- Chargement de modules
+- Création de nœuds /dev
+- Application de règles
+
+**Commande associée** : `udevadm`
+
+## Outils de configuration
+
+### hostnamectl
+
+Configuration du nom d'hôte.
 
 ```bash
-journalctl -u nginx.service
-journalctl -f
-journalctl --since "1 hour ago"
+hostnamectl set-hostname myserver
+hostnamectl status
 ```
 
-Accès au journal systemd avec filtrage puissant.
+### localectl
 
-### Réseau
-
-**networkctl**
-: Gestion et statut des interfaces réseau
+Configuration locale et clavier.
 
 ```bash
-networkctl status
-networkctl list
-```
-
-Utilisé avec systemd-networkd.
-
-**resolvectl** / **systemd-resolve**
-: Gestion DNS et résolution de noms
-
-```bash
-resolvectl status
-resolvectl query example.com
-```
-
-Contrôle systemd-resolved.
-
-### Sessions et utilisateurs
-
-**loginctl**
-: Gestion des sessions utilisateur
-
-```bash
-loginctl list-sessions
-loginctl show-user username
-loginctl terminate-session 1
-```
-
-Contrôle systemd-logind.
-
-### Système
-
-**hostnamectl**
-: Gestion du nom d'hôte
-
-```bash
-hostnamectl
-hostnamectl set-hostname server01
-```
-
-**timedatectl**
-: Gestion de la date et l'heure
-
-```bash
-timedatectl
-timedatectl set-timezone Europe/Paris
-timedatectl set-ntp true
-```
-
-**localectl**
-: Gestion de la locale et du clavier
-
-```bash
-localectl
 localectl set-locale LANG=fr_FR.UTF-8
 localectl set-keymap fr
 ```
 
-### Boot et firmware
+### timedatectl
 
-**bootctl**
-: Gestion du gestionnaire de démarrage systemd-boot
+Configuration date, heure et fuseau horaire.
+
+```bash
+timedatectl set-timezone Europe/Paris
+timedatectl set-ntp true
+```
+
+## Outils avancés
+
+### systemd-nspawn
+
+Conteneurs légers (alternative à chroot).
+
+```bash
+systemd-nspawn -D /var/lib/machines/container
+```
+
+### systemd-boot (bootctl)
+
+Gestionnaire de démarrage UEFI.
 
 ```bash
 bootctl status
 bootctl install
-bootctl list
 ```
 
-### Autres outils
+### systemd-tmpfiles
 
-**systemd-run**
-: Exécuter des commandes comme services temporaires
+Gestion des fichiers temporaires.
 
 ```bash
-systemd-run --unit=backup /usr/local/bin/backup.sh
-systemd-run --scope --slice=background.slice make
+systemd-tmpfiles --create
+systemd-tmpfiles --clean
 ```
 
-**systemd-cgls**
-: Visualiser l'arborescence des cgroups
+### systemd-sysusers
+
+Création d'utilisateurs et groupes système.
+
+```bash
+systemd-sysusers
+```
+
+## Outils de débogage
+
+### systemd-cgls
+
+Arbre des cgroups.
 
 ```bash
 systemd-cgls
 systemd-cgls system.slice
 ```
 
-**systemd-cgtop**
-: Monitorer l'utilisation des ressources par cgroup
+### systemd-cgtop
+
+Monitoring des ressources par cgroup.
 
 ```bash
 systemd-cgtop
-systemd-cgtop --order=memory
 ```
 
-**systemd-delta**
-: Voir les modifications de configuration
+### coredumpctl
+
+Gestion des core dumps.
 
 ```bash
-systemd-delta
-systemd-delta --type=overridden
+coredumpctl list
+coredumpctl info
+coredumpctl debug
 ```
 
-**systemd-path**
-: Afficher les chemins systemd
+## Tableau récapitulatif
 
-```bash
-systemd-path
-systemd-path system-unit
-systemd-path user-unit
-```
+| Outil | Fonction principale | Commande exemple |
+|-------|---------------------|------------------|
+| systemctl | Gestion des unités | `systemctl status` |
+| journalctl | Consultation logs | `journalctl -u service` |
+| systemd-analyze | Analyse performances | `systemd-analyze blame` |
+| networkctl | Gestion réseau | `networkctl status` |
+| resolvectl | Résolution DNS | `resolvectl status` |
+| loginctl | Sessions utilisateur | `loginctl list-sessions` |
+| timedatectl | Date et heure | `timedatectl status` |
+| hostnamectl | Nom d'hôte | `hostnamectl status` |
+| localectl | Locale et clavier | `localectl status` |
+| udevadm | Périphériques | `udevadm info /dev/sda` |
+| bootctl | Boot UEFI | `bootctl status` |
+| coredumpctl | Core dumps | `coredumpctl list` |
 
-**busctl**
-: Interagir avec D-Bus
+## Organisation de la documentation
 
-```bash
-busctl list
-busctl status org.freedesktop.systemd1
-busctl tree org.freedesktop.systemd1
-```
+Chaque outil est détaillé dans sa propre page avec :
 
-## Catégories d'outils
-
-### Administration
-- systemctl
-- systemd-analyze
-- systemd-run
-
-### Logs et debugging
-- journalctl
-- systemd-cgls
-- systemd-cgtop
-
-### Réseau
-- networkctl
-- resolvectl
-
-### Utilisateurs
-- loginctl
-
-### Configuration système
-- hostnamectl
-- timedatectl
-- localectl
-
-### Boot
-- bootctl
-
-### Bas niveau
-- busctl
-- systemd-delta
-- systemd-path
-
-## Installation
-
-La plupart des outils sont installés avec systemd :
-
-```bash
-# Debian/Ubuntu
-apt install systemd
-
-# RHEL/Rocky Linux
-dnf install systemd
-
-# Arch Linux
-pacman -S systemd
-```
-
-Certains outils optionnels :
-```bash
-# systemd-boot
-apt install systemd-boot
-
-# Outils réseau
-apt install systemd-resolved systemd-networkd
-```
-
-## Pages de manuel
-
-Chaque outil a une documentation complète :
-
-```bash
-man systemctl
-man journalctl
-man systemd-analyze
-man networkctl
-man loginctl
-```
-
-Documentation générale :
-```bash
-man systemd
-man systemd.unit
-man systemd.service
-man systemd.timer
-```
-
-## Complétion shell
-
-La plupart des shells modernes supportent l'autocomplétion pour les commandes systemd :
-
-```bash
-# Bash
-source /usr/share/bash-completion/completions/systemctl
-
-# Zsh
-autoload -U compinit && compinit
-
-# Fish
-fish_update_completions
-```
-
-## Alias utiles
-
-Quelques alias pratiques :
-
-```bash
-# ~/.bashrc ou ~/.zshrc
-alias sc='systemctl'
-alias scs='systemctl status'
-alias scr='systemctl restart'
-alias sce='systemctl enable'
-alias scd='systemctl disable'
-alias jc='journalctl'
-alias jcf='journalctl -f'
-alias jce='journalctl -e'
-```
+- Vue d'ensemble et cas d'usage
+- Syntaxe et options principales
+- Exemples pratiques
+- Astuces et bonnes pratiques
+- Dépannage
 
 ---
 
-Dans les sections suivantes, nous explorerons en détail chaque outil principal avec des exemples pratiques et des cas d'usage avancés.
+Les sections suivantes explorent chaque outil en détail.

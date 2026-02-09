@@ -3,8 +3,4 @@ arrange:
   - introduction
   - unites
   - outils
-  - gestion-services
-  - journal-logging
-  - securite
-  - cas-pratiques
-  - developpement.md
+  - ...
