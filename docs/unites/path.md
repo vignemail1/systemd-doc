@@ -1,27 +1,22 @@
-# Path (.path)
+# Path Units (.path)
 
-Les unités `.path` permettent d'activer des services en réponse à des modifications du système de fichiers. Elles surveillent des fichiers ou répertoires et déclenchent des actions lorsque certains événements se produisent.
+Les unités `.path` surveillent des fichiers ou répertoires et déclenchent des services lorsque des modifications sont détectées. Elles utilisent les APIs inotify du noyau Linux pour une surveillance efficace.
 
-## Concept
+## Principe de fonctionnement
 
-Une unité `.path` surveille un ou plusieurs chemins et active automatiquement un service associé lorsqu'une condition est remplie (fichier créé, modifié, supprimé...).
+1. systemd surveille un chemin spécifié
+2. Une condition se produit (fichier créé, modifié, supprimé...)
+3. systemd active automatiquement le service associé
+4. Le service traite l'événement
 
-## Cas d'usage
-
-- **Traitement automatique** : Traiter des fichiers déposés dans un répertoire
-- **Hot-reload** : Recharger une configuration quand elle change
-- **Déclenchement de tâches** : Lancer une action sur création de fichier trigger
-- **Monitoring** : Réagir à l'apparition de fichiers de log spécifiques
-- **Build automatique** : Rebuilder quand des sources changent
-
-## Structure d'un fichier .path
+## Structure d'un path unit
 
 ```ini
 [Unit]
 Description=Watch for configuration changes
 
 [Path]
-PathChanged=/etc/myapp/config.yaml
+PathModified=/etc/myapp/config.yaml
 Unit=myapp-reload.service
 
 [Install]
@@ -33,47 +28,52 @@ WantedBy=multi-user.target
 ### Types de surveillance
 
 **PathExists**
-: Déclenche quand le chemin existe
+: Déclenche quand le fichier ou répertoire existe
 
 ```ini
+[Path]
 PathExists=/tmp/trigger-file
 ```
 
-Vérifie périodiquement si le fichier/répertoire existe.
+Utilisé pour : déclenchement manuel, fichiers de verrouillage.
 
 **PathExistsGlob**
-: Déclenche quand au moins un fichier correspond au glob
+: Comme PathExists mais supporte les wildcards
 
 ```ini
-PathExistsGlob=/var/spool/upload/*.csv
+[Path]
+PathExistsGlob=/var/spool/mail/*
 ```
-
-Supporte les wildcards.
 
 **PathChanged**
-: Déclenche quand le fichier ou répertoire change
+: Déclenche quand le fichier ou répertoire change (création, modification, suppression)
 
 ```ini
-PathChanged=/etc/myapp/config.yaml
+[Path]
+PathChanged=/etc/myapp/
 ```
 
-Utilise inotify pour détecter les modifications.
+Détecte les changements de métadonnées (permissions, propriétaire) mais pas le contenu.
 
 **PathModified**
-: Déclenche sur modification de contenu uniquement
+: Déclenche quand le contenu change (plus précis que PathChanged)
 
 ```ini
-PathModified=/var/log/app/important.log
+[Path]
+PathModified=/etc/myapp/config.yaml
 ```
 
-Plus précis que `PathChanged` (ignore les changements de métadonnées).
+Détecte les modifications réelles du contenu du fichier.
 
 **DirectoryNotEmpty**
 : Déclenche quand le répertoire contient au moins un fichier
 
 ```ini
-DirectoryNotEmpty=/var/spool/processing
+[Path]
+DirectoryNotEmpty=/var/spool/myapp
 ```
+
+Utilisé pour : traitement de files d'attente, spool directories.
 
 ### Options
 
@@ -81,7 +81,7 @@ DirectoryNotEmpty=/var/spool/processing
 : Service à activer (par défaut : même nom avec .service)
 
 ```ini
-Unit=myapp-processor.service
+Unit=my-handler.service
 ```
 
 **MakeDirectory**
@@ -89,83 +89,31 @@ Unit=myapp-processor.service
 
 ```ini
 MakeDirectory=yes
-```
-
-**DirectoryMode**
-: Permissions du répertoire créé
-
-```ini
 DirectoryMode=0755
 ```
 
-**TriggerLimitIntervalSec** / **TriggerLimitBurst**
-: Limite le taux de déclenchement
+**TriggerLimitBurst** / **TriggerLimitIntervalSec**
+: Limite le nombre de déclenchements
 
 ```ini
+TriggerLimitBurst=5
 TriggerLimitIntervalSec=60s
-TriggerLimitBurst=5  # Max 5 déclenchements par minute
 ```
 
-## Exemples complets
+Protège contre les boucles infinies.
 
-### Traitement automatique de fichiers
-
-```ini
-# /etc/systemd/system/file-processor.path
-[Unit]
-Description=Watch for files to process
-
-[Path]
-DirectoryNotEmpty=/var/spool/inbox
-Unit=file-processor.service
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```ini
-# /etc/systemd/system/file-processor.service
-[Unit]
-Description=Process incoming files
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/process-files.sh
-User=processor
-```
-
-Script de traitement :
-```bash
-#!/bin/bash
-for file in /var/spool/inbox/*; do
-    [ -f "$file" ] || continue
-    process_file "$file"
-    mv "$file" /var/spool/processed/
-done
-```
-
-Activation :
-```bash
-systemctl enable file-processor.path
-systemctl start file-processor.path
-
-# Déposer un fichier pour tester
-touch /var/spool/inbox/test.txt
-
-# Vérifier
-journalctl -u file-processor.service
-```
+## Exemples pratiques
 
 ### Rechargement automatique de configuration
 
 ```ini
-# /etc/systemd/system/nginx-config-watcher.path
+# /etc/systemd/system/nginx-config-watch.path
 [Unit]
 Description=Watch Nginx Configuration
 
 [Path]
-PathChanged=/etc/nginx/nginx.conf
-PathChanged=/etc/nginx/sites-enabled
+PathModified=/etc/nginx/nginx.conf
+PathModified=/etc/nginx/conf.d/
 Unit=nginx-reload.service
 
 [Install]
@@ -179,54 +127,106 @@ Description=Reload Nginx Configuration
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/nginx -t
-ExecStart=/usr/bin/systemctl reload nginx.service
+ExecStart=/usr/sbin/nginx -t
+ExecStart=/usr/sbin/nginx -s reload
 ```
 
-### Déclenchement par fichier trigger
+Activation :
+```bash
+systemctl enable nginx-config-watch.path
+systemctl start nginx-config-watch.path
+
+# Nginx se recharge automatiquement quand la config change
+```
+
+### Traitement de files d'attente
 
 ```ini
-# /etc/systemd/system/backup-trigger.path
+# /etc/systemd/system/process-queue.path
 [Unit]
-Description=Trigger backup when requested
+Description=Watch Upload Queue
 
 [Path]
-PathExists=/tmp/backup.trigger
-Unit=backup-now.service
+DirectoryNotEmpty=/var/spool/uploads
+MakeDirectory=yes
 
 [Install]
 WantedBy=multi-user.target
 ```
 
 ```ini
-# /etc/systemd/system/backup-now.service
+# /etc/systemd/system/process-queue.service
 [Unit]
-Description=Run backup now
+Description=Process Upload Queue
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/backup.sh
-ExecStartPost=/usr/bin/rm -f /tmp/backup.trigger
+ExecStart=/usr/local/bin/process-uploads.sh
+User=processor
+```
+
+### Déclenchement manuel
+
+```ini
+# /etc/systemd/system/backup-trigger.path
+[Unit]
+Description=Manual Backup Trigger
+
+[Path]
+PathExists=/tmp/trigger-backup
+Unit=backup.service
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 Utilisation :
 ```bash
-# Déclencher le backup
-touch /tmp/backup.trigger
+# Déclencher la sauvegarde
+touch /tmp/trigger-backup
+
+# Le service backup.service se lance automatiquement
 ```
 
-### Surveillance de logs avec glob
+### Surveillance de certificats
 
 ```ini
-# /etc/systemd/system/error-detector.path
+# /etc/systemd/system/ssl-cert-watch.path
 [Unit]
-Description=Detect error log files
+Description=Watch SSL Certificates
 
 [Path]
-PathExistsGlob=/var/log/app/error-*.log
+PathChanged=/etc/ssl/certs/mysite.crt
+PathChanged=/etc/ssl/private/mysite.key
+Unit=ssl-cert-reload.service
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```ini
+# /etc/systemd/system/ssl-cert-reload.service
+[Unit]
+Description=Reload Services After Cert Change
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl reload nginx.service
+ExecStart=/usr/bin/systemctl reload postfix.service
+```
+
+### Surveillance de logs
+
+```ini
+# /etc/systemd/system/error-log-watch.path
+[Unit]
+Description=Watch Error Logs
+
+[Path]
+PathModified=/var/log/myapp/error.log
 Unit=error-alert.service
+TriggerLimitBurst=10
 TriggerLimitIntervalSec=300s
-TriggerLimitBurst=1
 
 [Install]
 WantedBy=multi-user.target
@@ -235,57 +235,63 @@ WantedBy=multi-user.target
 ```ini
 # /etc/systemd/system/error-alert.service
 [Unit]
-Description=Send error alert
+Description=Send Error Alert
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/send-alert.sh "Error logs detected"
+ExecStart=/usr/local/bin/send-alert.sh "Errors detected in log"
 ```
 
-### Build automatique
+### Hot-reload d'application
 
 ```ini
-# /etc/systemd/system/auto-build.path
+# /etc/systemd/system/app-reload.path
 [Unit]
-Description=Watch source files for changes
+Description=Watch Application Files
 
 [Path]
-PathModified=/home/dev/project/src
-Unit=auto-build.service
-TriggerLimitIntervalSec=10s
-TriggerLimitBurst=1
+PathModified=/opt/myapp/app.py
+PathModified=/opt/myapp/config.py
+Unit=myapp-reload.service
 
 [Install]
 WantedBy=multi-user.target
 ```
 
 ```ini
-# /etc/systemd/system/auto-build.service
+# /etc/systemd/system/myapp-reload.service
 [Unit]
-Description=Build project
+Description=Reload My Application
 
 [Service]
 Type=oneshot
-WorkingDirectory=/home/dev/project
-ExecStart=/usr/bin/make build
-User=dev
+ExecStart=/usr/bin/systemctl reload myapp.service
 ```
 
-### Surveillance multiple de fichiers
+### Traitement batch de fichiers
 
 ```ini
-# /etc/systemd/system/config-watcher.path
+# /etc/systemd/system/file-processor.path
 [Unit]
-Description=Watch multiple config files
+Description=Watch for Files to Process
 
 [Path]
-PathChanged=/etc/app/main.conf
-PathChanged=/etc/app/database.conf
-PathChanged=/etc/app/cache.conf
-Unit=app-restart.service
+PathExistsGlob=/var/spool/input/*.csv
+Unit=file-processor.service
 
 [Install]
 WantedBy=multi-user.target
+```
+
+```ini
+# /etc/systemd/system/file-processor.service
+[Unit]
+Description=Process CSV Files
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/process-csv-files.sh
+User=processor
 ```
 
 ## Gestion des path units
@@ -295,218 +301,257 @@ WantedBy=multi-user.target
 ```bash
 # Lister les path units
 systemctl list-units --type=path
-systemctl list-unit-files --type=path
+systemctl list-units --type=path --all
 
-# Démarrer la surveillance
-systemctl start file-processor.path
+# Activer
+systemctl enable mywatch.path
+systemctl start mywatch.path
 
-# Activer au boot
-systemctl enable file-processor.path
+# Désactiver
+systemctl stop mywatch.path
+systemctl disable mywatch.path
 
 # Voir l'état
-systemctl status file-processor.path
+systemctl status mywatch.path
 
-# Arrêter la surveillance
-systemctl stop file-processor.path
+# Voir les chemins surveillés
+systemctl show mywatch.path -p Paths
 ```
 
-### Voir les logs
+### Tester un path unit
 
 ```bash
-# Logs du path unit
-journalctl -u file-processor.path
+# Démarrer la surveillance
+systemctl start mywatch.path
 
-# Logs du service déclenché
-journalctl -u file-processor.service
+# Dans un autre terminal, surveiller les logs
+journalctl -u mywatch.path -f
+journalctl -u mywatch.service -f
 
-# Les deux ensemble
-journalctl -u file-processor.path -u file-processor.service
+# Modifier le fichier surveillé
+echo "test" >> /path/to/watched/file
+
+# Observer l'activation du service
 ```
-
-### Tester manuellement
-
-```bash
-# Démarrer le path
-systemctl start file-processor.path
-
-# Déclencher manuellement
-touch /var/spool/inbox/test.txt
-
-# Vérifier que le service s'est déclenché
-systemctl status file-processor.service
-```
-
-## Différences PathChanged vs PathModified
-
-**PathChanged** détecte :
-- Modification du contenu
-- Changement de permissions
-- Changement de propriétaire
-- Changement de timestamps
-- Ajout/suppression de fichiers (pour répertoires)
-
-**PathModified** détecte :
-- Modification du contenu uniquement (pour fichiers)
-- Ajout/suppression de fichiers (pour répertoires)
-
-Utiliser `PathModified` pour éviter les faux positifs.
-
-## Limitations
-
-### inotify
-
-Les path units utilisent inotify, qui a des limitations :
-
-```bash
-# Voir les limites actuelles
-cat /proc/sys/fs/inotify/max_user_watches
-
-# Augmenter si nécessaire
-echo "fs.inotify.max_user_watches=524288" >> /etc/sysctl.conf
-sysctl -p
-```
-
-### Fichiers réseau
-
-inotify ne fonctionne pas bien avec NFS/CIFS. Pour ces cas, utiliser des timers avec vérification périodique.
-
-### Polling
-
-Si inotify n'est pas disponible, systemd utilise le polling (moins efficace).
 
 ## Cas d'usage avancés
 
-### Hot-reload d'application
+### Multiple chemins, un seul service
 
 ```ini
-# /etc/systemd/system/app-config-watcher.path
+[Path]
+PathModified=/etc/app/config1.yaml
+PathModified=/etc/app/config2.yaml
+PathModified=/etc/app/includes/
+Unit=app-reload.service
+```
+
+Tout changement déclenche le même service.
+
+### Chaînes de traitement
+
+```ini
+# Stage 1: Détection de fichiers
+# process-stage1.path
+[Path]
+DirectoryNotEmpty=/var/spool/stage1
+Unit=process-stage1.service
+```
+
+```ini
+# process-stage1.service déplace vers stage2
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/stage1-to-stage2.sh
+```
+
+```ini
+# Stage 2: Traitement
+# process-stage2.path
+[Path]
+DirectoryNotEmpty=/var/spool/stage2
+Unit=process-stage2.service
+```
+
+### Avec dépendances
+
+```ini
+# config-watch.path
 [Unit]
-Description=Application Config Watcher
-PartOf=myapp.service
+Description=Configuration Watcher
+After=myapp.service
 
 [Path]
 PathModified=/etc/myapp/config.yaml
-Unit=myapp.service
+Unit=myapp-reload.service
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-Le service sera redémarré automatiquement.
+Le path unit ne démarre qu'après le service principal.
 
-### Pipeline de traitement
+## Limitations et considérations
 
-```ini
-# Stage 1: Détection
-# /etc/systemd/system/stage1-detect.path
-[Path]
-DirectoryNotEmpty=/data/stage1
-Unit=stage1-process.service
+### Limitations inotify
 
-# Stage 2: Traitement
-# /etc/systemd/system/stage2-detect.path
-[Path]
-DirectoryNotEmpty=/data/stage2
-Unit=stage2-process.service
-```
-
-Crée un pipeline avec plusieurs étapes.
-
-### Déploiement automatique
-
-```ini
-# /etc/systemd/system/auto-deploy.path
-[Unit]
-Description=Watch for deployment packages
-
-[Path]
-PathExistsGlob=/var/deploy/*.tar.gz
-Unit=deploy-app.service
-TriggerLimitIntervalSec=60s
-TriggerLimitBurst=1
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```ini
-# /etc/systemd/system/deploy-app.service
-[Unit]
-Description=Deploy application
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/deploy.sh
-ExecStartPost=/usr/bin/mv /var/deploy/*.tar.gz /var/deploy/deployed/
-```
-
-## Debugging
-
-### Le service ne se déclenche pas
-
-Vérifications :
+Linux limite le nombre de watches inotify :
 
 ```bash
-# Le path est-il actif ?
-systemctl status myapp.path
-
-# Vérifier les permissions
-ls -la /path/surveillé
-
-# Tester inotify manuellement
-inotifywait -m /path/surveillé
-
-# Vérifier les limites
+# Voir la limite actuelle
 cat /proc/sys/fs/inotify/max_user_watches
+
+# Augmenter temporairement
+echo 524288 | sudo tee /proc/sys/fs/inotify/max_user_watches
+
+# Permanent (/etc/sysctl.conf)
+fs.inotify.max_user_watches=524288
 ```
 
-### Trop de déclenchements
+### Performance
+
+La surveillance de nombreux fichiers peut consommer des ressources :
+- Privilégier DirectoryNotEmpty plutôt que PathExistsGlob
+- Éviter de surveiller des répertoires avec des milliers de fichiers
+- Utiliser des patterns spécifiques plutôt que génériques
+
+### Systèmes de fichiers réseau
+
+inotify ne fonctionne pas sur tous les systèmes de fichiers réseau (NFS, CIFS).
+
+Alternative : utiliser des timers avec polling.
+
+### Boucles infinies
+
+Attention aux services qui modifient les fichiers surveillés :
 
 ```ini
+# Protection
 [Path]
-# Limiter le taux
-TriggerLimitIntervalSec=60s
 TriggerLimitBurst=3
+TriggerLimitIntervalSec=60s
 ```
 
-### Logs verbeux
+## Débogage
+
+### Path unit ne déclenche pas
 
 ```bash
-# Activer le debug pour systemd
-systemctl log-level debug
+# Vérifier l'état
+systemctl status mywatch.path
 
-# Vérifier les événements
-journalctl -u myapp.path -f
+# Le path est-il correct ?
+systemctl show mywatch.path -p Paths
 
-# Remettre le niveau normal
-systemctl log-level info
+# Le fichier existe ?
+ls -l /path/to/watched/file
+
+# Logs
+journalctl -u mywatch.path
+
+# Tester manuellement le service
+systemctl start mywatch.service
 ```
+
+### Déclenchements trop fréquents
+
+```bash
+# Voir l'historique des déclenchements
+journalctl -u mywatch.path
+journalctl -u mywatch.service
+
+# Ajuster les limites
+[Path]
+TriggerLimitBurst=5
+TriggerLimitIntervalSec=120s
+```
+
+### Service ne s'exécute pas
+
+```bash
+# Vérifier que le service existe
+systemctl cat mywatch.service
+
+# Tester le service indépendamment
+systemctl start mywatch.service
+systemctl status mywatch.service
+
+# Logs du service
+journalctl -u mywatch.service -n 50
+```
+
+## Comparaison avec d'autres approches
+
+### Path units vs inotifywait
+
+**inotifywait** :
+```bash
+#!/bin/bash
+while inotifywait -e modify /etc/myapp/config.yaml; do
+    systemctl reload myapp.service
+done
+```
+
+**Path units** :
+- Intégration systemd native
+- Logs dans journald
+- Gestion automatique du cycle de vie
+- Redémarrage automatique en cas d'échec
+
+### Path units vs Timers
+
+**Timers** : Vérification périodique (polling)
+```ini
+[Timer]
+OnUnitActiveSec=5min
+```
+
+**Path units** : Réaction immédiate (inotify)
+- Plus réactif
+- Moins de charge système
+- Mais ne fonctionne pas sur tous les FS
 
 ## Bonnes pratiques
 
-1. **Utiliser PathModified** quand possible pour éviter les faux positifs
-2. **Limiter les déclenchements** avec TriggerLimit*
-3. **Type=oneshot** pour les services déclenchés
-4. **Nettoyer après traitement** : Supprimer/déplacer les fichiers traités
-5. **Tester** : Vérifier que le déclenchement fonctionne
-6. **Documenter** : Expliquer clairement ce qui est surveillé
-7. **Permissions** : Vérifier que systemd peut accéder au chemin
-8. **Éviter les répertoires massifs** : inotify peut être limité
+1. **Utiliser Type=oneshot** pour les services déclenchés
+   ```ini
+   [Service]
+   Type=oneshot
+   ```
 
-## Alternative : Timers
+2. **Toujours définir des limites**
+   ```ini
+   TriggerLimitBurst=5
+   TriggerLimitIntervalSec=60s
+   ```
 
-Pour certains cas, un timer avec vérification périodique peut être plus adapté :
+3. **Créer les répertoires si nécessaire**
+   ```ini
+   MakeDirectory=yes
+   DirectoryMode=0755
+   ```
 
-```ini
-# Au lieu d'un path unit, utiliser un timer
-[Timer]
-OnCalendar=*:0/5  # Toutes les 5 minutes
-Persistent=true
-```
+4. **Surveiller les répertoires plutôt que les fichiers individuels**
+   ```ini
+   PathModified=/etc/myapp/
+   ```
 
-Avantages :
-- Fonctionne avec NFS/CIFS
-- Pas de limite inotify
-- Contrôle précis de la fréquence
+5. **Documenter clairement**
+   ```ini
+   [Unit]
+   Description=Clear description of what triggers this
+   ```
 
-Les path units sont idéaux pour réagir rapidement aux changements du système de fichiers, permettant des workflows automatiques et réactifs.
+6. **Tester les limites inotify**
+   ```bash
+   cat /proc/sys/fs/inotify/max_user_watches
+   ```
+
+7. **Logger les déclenchements**
+   ```ini
+   [Service]
+   Type=oneshot
+   ExecStartPre=/usr/bin/logger "Path triggered: processing"
+   ```
+
+Les path units sont un outil puissant pour réagir aux changements du système de fichiers, permettant une automatisation élégante de nombreuses tâches administratives.
