@@ -6,14 +6,32 @@ Cette page explique comment utiliser systemd-logind pour limiter automatiquement
 
 systemd-logind crée automatiquement des slices pour chaque utilisateur connecté :
 
-```
-user.slice
-  ├── user-1000.slice (utilisateur alice)
-  │   └── session-1.scope (session SSH)
-  ├── user-1001.slice (utilisateur bob)
-  │   └── session-2.scope (session SSH)
-  └── user-1002.slice (utilisateur charlie)
-      └── session-3.scope (session console)
+```mermaid
+graph TB
+    userslice["user.slice"]
+    alice["user-1000.slice<br/>(utilisateur alice)"]
+    bob["user-1001.slice<br/>(utilisateur bob)"]
+    charlie["user-1002.slice<br/>(utilisateur charlie)"]
+    
+    session1["session-1.scope<br/>(session SSH)"]
+    session2["session-2.scope<br/>(session SSH)"]
+    session3["session-3.scope<br/>(session console)"]
+    
+    userslice --> alice
+    userslice --> bob
+    userslice --> charlie
+    
+    alice --> session1
+    bob --> session2
+    charlie --> session3
+    
+    style userslice fill:#E1BEE7
+    style alice fill:#C5CAE9
+    style bob fill:#C5CAE9
+    style charlie fill:#C5CAE9
+    style session1 fill:#E8EAF6
+    style session2 fill:#E8EAF6
+    style session3 fill:#E8EAF6
 ```
 
 Chaque `user-UID.slice` peut avoir des limites de ressources.
