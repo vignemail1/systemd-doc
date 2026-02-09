@@ -1,75 +1,65 @@
 # Mount et Automount
 
-Les unités `.mount` et `.automount` permettent à systemd de gérer les systèmes de fichiers montés, remplaçant ou complétant `/etc/fstab`.
+Les unités `.mount` et `.automount` gèrent le montage des systèmes de fichiers dans systemd. Elles offrent une alternative moderne au fichier `/etc/fstab` avec plus de contrôle et d'intégration.
 
-## Mount (.mount)
+## Mount Units (.mount)
 
-Les unités `.mount` définissent des points de montage gérés par systemd.
+Les unités `.mount` représentent un point de montage d'un système de fichiers.
 
-### Pourquoi utiliser .mount ?
+### Nommage des unités mount
 
-- **Intégration systemd** : Dépendances explicites avec d'autres services
-- **Supervision** : Détection automatique des problèmes de montage
-- **Flexibilité** : Conditions, timeouts, retry
-- **Logs structurés** : Dans journald
-- **Activation à la demande** : Avec automount
+Le nom du fichier `.mount` **doit** correspondre exactement au chemin de montage, avec les `/` remplacés par des `-`.
 
-### Convention de nommage
+**Exemples** :
 
-Le nom du fichier `.mount` **doit** correspondre au chemin de montage :
-
-```
-/data/backup → data-backup.mount
-/mnt/nfs/share → mnt-nfs-share.mount
-/home → home.mount
-```
-
-Les `/` deviennent des `-`, sauf le premier `/` qui est omis.
+| Point de montage | Nom du fichier |
+|------------------|----------------|
+| `/mnt/data` | `mnt-data.mount` |
+| `/home` | `home.mount` |
+| `/var/www` | `var-www.mount` |
+| `/media/usb` | `media-usb.mount` |
 
 ### Structure d'un fichier .mount
 
 ```ini
 [Unit]
-Description=Data Backup Mount
-After=network-online.target
-Wants=network-online.target
+Description=Data Storage Mount
+Before=local-fs.target
 
 [Mount]
 What=/dev/sdb1
-Where=/data/backup
+Where=/mnt/data
 Type=ext4
 Options=defaults,noatime
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=local-fs.target
 ```
 
 ## Section [Mount]
 
-### Options principales
+### Options obligatoires
 
 **What**
-: Device, UUID, ou chemin source (obligatoire)
+: Périphérique, partition ou ressource à monter
 
 ```ini
-# Device
+# Périphérique
 What=/dev/sdb1
 
-# UUID
-What=UUID=a1b2c3d4-e5f6-7890-abcd-ef1234567890
+# UUID (recommandé)
+What=/dev/disk/by-uuid/12345678-1234-1234-1234-123456789012
 
 # Label
-What=LABEL=backup
+What=/dev/disk/by-label/DATA
 
-# NFS
-What=server.example.com:/export/data
-
-# CIFS/SMB
+# Partage réseau
 What=//server/share
+What=server:/export/nfs
 ```
 
 **Where**
-: Point de montage (obligatoire)
+: Point de montage (doit correspondre au nom du fichier)
 
 ```ini
 Where=/mnt/data
@@ -81,11 +71,15 @@ Where=/mnt/data
 ```ini
 Type=ext4
 Type=xfs
-Type=nfs
-Type=cifs
-Type=tmpfs
 Type=btrfs
+Type=vfat
+Type=ntfs
+Type=cifs
+Type=nfs
+Type=tmpfs
 ```
+
+### Options facultatives
 
 **Options**
 : Options de montage (comme dans fstab)
@@ -93,10 +87,15 @@ Type=btrfs
 ```ini
 Options=defaults,noatime,nodiratime
 Options=ro,noexec,nosuid
-Options=rw,user,auto
+Options=uid=1000,gid=1000,umask=022
 ```
 
-### Options avancées
+**SloppyOptions**
+: Ignorer les options inconnues
+
+```ini
+SloppyOptions=yes
+```
 
 **DirectoryMode**
 : Permissions du point de montage s'il doit être créé
@@ -112,183 +111,160 @@ DirectoryMode=0755
 TimeoutSec=30s
 ```
 
-**SloppyOptions**
-: Ignorer les options non reconnues
+## Exemples de mount units
+
+### Partition de données
 
 ```ini
-SloppyOptions=yes
-```
-
-**LazyUnmount**
-: Démontage lazy (détache immédiatement, libère à la fermeture)
-
-```ini
-LazyUnmount=yes
-```
-
-**ForceUnmount**
-: Force le démontage même si occupé
-
-```ini
-ForceUnmount=yes
-```
-
-## Exemples de .mount
-
-### Montage disque local
-
-```ini
-# /etc/systemd/system/data-backup.mount
+# /etc/systemd/system/mnt-data.mount
 [Unit]
-Description=Backup Data Partition
+Description=Data Partition
+Before=local-fs.target
 
 [Mount]
-What=UUID=a1b2c3d4-e5f6-7890-abcd-ef1234567890
-Where=/data/backup
+What=/dev/disk/by-uuid/abcd1234-5678-90ef-ghij-klmnopqrstuv
+Where=/mnt/data
 Type=ext4
 Options=defaults,noatime
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=local-fs.target
 ```
 
 Activation :
 ```bash
-systemctl enable data-backup.mount
-systemctl start data-backup.mount
+systemctl enable mnt-data.mount
+systemctl start mnt-data.mount
 ```
 
-### Montage NFS
+### Partage NFS
 
 ```ini
-# /etc/systemd/system/mnt-nfs-share.mount
+# /etc/systemd/system/mnt-nfs.mount
 [Unit]
-Description=NFS Share from File Server
+Description=NFS Share
 After=network-online.target
 Wants=network-online.target
 
 [Mount]
-What=fileserver.lan:/export/shared
-Where=/mnt/nfs/share
+What=192.168.1.100:/export/share
+Where=/mnt/nfs
 Type=nfs
-Options=_netdev,nfsvers=4,rw
-TimeoutSec=30
+Options=defaults,_netdev,noatime
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=remote-fs.target
 ```
 
-!!! note "Option _netdev"
-    L'option `_netdev` indique que le montage nécessite le réseau.
+**Option importante** : `_netdev` indique que c'est un système de fichiers réseau.
 
-### Montage CIFS/SMB
+### Partage CIFS/SMB
 
 ```ini
-# /etc/systemd/system/mnt-smb-documents.mount
+# /etc/systemd/system/mnt-samba.mount
 [Unit]
-Description=Windows Share - Documents
+Description=Samba Share
 After=network-online.target
 Wants=network-online.target
 
 [Mount]
-What=//windowsserver/documents
-Where=/mnt/smb/documents
+What=//server.example.com/share
+Where=/mnt/samba
 Type=cifs
-Options=credentials=/etc/smb-credentials,uid=1000,gid=1000,_netdev
+Options=credentials=/etc/samba/credentials,uid=1000,gid=1000,_netdev
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=remote-fs.target
 ```
 
-Fichier credentials (`/etc/smb-credentials`) :
+Fichier de credentials (`/etc/samba/credentials`) :
 ```
-username=monuser
-password=monpass
-domain=DOMAIN
+username=myuser
+password=mypassword
+domain=WORKGROUP
 ```
 
-Permissions :
 ```bash
-chmod 600 /etc/smb-credentials
+chmod 600 /etc/samba/credentials
 ```
 
-### Montage tmpfs
+### tmpfs (RAM disk)
 
 ```ini
-# /etc/systemd/system/tmp-app-cache.mount
+# /etc/systemd/system/tmp-cache.mount
 [Unit]
-Description=Application Cache in RAM
+Description=Temporary Cache in RAM
 
 [Mount]
 What=tmpfs
-Where=/tmp/app-cache
+Where=/tmp/cache
 Type=tmpfs
 Options=size=1G,mode=1777
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=local-fs.target
 ```
 
-### Montage avec dépendances
+### Bind mount
 
 ```ini
-# /etc/systemd/system/var-lib-postgresql.mount
+# /etc/systemd/system/var-www-logs.mount
 [Unit]
-Description=PostgreSQL Data Directory
-Before=postgresql.service
+Description=Bind mount for web logs
+After=var-www.mount
+Requires=var-www.mount
 
 [Mount]
-What=/dev/mapper/vg0-postgres
-Where=/var/lib/postgresql
-Type=ext4
-Options=defaults,noatime
+What=/mnt/data/logs
+Where=/var/www/logs
+Type=none
+Options=bind
 
 [Install]
-RequiredBy=postgresql.service
+WantedBy=local-fs.target
 ```
 
-PostgreSQL ne démarrera que si le montage réussit.
+## Automount Units (.automount)
 
-## Automount (.automount)
+Les unités `.automount` montent automatiquement un système de fichiers lors du premier accès.
 
-Les unités `.automount` permettent le montage automatique à la demande lors du premier accès.
+### Principe
+
+1. systemd crée un point de montage vide
+2. L'utilisateur accède au répertoire
+3. systemd monte automatiquement le système de fichiers
+4. Optionnel : démontage après inactivité
 
 ### Avantages
 
-- **Boot plus rapide** : Les filesystems ne sont pas montés au démarrage
-- **Ressources** : Économise les ressources pour les montages rarement utilisés
-- **Réseau** : Évite les timeouts au boot pour les montages réseau
-- **Transparence** : Le montage se fait automatiquement à l'accès
+- **Boot plus rapide** : Pas de montage au démarrage
+- **Économie de ressources** : Montage à la demande
+- **Systèmes lents** : NFS, partages réseau ne ralentissent pas le boot
 
-### Convention de nommage
-
-Même règle que `.mount` :
-
-```
-/data/backup → data-backup.automount
-```
-
-### Structure d'un .automount
+### Structure d'un automount
 
 ```ini
+# /etc/systemd/system/mnt-data.automount
 [Unit]
-Description=Automount for Backup Data
+Description=Automount Data Partition
 
 [Automount]
-Where=/data/backup
+Where=/mnt/data
 TimeoutIdleSec=300
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=local-fs.target
 ```
 
-## Section [Automount]
+**Important** : Doit être accompagné d'une unité `.mount` correspondante.
+
+### Options [Automount]
 
 **Where**
-: Point de montage (doit correspondre au .mount associé)
+: Point de montage (identique au .mount)
 
 ```ini
-Where=/data/backup
+Where=/mnt/data
 ```
 
 **DirectoryMode**
@@ -299,251 +275,328 @@ DirectoryMode=0755
 ```
 
 **TimeoutIdleSec**
-: Délai avant démontage automatique si inactif
+: Démonte après inactivité (optionnel)
 
 ```ini
-TimeoutIdleSec=300  # 5 minutes
-TimeoutIdleSec=0    # Ne jamais démonter auto
+TimeoutIdleSec=300   # 5 minutes
+TimeoutIdleSec=0     # Jamais démonter (défaut)
 ```
 
-## Exemples d'automount
+## Exemple complet automount
 
-### Automount NFS
-
-```ini
-# /etc/systemd/system/mnt-nfs-share.automount
-[Unit]
-Description=Automount NFS Share
-
-[Automount]
-Where=/mnt/nfs/share
-TimeoutIdleSec=600
-
-[Install]
-WantedBy=multi-user.target
-```
+### NFS avec automount
 
 ```ini
-# /etc/systemd/system/mnt-nfs-share.mount
+# /etc/systemd/system/mnt-nfs.mount
 [Unit]
 Description=NFS Share
 After=network-online.target
 
 [Mount]
-What=fileserver:/export/shared
-Where=/mnt/nfs/share
+What=server:/export/data
+Where=/mnt/nfs
 Type=nfs
-Options=_netdev,nfsvers=4
+Options=defaults,_netdev,noatime
+```
+
+```ini
+# /etc/systemd/system/mnt-nfs.automount
+[Unit]
+Description=Automount NFS Share
+
+[Automount]
+Where=/mnt/nfs
+TimeoutIdleSec=600
+
+[Install]
+WantedBy=remote-fs.target
 ```
 
 Activation :
 ```bash
-# Activer l'automount (pas le mount)
-systemctl enable mnt-nfs-share.automount
-systemctl start mnt-nfs-share.automount
+# N'activer QUE l'automount
+systemctl enable mnt-nfs.automount
+systemctl start mnt-nfs.automount
 
-# Le montage se fera au premier accès
-ls /mnt/nfs/share  # Déclenche le montage
+# Le .mount sera activé automatiquement à l'accès
 ```
 
-### Automount avec timeout court
+### Données externes avec automount
 
 ```ini
-# /etc/systemd/system/mnt-usb-backup.automount
+# /etc/systemd/system/mnt-backup.mount
 [Unit]
-Description=USB Backup Automount
+Description=External Backup Drive
 
-[Automount]
-Where=/mnt/usb/backup
-TimeoutIdleSec=60  # Démonte après 1 minute d'inactivité
-
-[Install]
-WantedBy=multi-user.target
+[Mount]
+What=/dev/disk/by-uuid/external-backup-uuid
+Where=/mnt/backup
+Type=ext4
+Options=defaults,noatime
 ```
 
-Idéal pour des périphériques USB ou disques externes.
+```ini
+# /etc/systemd/system/mnt-backup.automount
+[Unit]
+Description=Automount Backup Drive
 
-## Gestion des montages
+[Automount]
+Where=/mnt/backup
+TimeoutIdleSec=600
+
+[Install]
+WantedBy=local-fs.target
+```
+
+## Gestion des mounts
 
 ### Commandes de base
 
 ```bash
-# Lister les montages systemd
+# Lister tous les mounts
 systemctl list-units --type=mount
 
+# Monter
+systemctl start mnt-data.mount
+
+# Démonter
+systemctl stop mnt-data.mount
+
+# Activer au boot
+systemctl enable mnt-data.mount
+
+# Voir l'état
+systemctl status mnt-data.mount
+
+# Recharger si modification
+systemctl daemon-reload
+systemctl restart mnt-data.mount
+```
+
+### Commandes automount
+
+```bash
 # Lister les automounts
 systemctl list-units --type=automount
 
-# Démarrer un montage
-systemctl start data-backup.mount
+# Activer un automount
+systemctl enable mnt-data.automount
+systemctl start mnt-data.automount
 
-# Arrêter (démonter)
-systemctl stop data-backup.mount
-
-# Statut
-systemctl status data-backup.mount
-
-# Recharger après modification
-systemctl daemon-reload
-systemctl restart data-backup.mount
+# Désactiver
+systemctl stop mnt-data.automount
+systemctl disable mnt-data.automount
 ```
 
-### Forcer un démontage
+## Conversion depuis fstab
 
-```bash
-# Démontage normal
-systemctl stop data-backup.mount
-
-# Si occupé, tuer les processus
-fuser -km /data/backup
-systemctl stop data-backup.mount
-```
-
-## Migration depuis /etc/fstab
-
-### Entrée fstab
+### fstab traditionnel
 
 ```
-UUID=xxx  /data/backup  ext4  defaults,noatime  0  2
+# /etc/fstab
+UUID=abc-123 /mnt/data ext4 defaults,noatime 0 2
+//server/share /mnt/smb cifs credentials=/etc/creds 0 0
 ```
 
 ### Équivalent systemd
 
 ```ini
-# /etc/systemd/system/data-backup.mount
+# /etc/systemd/system/mnt-data.mount
 [Unit]
-Description=Backup Data
+Description=Data Partition
 
 [Mount]
-What=UUID=xxx
-Where=/data/backup
+What=/dev/disk/by-uuid/abc-123
+Where=/mnt/data
 Type=ext4
 Options=defaults,noatime
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=local-fs.target
 ```
 
-On peut conserver les deux : systemd lit aussi `/etc/fstab`.
-
-## Cas d'usage avancés
-
-### Montage conditionnel
-
 ```ini
-# /etc/systemd/system/mnt-external.mount
+# /etc/systemd/system/mnt-smb.mount
 [Unit]
-Description=External Drive
-ConditionPathExists=/dev/disk/by-label/EXTERNAL
-
-[Mount]
-What=LABEL=EXTERNAL
-Where=/mnt/external
-Type=ext4
-Options=defaults
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Ne monte que si le disque est présent.
-
-### Montage avec retry
-
-```ini
-# /etc/systemd/system/mnt-nfs-data.mount
-[Unit]
-Description=NFS Data Mount
+Description=SMB Share
 After=network-online.target
 
 [Mount]
-What=server:/data
-Where=/mnt/nfs/data
-Type=nfs
-Options=_netdev,soft,timeo=30,retrans=3
+What=//server/share
+Where=/mnt/smb
+Type=cifs
+Options=credentials=/etc/creds,_netdev
+
+[Install]
+WantedBy=remote-fs.target
+```
+
+### Outil de conversion
+
+systemd peut générer des units depuis fstab :
+
+```bash
+# systemd génère automatiquement des .mount depuis /etc/fstab
+# Visible avec:
+systemctl list-units --type=mount --all
+```
+
+## Dépendances
+
+### Monter avant un service
+
+```ini
+# myapp.service
+[Unit]
+Description=My Application
+After=mnt-data.mount
+Requires=mnt-data.mount
 
 [Service]
-Restart=on-failure
-RestartSec=10s
-
-[Install]
-WantedBy=multi-user.target
+ExecStart=/usr/bin/myapp
 ```
 
-### Montage readonly en cas d'erreur
+### Cascade de montages
 
 ```ini
+# /etc/systemd/system/mnt-data.mount
+[Unit]
+Description=Data Partition
+
 [Mount]
 What=/dev/sdb1
-Where=/data/critical
+Where=/mnt/data
 Type=ext4
-Options=errors=remount-ro
 ```
 
-## Debugging
+```ini
+# /etc/systemd/system/mnt-data-www.mount
+[Unit]
+Description=WWW Bind Mount
+After=mnt-data.mount
+Requires=mnt-data.mount
 
-### Voir les logs de montage
-
-```bash
-journalctl -u data-backup.mount
-journalctl -u data-backup.mount -f
-journalctl -b -u '*.mount'
+[Mount]
+What=/mnt/data/www
+Where=/var/www
+Type=none
+Options=bind
 ```
 
-### Vérifier la configuration
+## Sécurité
 
-```bash
-systemd-analyze verify data-backup.mount
-```
+### Options de montage sécurisées
 
-### Tester manuellement
-
-```bash
-# Vérifier que le montage fonctionne
-mount -t ext4 /dev/sdb1 /data/backup
-
-# Puis convertir en unit systemd
-```
-
-### Problèmes courants
-
-**Timeout au boot** :
 ```ini
 [Mount]
-TimeoutSec=30s
-
-[Unit]
-# Pour NFS/CIFS
-After=network-online.target
+Options=nodev,nosuid,noexec
 ```
 
-**Démontage impossible** :
+**nodev**
+: Pas de fichiers spéciaux de périphériques
+
+**nosuid**
+: Ignorer les bits SUID/SGID
+
+**noexec**
+: Pas d'exécution de binaires
+
+### Montage en lecture seule
+
+```ini
+[Mount]
+Options=ro
+```
+
+### Restrictions d'accès
+
+```ini
+[Mount]
+Options=uid=1000,gid=1000,umask=077
+```
+
+## Dépannage
+
+### Mount échoue
+
 ```bash
-# Trouver qui utilise
-lsof +D /data/backup
-fuser -v /data/backup
+# Voir les logs
+journalctl -u mnt-data.mount
+
+# Tester le montage manuellement
+mount -t ext4 /dev/sdb1 /mnt/data
+
+# Vérifier le périphérique
+lsblk
+blkid
+
+# Vérifier les permissions
+ls -ld /mnt/data
+```
+
+### Automount ne fonctionne pas
+
+```bash
+# L'automount est-il actif ?
+systemctl status mnt-data.automount
+
+# Le .mount existe ?
+systemctl cat mnt-data.mount
+
+# Tester l'accès
+ls /mnt/data
+
+# Logs
+journalctl -u mnt-data.automount
+journalctl -u mnt-data.mount
+```
+
+### Démontage impossible
+
+```bash
+# Voir ce qui utilise le mount
+lsof /mnt/data
+fuser -vm /mnt/data
 
 # Tuer les processus
-fuser -km /data/backup
-```
+fuser -km /mnt/data
 
-**Automount ne fonctionne pas** :
-```bash
-# Vérifier que l'automount est actif
-systemctl status data-backup.automount
-
-# Pas le .mount
-systemctl status data-backup.mount  # Doit être inactif
+# Forcer le démontage
+umount -l /mnt/data  # Lazy unmount
 ```
 
 ## Bonnes pratiques
 
-1. **Utiliser UUID** : Plus fiable que les noms de devices
-2. **_netdev pour réseau** : Toujours utiliser pour NFS/CIFS
-3. **Timeout raisonnable** : Éviter que le boot se bloque
-4. **Documenter** : Description claire de ce qui est monté
-5. **Tester** : Valider le montage avant d'activer au boot
-6. **Automount pour réseau** : Préférer automount pour les montages réseau
-7. **Credentials sécurisés** : Protéger les fichiers de credentials (chmod 600)
+1. **Utiliser UUID** plutôt que /dev/sdX
+   ```ini
+   What=/dev/disk/by-uuid/...
+   ```
 
-Les unités mount et automount offrent une gestion moderne et flexible des systèmes de fichiers, bien intégrée avec le reste de systemd.
+2. **Option _netdev** pour montages réseau
+   ```ini
+   Options=_netdev
+   ```
+
+3. **Automount pour ressources lentes**
+   - NFS, CIFS
+   - Disques externes
+   - Ressources rarement utilisées
+
+4. **Dépendances explicites**
+   ```ini
+   After=network-online.target
+   Wants=network-online.target
+   ```
+
+5. **Timeout raisonnable**
+   ```ini
+   TimeoutSec=30s
+   ```
+
+6. **Documenter**
+   ```ini
+   [Unit]
+   Description=Clear description of what is mounted
+   ```
+
+Les mount et automount units offrent une gestion moderne et flexible des systèmes de fichiers, avec une meilleure intégration dans systemd que le traditionnel /etc/fstab.

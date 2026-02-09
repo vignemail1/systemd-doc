@@ -1,12 +1,4 @@
 title: Unités
 arrange:
   - index.md
-  - services.md
-  - sockets.md
-  - timers.md
-  - targets.md
-  - mount-automount.md
-  - path.md
-  - device.md
-  - swap.md
-  - slices-scopes.md
+  - ...
