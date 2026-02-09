@@ -234,12 +234,12 @@ CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 
 ### Capacités courantes
 
-- **CAP*NET*BIND_SERVICE** : Bind ports < 1024
-- **CAP*NET*RAW** : Sockets raw (ping)
-- **CAP*NET*ADMIN** : Configuration réseau
-- **CAP*SYS*ADMIN** : Opérations système (mount, etc.)
-- **CAP*SYS*TIME** : Modifier l'horloge système
-- **CAP*DAC*OVERRIDE** : Outrepasser permissions fichiers
+- **CAP_NET_BIND_SERVICE** : Bind ports < 1024
+- **CAP_NET_RAW** : Sockets raw (ping)
+- **CAP_NET_ADMIN** : Configuration réseau
+- **CAP_SYS_ADMIN** : Opérations système (mount, etc.)
+- **CAP_SYS_TIME** : Modifier l'horloge système
+- **CAP_DAC_OVERRIDE** : Outrepasser permissions fichiers
 - **CAP_CHOWN** : Changer propriétaire fichiers
 
 ### Exemple : serveur web
