@@ -1,14 +1,46 @@
 # Documentation systemd
 
-Documentation complète sur systemd et son écosystème, construite avec [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
+Documentation complète et en français de systemd, le système d'initialisation et de gestion des services Linux.
 
-## 🚀 Démarrage rapide
+## 🌐 Site en ligne
+
+**[https://vignemail1.github.io/systemd-doc/](https://vignemail1.github.io/systemd-doc/)**
+
+## 📚 Contenu
+
+### Introduction
+
+- Vue d'ensemble de systemd
+- Architecture et composants
+- Histoire et évolution
+- Comparaison avec SysVinit
+
+### Types d'unités
+
+- **Services** : Démons et services système
+- **Sockets** : Activation à la demande
+- **Timers** : Planification de tâches
+- **Targets** : Groupes d'unités et runlevels
+- **Mount/Automount** : Gestion des systèmes de fichiers
+- **Path** : Surveillance de fichiers
+- **Device** : Gestion des périphériques
+- **Swap** : Mémoire virtuelle
+- **Slices/Scopes** : Gestion des ressources et cgroups
+
+### Outils
+
+- systemctl, journalctl, systemd-analyze
+- networkd, resolved, timesyncd
+- Et bien d'autres...
+
+## 🚀 Installation et développement
 
 ### Prérequis
 
-- [mise](https://mise.jdx.dev) - Gestionnaire d'outils et d'environnement
+- [mise](https://mise.jdx.dev) (gestionnaire d'environnement)
+- Python 3.14+
 
-### Installation
+### Installation rapide
 
 ```bash
 # Cloner le repository
@@ -18,103 +50,130 @@ cd systemd-doc
 # Installer mise si nécessaire
 curl https://mise.run | sh
 
-# Installer les dépendances
+# Installer Python et les dépendances
 mise install
 mise run install
 ```
 
-### Développement
+### Commandes disponibles
 
 ```bash
 # Démarrer le serveur de développement
 mise run dev
+# Site accessible sur http://127.0.0.1:8000
 
-# Le site sera accessible sur http://127.0.0.1:8000
-```
-
-### Build
-
-```bash
 # Construire le site statique
 mise run build
 
-# Les fichiers générés seront dans ./site/
-```
-
-### Déploiement
-
-Le déploiement sur GitHub Pages est automatique via GitHub Actions lors d'un push sur `main`.
-
-Pour déployer manuellement :
-
-```bash
+# Déployer sur GitHub Pages
 mise run deploy
+
+# Nettoyer les fichiers générés
+mise run clean
 ```
 
-## 📚 Structure
+## 🔧 Qualité et linting
 
-```
-.
-├── docs/                      # Contenu de la documentation
-│   ├── index.md              # Page d'accueil
-│   ├── introduction/         # Introduction à systemd
-│   ├── unites/               # Types d'unités systemd
-│   ├── outils/               # Outils de l'écosystème
-│   ├── gestion-services/     # Gestion des services
-│   ├── journal-logging/      # Journal et logging
-│   ├── securite/             # Sécurité et isolation
-│   └── cas-pratiques/        # Exemples pratiques
-├── mkdocs.yml                # Configuration MkDocs
-├── .mise.toml                # Configuration mise
-├── requirements.txt          # Dépendances Python
-└── README.md                 # Ce fichier
-```
-
-## 🛠️ Commandes mise disponibles
+### Vérification Markdown
 
 ```bash
-mise tasks                    # Lister toutes les tâches
-mise run install             # Installer les dépendances
-mise run dev                 # Serveur de développement
-mise run build               # Construire le site
-mise run deploy              # Déployer sur GitHub Pages
-mise run clean               # Nettoyer les fichiers générés
+# Vérifier la syntaxe (nécessite markdownlint-cli2)
+npm install -g markdownlint-cli2
+mise run lint
+
+# Correction automatique avec markdownlint
+mise run lint-fix
+
+# Correction du formatage (indentation, lignes vides)
+mise run fix-markdown
 ```
 
-## 📖 Contenu
+### Règles de formatage
 
-Cette documentation couvre :
+La documentation suit les règles MkDocs :
 
-- **Introduction** : Architecture, histoire, comparaison avec SysVinit
-- **Unités** : Services, sockets, timers, targets, mount, path, device, swap
-- **Outils** : systemctl, journalctl, networkctl, resolvectl, etc.
-- **Gestion** : Création, modification, debugging de services
-- **Logging** : Exploitation du journal systemd
-- **Sécurité** : Isolation, sandboxing, best practices
-- **Cas pratiques** : Exemples concrets et patterns courants
+- **Indentation des listes** : 3 espaces par niveau
+- **Lignes vides** : Avant et après chaque liste
+- **Lignes vides** : Avant et après les blocs de code
+- **Pas d'espaces** en fin de ligne
+- **Une ligne vide** maximum entre les sections
 
-## 🌐 Site en ligne
+Le script `scripts/fix_markdown.py` corrige automatiquement ces problèmes.
 
-La documentation est accessible sur : [https://vignemail1.github.io/systemd-doc/](https://vignemail1.github.io/systemd-doc/)
+## 📝 Structure du projet
 
-## 🤝 Contribution
+```
+systemd-doc/
+├── docs/                    # Documentation source
+│   ├── introduction/        # Introduction à systemd
+│   ├── unites/              # Types d'unités
+│   ├── outils/              # Outils systemd
+│   └── index.md             # Page d'accueil
+├── scripts/                # Scripts utilitaires
+│   └── fix_markdown.py      # Correction Markdown
+├── .github/workflows/      # GitHub Actions
+├── mkdocs.yml              # Configuration MkDocs
+├── .mise.toml              # Configuration mise
+├── .markdownlint.yaml      # Configuration linting
+└── requirements.txt        # Dépendances Python
+```
 
-Les contributions sont les bienvenues ! Pour contribuer :
+## ⚙️ Configuration
 
-1. Fork le projet
-2. Créez une branche (`git checkout -b feature/amelioration`)
-3. Committez vos changements (`git commit -am 'Ajout nouvelle section'`)
-4. Push vers la branche (`git push origin feature/amelioration`)
-5. Ouvrez une Pull Request
+### mise (.mise.toml)
+
+Gestionnaire d'environnement avec tâches prédéfinies :
+
+- `install` : Installation des dépendances
+- `dev` : Serveur de développement
+- `build` : Construction du site
+- `deploy` : Déploiement GitHub Pages
+- `clean` : Nettoyage
+- `lint` : Vérification Markdown
+- `lint-fix` : Correction automatique
+- `fix-markdown` : Formatage Markdown
+
+### MkDocs (mkdocs.yml)
+
+- Thème Material Design
+- Navigation automatique avec awesome-pages
+- Extensions Markdown (admonitions, tabs, code highlighting...)
+- Support multi-langue
+
+## 👥 Contribution
+
+### Ajouter du contenu
+
+1. Créer ou modifier un fichier `.md` dans `docs/`
+2. Utiliser la syntaxe Markdown avec les extensions MkDocs
+3. Exécuter `mise run fix-markdown` pour formater
+4. Tester avec `mise run dev`
+5. Commiter et pusher
+
+### Standards de qualité
+
+- **Langage** : Français clair et technique
+- **Exemples** : Code fonctionnel et commenté
+- **Structure** : En-têtes hiérarchiques
+- **Format** : Respect des règles markdownlint
+
+## 📦 Déploiement
+
+Le déploiement est **automatique** via GitHub Actions :
+
+- Push sur `main` → Build et déploiement sur GitHub Pages
+- Le site est accessible sur `https://vignemail1.github.io/systemd-doc/`
+
+Déploiement manuel possible avec `mise run deploy`.
 
 ## 📝 Licence
 
-Cette documentation est mise à disposition selon les termes de la licence MIT.
+Documentation sous licence libre (préciser la licence si nécessaire).
 
 ## 🔗 Ressources
 
-- [Site officiel systemd](https://systemd.io/)
-- [Documentation freedesktop.org](https://www.freedesktop.org/software/systemd/man/)
-- [Code source systemd](https://github.com/systemd/systemd)
-- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
-- [mise](https://mise.jdx.dev)
+- [systemd.io](https://systemd.io/) - Site officiel
+- [freedesktop.org](https://www.freedesktop.org/wiki/Software/systemd/) - Documentation officielle
+- [Arch Wiki - systemd](https://wiki.archlinux.org/title/Systemd) - Excellente documentation
+- [MkDocs](https://www.mkdocs.org/) - Générateur de documentation
+- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) - Thème utilisé
