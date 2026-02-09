@@ -1,0 +1,10 @@
+site_name: Systemd - Documentation interne
+theme:
+  name: material
+  language: fr
+plugins:
+  - search
+  - awesome-pages
+nav:
+  - Accueil: index.md
+  - Systemd: systemd/
