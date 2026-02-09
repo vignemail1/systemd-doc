@@ -1,0 +1,6 @@
+title: Introduction
+arrange:
+  - index.md
+  - architecture.md
+  - histoire.md
+  - comparaison-sysvinit.md
