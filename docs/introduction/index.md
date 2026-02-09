@@ -18,18 +18,23 @@ systemd est bien plus qu'un simple gestionnaire d'initialisation. C'est une suit
 ### Avantages par rapport à SysVinit
 
 **Parallélisation**
+
 : systemd démarre les services en parallèle plutôt que séquentiellement, réduisant significativement le temps de démarrage du système.
 
 **Activation à la demande**
+
 : Les services peuvent être démarrés uniquement lorsqu'ils sont nécessaires grâce à l'activation par socket, path ou device.
 
 **Dépendances explicites**
+
 : Les relations entre services sont clairement définies dans les fichiers d'unités, garantissant un ordre de démarrage correct.
 
 **Supervision intégrée**
+
 : systemd surveille l'état des services et peut les redémarrer automatiquement en cas d'échec.
 
 **Journalisation structurée**
+
 : Les logs sont stockés de manière binaire avec des métadonnées, permettant des recherches et filtres puissants.
 
 ### Adoption massive
@@ -48,7 +53,7 @@ systemd est aujourd'hui le standard sur :
 
 systemd est organisé autour de plusieurs composants :
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │         systemd (PID 1)                 │
 │  Gestionnaire principal du système      │
@@ -67,7 +72,7 @@ systemd est organisé autour de plusieurs composants :
 │  Services, Sockets, Timers, etc.     │
 │  (Unités systemd)                    │
 └──────────────────────────────────────┘
-```
+```text
 
 ### Composants principaux
 
@@ -115,7 +120,7 @@ journalctl -f                        # Suivre les logs en temps réel
 # État du système
 systemctl list-units                 # Lister les unités actives
 systemctl list-unit-files            # Lister tous les fichiers d'unités
-```
+```text
 
 ## Ressources officielles
 

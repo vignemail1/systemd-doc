@@ -18,7 +18,7 @@ L'outil central de contrôle de systemd.
 systemctl status nginx.service
 systemctl restart postgresql.service
 systemctl list-units --type=service
-```
+```text
 
 ### journalctl
 
@@ -34,7 +34,7 @@ Consultation et analyse des logs systemd.
 journalctl -u nginx.service
 journalctl --since "1 hour ago"
 journalctl -f
-```
+```text
 
 ### systemd-analyze
 
@@ -50,7 +50,7 @@ Analyse des performances et débogage.
 systemd-analyze time
 systemd-analyze blame
 systemd-analyze critical-chain
-```
+```text
 
 ## Outils réseau
 
@@ -124,7 +124,7 @@ Configuration du nom d'hôte.
 ```bash
 hostnamectl set-hostname myserver
 hostnamectl status
-```
+```text
 
 ### localectl
 
@@ -133,7 +133,7 @@ Configuration locale et clavier.
 ```bash
 localectl set-locale LANG=fr_FR.UTF-8
 localectl set-keymap fr
-```
+```text
 
 ### timedatectl
 
@@ -142,7 +142,7 @@ Configuration date, heure et fuseau horaire.
 ```bash
 timedatectl set-timezone Europe/Paris
 timedatectl set-ntp true
-```
+```text
 
 ## Outils avancés
 
@@ -152,7 +152,7 @@ Conteneurs légers (alternative à chroot).
 
 ```bash
 systemd-nspawn -D /var/lib/machines/container
-```
+```text
 
 ### systemd-boot (bootctl)
 
@@ -161,7 +161,7 @@ Gestionnaire de démarrage UEFI.
 ```bash
 bootctl status
 bootctl install
-```
+```text
 
 ### systemd-tmpfiles
 
@@ -170,7 +170,7 @@ Gestion des fichiers temporaires.
 ```bash
 systemd-tmpfiles --create
 systemd-tmpfiles --clean
-```
+```text
 
 ### systemd-sysusers
 
@@ -178,7 +178,7 @@ Création d'utilisateurs et groupes système.
 
 ```bash
 systemd-sysusers
-```
+```text
 
 ## Outils de débogage
 
@@ -189,7 +189,7 @@ Arbre des cgroups.
 ```bash
 systemd-cgls
 systemd-cgls system.slice
-```
+```text
 
 ### systemd-cgtop
 
@@ -197,7 +197,7 @@ Monitoring des ressources par cgroup.
 
 ```bash
 systemd-cgtop
-```
+```text
 
 ### coredumpctl
 
@@ -207,12 +207,12 @@ Gestion des core dumps.
 coredumpctl list
 coredumpctl info
 coredumpctl debug
-```
+```text
 
 ## Tableau récapitulatif
 
 | Outil | Fonction principale | Commande exemple |
-|-------|---------------------|------------------|
+| ------- | --------------------- | ------------------ |
 | systemctl | Gestion des unités | `systemctl status` |
 | journalctl | Consultation logs | `journalctl -u service` |
 | systemd-analyze | Analyse performances | `systemd-analyze blame` |

@@ -53,7 +53,7 @@ journalctl -f
 
 # Dernières 50 lignes
 journalctl -n 50
-```
+```text
 
 ### Filtrer par unité
 
@@ -69,7 +69,7 @@ journalctl -u nginx.service -f
 
 # Avec priorité
 journalctl -u nginx.service -p err
-```
+```text
 
 ### Filtrer par temps
 
@@ -88,7 +88,7 @@ journalctl --until "30 minutes ago"
 # Période
 journalctl --since "2024-02-09 08:00" --until "2024-02-09 18:00"
 journalctl --since "1 hour ago" --until "30 minutes ago"
-```
+```text
 
 ### Filtrer par priorité
 
@@ -108,7 +108,7 @@ journalctl -p debug      # Tous les messages
 # 5: notice (notification)
 # 6: info (information)
 # 7: debug (débogage)
-```
+```text
 
 ### Filtrer par processus
 
@@ -124,7 +124,7 @@ journalctl _UID=1000
 
 # Par GID
 journalctl _GID=1000
-```
+```text
 
 ### Filtrer par champs
 
@@ -142,7 +142,7 @@ journalctl _TRANSPORT=journal
 
 # Combiner plusieurs filtres
 journalctl _SYSTEMD_UNIT=nginx.service PRIORITY=3
-```
+```text
 
 ## Formats de sortie
 
@@ -151,7 +151,7 @@ journalctl _SYSTEMD_UNIT=nginx.service PRIORITY=3
 ```bash
 journalctl -o short
 # Fév 09 14:30:25 server sshd[1234]: Accepted password for user
-```
+```text
 
 ### Format détaillé
 
@@ -170,7 +170,7 @@ journalctl -o export
 
 # Format cat (juste le message)
 journalctl -o cat
-```
+```text
 
 ### Exemples de formats
 
@@ -186,7 +186,7 @@ journalctl -o short-iso-precise
 
 # Format court monotonic
 journalctl -o short-monotonic
-```
+```text
 
 ## Recherche et filtrage avancé
 
@@ -204,7 +204,7 @@ journalctl -u nginx.service | grep -C 5 "error"
 
 # Utiliser --grep de journalctl (plus efficace)
 journalctl --grep="error" --case-sensitive=false
-```
+```text
 
 ### Recherche par motif
 
@@ -214,7 +214,7 @@ journalctl --grep="(error|fail|critical)"
 
 # Inverser la recherche
 journalctl --grep="error" --grep-invert
-```
+```text
 
 ### Lister les valeurs d'un champ
 
@@ -230,7 +230,7 @@ journalctl -F SYSLOG_IDENTIFIER
 
 # Tous les hostnames
 journalctl -F _HOSTNAME
-```
+```text
 
 ## Configuration du journal
 
@@ -277,13 +277,13 @@ MaxLevelWall=emerg
 # Rate limiting
 RateLimitIntervalSec=30s
 RateLimitBurst=10000
-```
+```text
 
 Appliquer les changements :
 
 ```bash
 sudo systemctl restart systemd-journald
-```
+```text
 
 ### Activer la persistance
 
@@ -297,7 +297,7 @@ sudo systemctl restart systemd-journald
 
 # Vérifier
 journalctl --disk-usage
-```
+```text
 
 ## Gestion de l'espace disque
 
@@ -312,7 +312,7 @@ ls -lh /var/log/journal/*/
 
 # Statistiques détaillées
 journalctl --header
-```
+```text
 
 ### Nettoyer les anciens logs
 
@@ -328,7 +328,7 @@ sudo journalctl --vacuum-size=500M
 
 # Limiter le nombre de fichiers
 sudo journalctl --vacuum-files=10
-```
+```text
 
 ### Rotation manuelle
 
@@ -338,7 +338,7 @@ sudo systemctl kill --signal=SIGUSR2 systemd-journald
 
 # Ou
 sudo journalctl --rotate
-```
+```text
 
 ## Vérification et maintenance
 
@@ -350,7 +350,7 @@ sudo journalctl --verify
 
 # Vérifier un fichier spécifique
 sudo journalctl --verify --file=/var/log/journal/xxx/system.journal
-```
+```text
 
 ### Diagnostics
 
@@ -363,7 +363,7 @@ journalctl --header
 
 # Voir les warnings
 journalctl -u systemd-journald -p warning
-```
+```text
 
 ## Export et sauvegarde
 
@@ -378,7 +378,7 @@ journalctl -u nginx.service -o json > nginx.json
 
 # Export binaire (pour import)
 journalctl -o export > journal-export.bin
-```
+```text
 
 ### Sauvegarder les logs
 
@@ -388,15 +388,17 @@ sudo cp -r /var/log/journal/ /backup/journal-$(date +%Y%m%d)/
 
 # Export pour archivage
 sudo journalctl -o export | gzip > journal-backup-$(date +%Y%m%d).gz
-```
+```text
 
 ### Importer un journal
 
 ```bash
 # Restaurer depuis export
 sudo systemd-journal-remote -o /var/log/journal/remote/ \
+
   --split-mode=host < journal-export.bin
-```
+
+```text
 
 ## Logs centralisés
 
@@ -410,12 +412,12 @@ URL=https://log-server.example.com:19532
 ServerKeyFile=/etc/ssl/private/journal-upload.key
 ServerCertificateFile=/etc/ssl/certs/journal-upload.pem
 TrustedCertificateFile=/etc/ssl/certs/ca-bundle.crt
-```
+```text
 
 ```bash
 sudo systemctl enable systemd-journal-upload
 sudo systemctl start systemd-journal-upload
-```
+```text
 
 ### Recevoir des logs distants
 
@@ -425,12 +427,12 @@ Configuration `/etc/systemd/journal-remote.conf` :
 [Remote]
 Seal=yes
 SplitMode=host
-```
+```text
 
 ```bash
 sudo systemctl enable systemd-journal-remote.socket
 sudo systemctl start systemd-journal-remote.socket
-```
+```text
 
 ## Logs structurés
 
@@ -445,7 +447,7 @@ echo "Message" | systemd-cat -t myapp -p info
 
 # Exécuter une commande et capturer sa sortie
 systemd-cat -t backup /usr/local/bin/backup.sh
-```
+```text
 
 ### Écrire depuis un script
 
@@ -460,7 +462,7 @@ log() {
 log 6 "Script démarré"  # Info
 log 3 "Erreur détectée"  # Error
 log 6 "Script terminé"  # Info
-```
+```text
 
 ### API native (C, Python, etc.)
 
@@ -479,7 +481,7 @@ journal.send(
     SYSLOG_IDENTIFIER="myapp",
     CUSTOM_FIELD="valeur"
 )
-```
+```text
 
 ## Analyse et monitoring
 
@@ -496,7 +498,7 @@ journalctl -o json | jq -r '._SYSTEMD_UNIT' | sort | uniq -c | sort -rn
 journalctl --since today -o json | \
   jq -r '._SYSTEMD_UNIT' | \
   sort | uniq -c | sort -rn | head -10
-```
+```text
 
 ### Détecter les erreurs
 
@@ -510,7 +512,7 @@ journalctl --since today -p err -o json | \
 
 # Services en échec
 systemctl --failed
-```
+```text
 
 ### Monitoring continu
 
@@ -526,46 +528,53 @@ journalctl -f | grep -i --line-buffered "error" | \
   while read line; do
     notify-send "Erreur détectée" "$line"
   done
-```
+```text
 
 ## Bonnes pratiques
 
 1. **Activer la persistance**
+
    ```bash
    sudo mkdir -p /var/log/journal
-   ```
+```text
 
 2. **Définir des limites raisonnables**
+
    ```ini
    SystemMaxUse=2G
    MaxRetentionSec=1month
-   ```
+```text
 
 3. **Utiliser des identifiants syslog clairs**
+
    ```ini
    [Service]
    SyslogIdentifier=myapp
-   ```
+```text
 
 4. **Structurer les logs**
+
    ```python
    journal.send("User login", USER_ID=user_id, IP=ip_addr)
-   ```
+```text
 
 5. **Nettoyer régulièrement**
+
    ```bash
    # Cron hebdomadaire
    0 2 * * 0 journalctl --vacuum-time=30d
-   ```
+```text
 
 6. **Monitorer l'utilisation**
+
    ```bash
    journalctl --disk-usage
-   ```
+```text
 
 7. **Sauvegarder les logs importants**
+
    ```bash
    journalctl -u production.service > backup.log
-   ```
+```text
 
 Le journal systemd offre un système de logging puissant et flexible, essentiel pour le débogage et la surveillance des systèmes Linux modernes.

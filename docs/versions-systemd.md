@@ -8,14 +8,14 @@ Ce document récapitule les versions minimales de systemd nécessaires pour chaq
 systemctl --version
 # Ou
 systemd --version
-```
+```text
 
 ## Services
 
 ### Type de service
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `Type=simple` | systemd 1+ | Toutes versions |
 | `Type=forking` | systemd 1+ | Toutes versions |
 | `Type=oneshot` | systemd 1+ | Toutes versions |
@@ -28,7 +28,7 @@ systemd --version
 ### Options de sécurité
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `NoNewPrivileges=` | systemd 187+ | |
 | `PrivateTmp=` | systemd 183+ | |
 | `PrivateDevices=` | systemd 186+ | |
@@ -58,7 +58,7 @@ systemd --version
 ### Limitations ressources
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `MemoryLimit=` | systemd 208+ | Obsolète, utiliser MemoryMax |
 | `MemoryMax=` | systemd 231+ | Nécessite cgroups v2 |
 | `MemoryHigh=` | systemd 231+ | Nécessite cgroups v2 |
@@ -78,7 +78,7 @@ systemd --version
 ### Réseau
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `RestrictAddressFamilies=` | systemd 211+ | |
 | `IPAccounting=` | systemd 235+ | Nécessite cgroups v2 |
 | `IPAddressAllow=` | systemd 239+ | Nécessite cgroups v2 |
@@ -87,7 +87,7 @@ systemd --version
 ### Seccomp
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `SystemCallFilter=` | systemd 187+ | |
 | `SystemCallErrorNumber=` | systemd 209+ | |
 | `SystemCallArchitectures=` | systemd 209+ | |
@@ -96,7 +96,7 @@ systemd --version
 ### Restrictions
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `LockPersonality=` | systemd 232+ | |
 | `MemoryDenyWriteExecute=` | systemd 231+ | |
 | `RestrictRealtime=` | systemd 231+ | |
@@ -106,14 +106,14 @@ systemd --version
 ### Capabilities
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `CapabilityBoundingSet=` | systemd 187+ | |
 | `AmbientCapabilities=` | systemd 229+ | Nécessite Linux 4.3+ |
 
 ## Timers
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `OnCalendar=` | systemd 197+ | |
 | `OnBootSec=` | systemd 197+ | |
 | `OnStartupSec=` | systemd 197+ | |
@@ -128,7 +128,7 @@ systemd --version
 ## Sockets
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `ListenStream=` | systemd 1+ | |
 | `ListenDatagram=` | systemd 1+ | |
 | `ListenSequentialPacket=` | systemd 1+ | |
@@ -144,7 +144,7 @@ systemd --version
 ## Mount
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `What=` | systemd 1+ | |
 | `Where=` | systemd 1+ | |
 | `Type=` | systemd 1+ | |
@@ -156,7 +156,7 @@ systemd --version
 ## Path
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `PathExists=` | systemd 1+ | |
 | `PathExistsGlob=` | systemd 1+ | |
 | `PathChanged=` | systemd 1+ | |
@@ -170,7 +170,7 @@ systemd --version
 ## Slices et Cgroups
 
 | Option | Version | Cgroups |
-|--------|---------|----------|
+| -------- | --------- | ---------- |
 | `CPUAccounting=` | systemd 208+ | v1 et v2 |
 | `MemoryAccounting=` | systemd 208+ | v1 et v2 |
 | `TasksAccounting=` | systemd 227+ | v2 |
@@ -180,7 +180,7 @@ systemd --version
 ## Journal
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `Storage=` | systemd 1+ | |
 | `Compress=` | systemd 1+ | |
 | `Seal=` | systemd 189+ | |
@@ -195,7 +195,7 @@ systemd --version
 ## Commandes journalctl
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `journalctl` | systemd 1+ | |
 | `--since` / `--until` | systemd 1+ | |
 | `--vacuum-time` | systemd 218+ | |
@@ -213,7 +213,7 @@ systemd --version
 ## Logind
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `UserTasksMax=` | systemd 230+ | |
 | `KillUserProcesses=` | systemd 230+ | |
 | `KillOnlyUsers=` | systemd 230+ | |
@@ -229,7 +229,7 @@ systemd --version
 ## Networkd
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `[Match]` | systemd 210+ | |
 | `[Network]` | systemd 210+ | |
 | `[Address]` | systemd 210+ | |
@@ -245,7 +245,7 @@ systemd --version
 ## Resolved
 
 | Option | Version | Notes |
-|--------|---------|-------|
+| -------- | --------- | ------- |
 | `DNS=` | systemd 216+ | |
 | `FallbackDNS=` | systemd 216+ | |
 | `Domains=` | systemd 216+ | |
@@ -300,7 +300,7 @@ systemd --version
 ## Distributions et versions
 
 | Distribution | Version systemd | Sortie |
-|--------------|-----------------|--------|
+| -------------- | ----------------- | -------- |
 | **RHEL / CentOS** | | |
 | RHEL 9 / Rocky 9 | 250+ | 2022 |
 | RHEL 8 / Rocky 8 | 239 | 2019 |
@@ -339,7 +339,7 @@ Vérifier la version cgroups :
 stat -fc %T /sys/fs/cgroup/
 # cgroup2fs = cgroups v2 (unified)
 # tmpfs = cgroups v1 (legacy)
-```
+```text
 
 Activer cgroups v2 (si supporté) :
 
@@ -349,7 +349,7 @@ systemd.unified_cgroup_hierarchy=1
 
 # Ou
 cgroup_no_v1=all
-```
+```text
 
 ## Références
 

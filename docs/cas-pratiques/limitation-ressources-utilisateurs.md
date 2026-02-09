@@ -32,7 +32,7 @@ graph TB
     style session1 fill:#E8EAF6
     style session2 fill:#E8EAF6
     style session3 fill:#E8EAF6
-```
+```text
 
 Chaque `user-UID.slice` peut avoir des limites de ressources.
 
@@ -46,7 +46,7 @@ Fichier `/etc/systemd/logind.conf` :
 [Login]
 # Limites par défaut pour tous les utilisateurs
 UserTasksMax=500
-```
+```text
 
 **Version minimum** : systemd 230+
 
@@ -54,7 +54,7 @@ Appliquer :
 
 ```bash
 sudo systemctl restart systemd-logind
-```
+```text
 
 !!! warning "Attention"
     Redémarrer logind déconnecte tous les utilisateurs. Planifier pendant une maintenance.
@@ -71,7 +71,7 @@ MemoryMax=2G               # 2 Go RAM max par utilisateur
 MemoryHigh=1.5G            # Throttling à 1.5 Go
 TasksMax=500               # Max 500 processus/threads
 IOWeight=100               # Priorité I/O basse
-```
+```text
 
 **Versions minimums** :
 
@@ -86,7 +86,7 @@ Appliquer :
 sudo systemctl daemon-reload
 
 # Pas besoin de redémarrer, s'applique aux nouvelles sessions
-```
+```text
 
 ## Limites par utilisateur spécifique
 
@@ -99,19 +99,19 @@ Configuration `/etc/systemd/system/user-1000.slice.d/limits.conf` :
 CPUQuota=200%         # 2 cores pour alice (UID 1000)
 MemoryMax=4G          # 4 Go RAM
 TasksMax=1000         # 1000 processus
-```
+```text
 
 Appliquer :
 
 ```bash
 sudo systemctl daemon-reload
-```
+```text
 
 Pour trouver l'UID d'un utilisateur :
 
 ```bash
 id -u alice
-```
+```text
 
 ### Configuration dynamique
 
@@ -122,13 +122,13 @@ Modifier temporairement (jusqu'à la prochaine connexion) :
 sudo systemctl set-property user-1000.slice CPUQuota=50%
 sudo systemctl set-property user-1000.slice MemoryMax=1G
 sudo systemctl set-property user-1000.slice TasksMax=200
-```
+```text
 
 Pour rendre permanent :
 
 ```bash
 sudo systemctl set-property --runtime=false user-1000.slice CPUQuota=50%
-```
+```text
 
 ## Limites par groupe d'utilisateurs
 
@@ -138,17 +138,17 @@ sudo systemctl set-property --runtime=false user-1000.slice CPUQuota=50%
 sudo groupadd limited-users
 sudo usermod -aG limited-users alice
 sudo usermod -aG limited-users bob
-```
+```text
 
 ### Configuration avec pam_systemd
 
 Fichier `/etc/security/limits.d/limited-users.conf` :
 
-```
+```text
 @limited-users  hard    nproc       200
 @limited-users  hard    memlock     1048576
 @limited-users  hard    nofile      1024
-```
+```text
 
 Fichier `/etc/systemd/system/user-.slice.d/limited-users.conf` :
 
@@ -157,7 +157,7 @@ Fichier `/etc/systemd/system/user-.slice.d/limited-users.conf` :
 CPUQuota=100%
 MemoryMax=2G
 TasksMax=300
-```
+```text
 
 ### Script pour appliquer selon groupe
 
@@ -175,13 +175,13 @@ if groups "$USER" | grep -q "limited-users"; then
     systemctl set-property "user-${UID}.slice" MemoryMax=1G
     systemctl set-property "user-${UID}.slice" TasksMax=200
 fi
-```
+```text
 
 Configuration PAM `/etc/pam.d/sshd` :
 
-```
+```text
 session optional pam_exec.so /usr/local/bin/apply-user-limits.sh
-```
+```text
 
 ## Exemples pratiques
 
@@ -196,7 +196,7 @@ MemoryMax=16G              # 16 Go RAM max
 MemoryHigh=12G             # Throttling à 12 Go
 TasksMax=2000              # Beaucoup de processus (IDE, build...)
 IOWeight=500               # Priorité I/O moyenne
-```
+```text
 
 ### Serveur d'accès limité
 
@@ -209,7 +209,7 @@ MemoryMax=512M             # 512 Mo RAM
 MemorySwapMax=256M         # 256 Mo swap
 TasksMax=100               # 100 processus max
 IOWeight=50                # Priorité I/O très basse
-```
+```text
 
 **Version minimum** : `MemorySwapMax` requiert systemd 232+
 
@@ -222,7 +222,7 @@ IOWeight=50                # Priorité I/O très basse
 CPUQuota=infinity
 MemoryMax=infinity
 TasksMax=infinity
-```
+```text
 
 ### Utilisateurs de service
 
@@ -234,7 +234,7 @@ CPUQuota=100%
 MemoryMax=2G
 TasksMax=500
 IOWeight=800               # Haute priorité I/O
-```
+```text
 
 ## Monitoring et vérification
 
@@ -255,7 +255,7 @@ for slice in /sys/fs/cgroup/user.slice/user-*.slice; do
     systemctl show "user-${uid}.slice" | grep -E '(CPUQuota|MemoryMax|TasksMax)'
     echo
 done
-```
+```text
 
 ### Surveiller l'utilisation
 
@@ -268,7 +268,7 @@ systemd-cgtop | grep user-
 
 # Utilisation détaillée
 systemd-cgls user.slice
-```
+```text
 
 ### Vérifier si limites atteintes
 
@@ -281,7 +281,7 @@ journalctl | grep -i "user.*limit"
 
 # OOM kills
 journalctl -k | grep -i "oom"
-```
+```text
 
 ### Statistiques d'utilisation
 
@@ -297,7 +297,7 @@ systemctl show user-1000.slice -p TasksCurrent
 
 # I/O
 systemctl show user-1000.slice -p IOReadBytes -p IOWriteBytes
-```
+```text
 
 ## Débogage
 
@@ -310,14 +310,14 @@ Causes possibles :
    ```bash
    # Augmenter temporairement
    sudo systemctl set-property user-1000.slice TasksMax=200
-   ```
+```text
 
 2. **MemoryMax trop bas** : Pas assez de RAM pour le shell
 
    ```bash
    # Vérifier les logs
    sudo journalctl -u user-1000.slice | tail -20
-   ```
+```text
 
 3. **Limites PAM conflictuelles**
 
@@ -325,7 +325,7 @@ Causes possibles :
    # Vérifier
    cat /etc/security/limits.conf
    cat /etc/security/limits.d/*
-   ```
+```text
 
 ### Processus tués par OOM
 
@@ -335,7 +335,7 @@ sudo journalctl -k | grep -i "killed process"
 
 # Augmenter la limite
 sudo systemctl set-property user-1000.slice MemoryMax=4G
-```
+```text
 
 ### Performances dégradées
 
@@ -348,7 +348,7 @@ systemctl show user-1000.slice -p MemoryCurrent -p MemoryHigh
 
 # Voir les warnings
 journalctl -u user-1000.slice | grep -i "throttl"
-```
+```text
 
 ## Configuration avancée
 
@@ -371,7 +371,7 @@ else
     systemctl set-property "user-${UID}.slice" CPUQuota=50%
     systemctl set-property "user-${UID}.slice" MemoryMax=1G
 fi
-```
+```text
 
 ### Limites selon charge système
 
@@ -390,13 +390,15 @@ else
     systemctl set-property user.slice CPUQuota=200%
     systemctl set-property user.slice MemoryMax=4G
 fi
-```
+```text
 
 Exécuter via cron toutes les 5 minutes :
 
 ```cron
+
 */5 * * * * /usr/local/bin/adaptive-limits.sh
-```
+
+```text
 
 ### Quotas réseau par utilisateur
 
@@ -409,7 +411,7 @@ Exécuter via cron toutes les 5 minutes :
 IPAccounting=yes
 IPAddressAllow=10.0.0.0/8 192.168.0.0/16
 IPAddressDeny=any
-```
+```text
 
 ## Bonnes pratiques
 
@@ -419,7 +421,7 @@ IPAddressDeny=any
    CPUQuota=400%
    MemoryMax=8G
    TasksMax=1000
-   ```
+```text
 
    Puis ajuster selon le monitoring.
 
@@ -428,28 +430,28 @@ IPAddressDeny=any
    ```ini
    TasksMax=100  # Minimum absolu
    MemoryMax=256M  # Minimum pour shell basique
-   ```
+```text
 
 3. **Utiliser MemoryHigh pour soft limit**
 
    ```ini
    MemoryHigh=3G   # Throttling
    MemoryMax=4G    # Hard limit
-   ```
+```text
 
 4. **Documenter les limites**
 
    ```ini
    # Limites pour développeurs (build intensifs)
    CPUQuota=400%
-   ```
+```text
 
 5. **Monitorer régulièrement**
 
    ```bash
    systemd-cgtop
    journalctl | grep -i "limit\|oom"
-   ```
+```text
 
 6. **Tester avant production**
 
@@ -459,7 +461,7 @@ IPAddressDeny=any
    
    # Vérifier les limites
    systemctl show user-$(id -u).slice
-   ```
+```text
 
 7. **Exclure les admins**
 
@@ -468,12 +470,12 @@ IPAddressDeny=any
    [Slice]
    CPUQuota=infinity
    MemoryMax=infinity
-   ```
+```text
 
 ## Récapitulatif des versions
 
 | Fonctionnalité | Version minimum |
-|-----------------|------------------|
+| ----------------- | ------------------ |
 | TasksMax | systemd 227+ |
 | CPUQuota | systemd 213+ |
 | MemoryMax, MemoryHigh | systemd 231+ |
@@ -487,6 +489,6 @@ Vérifier votre version :
 
 ```bash
 systemctl --version
-```
+```text
 
 La limitation des ressources utilisateurs via systemd-logind permet un contrôle granulaire et automatique, essentiel sur les serveurs multi-utilisateurs.

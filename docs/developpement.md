@@ -18,7 +18,7 @@ brew install mise
 # Activer mise dans votre shell
 echo 'eval "$(mise activate bash)"' >> ~/.bashrc  # bash
 echo 'eval "$(mise activate zsh)"' >> ~/.zshrc   # zsh
-```
+```text
 
 ### Setup du projet
 
@@ -33,7 +33,7 @@ cd systemd-doc
 # - Installer les dépendances
 mise install
 mise run install
-```
+```text
 
 ## Commandes disponibles
 
@@ -44,7 +44,7 @@ mise run install
 mise run dev
 
 # Accéder au site sur http://127.0.0.1:8000
-```
+```text
 
 Le serveur se recharge automatiquement à chaque modification.
 
@@ -55,14 +55,14 @@ Le serveur se recharge automatiquement à chaque modification.
 mise run build
 
 # Le résultat est dans ./site/
-```
+```text
 
 ### Déploiement
 
 ```bash
 # Déployer manuellement sur GitHub Pages
 mise run deploy
-```
+```text
 
 ⚠️ **Note** : Le déploiement automatique via GitHub Actions est configuré sur push vers `main`.
 
@@ -71,20 +71,20 @@ mise run deploy
 ```bash
 # Supprimer les fichiers générés
 mise run clean
-```
+```text
 
 ### Lister les tâches
 
 ```bash
 # Voir toutes les tâches disponibles
 mise tasks
-```
+```text
 
 ## Structure des fichiers
 
 ### Organisation du contenu
 
-```
+```text
 docs/
 ├── index.md                    # Page d'accueil
 ├── .pages                      # Configuration awesome-pages (ordre navigation)
@@ -100,7 +100,7 @@ docs/
 │   └── ...
 └── stylesheets/
     └── extra.css               # Styles personnalisés
-```
+```text
 
 ### Fichier .pages
 
@@ -109,11 +109,13 @@ Le plugin `awesome-pages` utilise des fichiers `.pages` pour contrôler l'ordre 
 ```yaml
 title: Titre de la section
 arrange:
+
   - index.md
   - fichier1.md
   - fichier2.md
   - sous-dossier
-```
+
+```text
 
 ## Syntaxe Markdown
 
@@ -138,7 +140,7 @@ Le projet utilise de nombreuses extensions Markdown :
 
 !!! danger
     Danger
-```
+```text
 
 #### Code avec highlighting
 
@@ -158,7 +160,7 @@ Description=Mon service
 # Code Python
 import systemd.daemon
 \`\`\`
-```
+```text
 
 #### Tabs
 
@@ -168,7 +170,7 @@ import systemd.daemon
 
 === "Tab 2"
     Contenu du second tab
-```
+```text
 
 #### Definition lists
 
@@ -178,7 +180,7 @@ Terme
 
 Autre terme
 : Autre définition
-```
+```text
 
 #### Tables
 
@@ -186,7 +188,7 @@ Autre terme
 | Colonne 1 | Colonne 2 |
 |-----------|----------|
 | Valeur 1  | Valeur 2 |
-```
+```text
 
 #### Footnotes
 
@@ -194,23 +196,25 @@ Autre terme
 Texte avec note[^1].
 
 [^1]: Contenu de la note de bas de page.
-```
+```text
 
 #### Emoji
 
 ```markdown
 :smile: :rocket: :fire:
-```
+```text
 
 ### Variables spéciales
 
 Dans le contexte systemd :
 
 ```markdown
+
 - `%n` : Nom de l'unité
 - `%i` : Instance
 - `$MAINPID` : PID principal
-```
+
+```text
 
 ## Bonnes pratiques
 
@@ -237,7 +241,7 @@ Messages de commit clairs :
 git commit -m "Ajout section sur systemd-resolved"
 git commit -m "Fix: Correction exemple socket activation"
 git commit -m "Docs: Amélioration explications cgroups"
-```
+```text
 
 ## Configuration MkDocs
 
@@ -282,14 +286,14 @@ curl https://mise.run | sh
 
 # Activer dans le shell
 eval "$(mise activate bash)"
-```
+```text
 
 ### Python version incorrecte
 
 ```bash
 # Forcer l'installation de Python 3.12
 mise install python@3.12
-```
+```text
 
 ### Dépendances manquantes
 
@@ -300,7 +304,7 @@ mise run install
 # Ou manuellement
 source .venv/bin/activate
 pip install -r requirements.txt
-```
+```text
 
 ### Site ne se build pas
 
@@ -311,7 +315,7 @@ mise run build
 # Nettoyer et rebuilder
 mise run clean
 mise run build
-```
+```text
 
 ### GitHub Pages ne se met pas à jour
 

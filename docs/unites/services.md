@@ -24,7 +24,7 @@ RestartSec=10s
 
 [Install]
 WantedBy=multi-user.target
-```
+```text
 
 ## Section [Unit]
 
@@ -33,57 +33,64 @@ La section `[Unit]` contient les métadonnées et dépendances.
 ### Options courantes
 
 **Description**
+
 : Description lisible du service (affichée par `systemctl status`)
 
 ```ini
 Description=Nginx HTTP Server
-```
+```text
 
 **Documentation**
+
 : URLs vers la documentation (man pages, sites web)
 
 ```ini
 Documentation=man:nginx(8)
 Documentation=https://nginx.org/en/docs/
-```
+```text
 
 **After** / **Before**
+
 : Ordre de démarrage (n'implique pas de dépendance forte)
 
 ```ini
 After=network.target syslog.target
 Before=nginx.service
-```
+```text
 
 **Requires**
+
 : Dépendance stricte (si la dépendance échoue, ce service échoue aussi)
 
 ```ini
 Requires=postgresql.service
-```
+```text
 
 **Wants**
+
 : Dépendance faible (recommandée mais pas obligatoire)
 
 ```ini
 Wants=redis.service
-```
+```text
 
 **Conflicts**
+
 : Unités incompatibles (ne peuvent pas tourner simultanément)
 
 ```ini
 Conflicts=apache2.service
-```
+```text
 
 **Condition** / **Assert**
+
 : Conditions de démarrage
 
 ```ini
 ConditionPathExists=/etc/myapp/config.yaml
 ConditionFileNotEmpty=/etc/myapp/config.yaml
 AssertPathExists=/usr/bin/myapp
-```
+```text
 
 ## Section [Service]
 
@@ -101,7 +108,7 @@ Le processus démarré par `ExecStart` est le processus principal.
 [Service]
 Type=simple
 ExecStart=/usr/bin/myapp
-```
+```text
 
 **Utilisation** : Pour les applications qui restent au premier plan.
 
@@ -114,7 +121,7 @@ Le processus fork() et le parent se termine, l'enfant continue.
 Type=forking
 PIDFile=/var/run/nginx.pid
 ExecStart=/usr/sbin/nginx
-```
+```text
 
 **Utilisation** : Daemons traditionnels qui se mettent en arrière-plan.
 
@@ -127,7 +134,7 @@ Le processus s'exécute puis se termine (pas de daemon persistant).
 Type=oneshot
 ExecStart=/usr/bin/backup.sh
 RemainAfterExit=yes
-```
+```text
 
 **Utilisation** : Scripts de configuration, tâches ponctuelles.
 
@@ -139,7 +146,7 @@ Le service notifie systemd quand il est prêt via `sd_notify()`.
 [Service]
 Type=notify
 ExecStart=/usr/bin/myapp
-```
+```text
 
 **Utilisation** : Applications qui supportent la notification systemd (nginx, PostgreSQL...).
 
@@ -152,7 +159,7 @@ Le service est considéré prêt quand il acquiert un nom D-Bus.
 Type=dbus
 BusName=org.example.MyApp
 ExecStart=/usr/bin/myapp
-```
+```text
 
 **Utilisation** : Services D-Bus.
 
@@ -164,59 +171,66 @@ Retarde le démarrage jusqu'à ce que tous les autres services soient lancés.
 [Service]
 Type=idle
 ExecStart=/usr/bin/late-service
-```
+```text
 
 **Utilisation** : Rare, pour des services qui doivent démarrer en dernier.
 
 ### Commandes d'exécution
 
 **ExecStart**
+
 : Commande principale de démarrage (obligatoire sauf pour Type=oneshot)
 
 ```ini
 ExecStart=/usr/bin/myapp --port 8080
-```
+```text
 
 **ExecStartPre** / **ExecStartPost**
+
 : Commandes à exécuter avant/après le démarrage
 
 ```ini
 ExecStartPre=/usr/bin/setup.sh
 ExecStart=/usr/bin/myapp
 ExecStartPost=/usr/bin/notify-started.sh
-```
+```text
 
 **ExecReload**
+
 : Commande pour recharger la configuration sans redémarrer
 
 ```ini
 ExecReload=/bin/kill -HUP $MAINPID
-```
+```text
 
 **ExecStop**
+
 : Commande pour arrêter proprement le service
 
 ```ini
 ExecStop=/usr/bin/myapp-stop.sh
-```
+```text
 
 **ExecStopPost**
+
 : Commandes après l'arrêt (nettoyage)
 
 ```ini
 ExecStopPost=/usr/bin/cleanup.sh
-```
+```text
 
 ### Redémarrage automatique
 
 **Restart**
+
 : Politique de redémarrage automatique
 
 ```ini
 Restart=on-failure  # Redémarre uniquement en cas d'échec
-```
+```text
 
 Valeurs possibles :
+
 - `no` : Jamais redémarrer (défaut)
 - `always` : Toujours redémarrer
 - `on-success` : Redémarrer si terminé avec succès
@@ -226,134 +240,150 @@ Valeurs possibles :
 - `on-watchdog` : Redémarrer si watchdog timeout
 
 **RestartSec**
+
 : Délai avant redémarrage
 
 ```ini
 RestartSec=5s
-```
+```text
 
 **StartLimitBurst** / **StartLimitIntervalSec**
+
 : Protection contre les boucles de redémarrage
 
 ```ini
 StartLimitBurst=3          # Max 3 redémarrages
 StartLimitIntervalSec=60s  # Dans une fenêtre de 60 secondes
-```
+```text
 
 ### Identité et permissions
 
 **User** / **Group**
+
 : Utilisateur et groupe sous lesquels exécuter le service
 
 ```ini
 User=webapp
 Group=webapp
-```
+```text
 
 **DynamicUser**
+
 : Crée automatiquement un utilisateur temporaire
 
 ```ini
 DynamicUser=yes
-```
+```text
 
 ### Répertoires de travail
 
 **WorkingDirectory**
+
 : Répertoire de travail du processus
 
 ```ini
 WorkingDirectory=/opt/myapp
-```
+```text
 
 **RootDirectory** / **RootImage**
+
 : Changement de racine (chroot)
 
 ```ini
 RootDirectory=/srv/chroot/myapp
-```
+```text
 
 ### Variables d'environnement
 
 **Environment**
+
 : Définir des variables
 
 ```ini
 Environment="VAR1=value1" "VAR2=value2"
 Environment="PATH=/usr/local/bin:/usr/bin"
-```
+```text
 
 **EnvironmentFile**
+
 : Charger des variables depuis un fichier
 
 ```ini
 EnvironmentFile=/etc/myapp/env
-```
+```text
 
 Contenu de `/etc/myapp/env` :
+
 ```bash
 PORT=8080
 DATABASE_URL=postgresql://localhost/mydb
-```
+```text
 
 ### Limites de ressources
 
 **LimitNOFILE** / **LimitNPROC**
+
 : Limites de descripteurs de fichiers et processus
 
 ```ini
 LimitNOFILE=65536
 LimitNPROC=4096
-```
+```text
 
 **MemoryLimit** / **CPUQuota**
+
 : Limites mémoire et CPU
 
 ```ini
 MemoryLimit=2G
 CPUQuota=200%  # 2 cores
-```
+```text
 
 ### Timeouts
 
 **TimeoutStartSec**
+
 : Timeout pour le démarrage
 
 ```ini
 TimeoutStartSec=30s
-```
+```text
 
 **TimeoutStopSec**
+
 : Timeout pour l'arrêt
 
 ```ini
 TimeoutStopSec=10s
-```
+```text
 
 ## Section [Install]
 
 Définit les liens de dépendances lors de l'activation.
 
 **WantedBy**
+
 : Target qui "veut" ce service
 
 ```ini
 WantedBy=multi-user.target
-```
+```text
 
 **RequiredBy**
+
 : Target qui "requiert" ce service (dépendance forte)
 
 ```ini
 RequiredBy=graphical.target
-```
+```text
 
 **Alias**
+
 : Noms alternatifs pour le service
 
 ```ini
 Alias=webserver.service
-```
+```text
 
 ## Exemples complets
 
@@ -374,7 +404,7 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-```
+```text
 
 ### Service avec préparation
 
@@ -427,7 +457,7 @@ TimeoutStopSec=30s
 
 [Install]
 WantedBy=multi-user.target
-```
+```text
 
 ### Service avec isolation de sécurité
 
@@ -471,7 +501,7 @@ AmbientCapabilities=CAP_NET_BIND_SERVICE
 
 [Install]
 WantedBy=multi-user.target
-```
+```text
 
 ### Service oneshot
 
@@ -486,9 +516,10 @@ ExecStart=/usr/local/bin/backup.sh
 User=backup
 StandardOutput=journal
 StandardError=journal
-```
+```text
 
 Utilisé avec un timer :
+
 ```ini
 # /etc/systemd/system/backup.timer
 [Unit]
@@ -500,7 +531,7 @@ Persistent=true
 
 [Install]
 WantedBy=timers.target
-```
+```text
 
 ## Bonnes pratiques
 
@@ -511,7 +542,7 @@ WantedBy=timers.target
 ```ini
 User=myapp
 Group=myapp
-```
+```text
 
 ### 2. Utiliser Restart=on-failure
 
@@ -520,14 +551,14 @@ Pour la résilience :
 ```ini
 Restart=on-failure
 RestartSec=5s
-```
+```text
 
 ### 3. Définir des timeouts raisonnables
 
 ```ini
 TimeoutStartSec=30s
 TimeoutStopSec=15s
-```
+```text
 
 ### 4. Utiliser Type=notify quand possible
 
@@ -535,7 +566,7 @@ Pour une détection précise de l'état "ready" :
 
 ```ini
 Type=notify
-```
+```text
 
 ### 5. Documenter le service
 
@@ -544,7 +575,7 @@ Type=notify
 Description=Description claire et concise
 Documentation=man:myapp(8)
 Documentation=https://docs.example.com
-```
+```text
 
 ### 6. Appliquer des restrictions de sécurité
 
@@ -552,7 +583,7 @@ Documentation=https://docs.example.com
 PrivateTmp=yes
 ProtectSystem=strict
 NoNewPrivileges=yes
-```
+```text
 
 ### 7. Utiliser des fichiers d'environnement
 
@@ -560,7 +591,7 @@ Plutôt que d'encoder les secrets dans le fichier unité :
 
 ```ini
 EnvironmentFile=/etc/myapp/secrets.env
-```
+```text
 
 ## Débogage
 
@@ -568,7 +599,7 @@ EnvironmentFile=/etc/myapp/secrets.env
 
 ```bash
 systemctl status myapp.service
-```
+```text
 
 ### Voir les logs
 
@@ -576,26 +607,26 @@ systemctl status myapp.service
 journalctl -u myapp.service
 journalctl -u myapp.service -f  # Suivi temps réel
 journalctl -u myapp.service --since "1 hour ago"
-```
+```text
 
 ### Vérifier la configuration
 
 ```bash
 systemd-analyze verify myapp.service
-```
+```text
 
 ### Voir la configuration effective
 
 ```bash
 systemctl show myapp.service
-```
+```text
 
 ### Recharger après modification
 
 ```bash
 systemctl daemon-reload
 systemctl restart myapp.service
-```
+```text
 
 ## Variables spéciales
 
@@ -614,8 +645,10 @@ systemd fournit des variables utilisables dans les commandes :
 - `%S` : State directory (`/var/lib`)
 
 Exemple :
+
 ```ini
 ExecStart=/usr/bin/myapp --instance %i --user %u
-```
+```text
 
 Les services sont le cœur de systemd. Maîtriser leur configuration est essentiel pour administrer efficacement un système Linux moderne.
+
