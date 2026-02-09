@@ -58,11 +58,16 @@ run = """
 """
 
 [tasks.fix-markdown]
-description = "Corriger automatiquement les erreurs Markdown (MD031, MD032, MD049, MD060, MD040)"
+description = "Corriger automatiquement les erreurs Markdown (MD031, MD032, MD049, MD060, MD040, fins blocs)"
 run = "python scripts/fix-markdown.py"
 depends = ["install"]
 
 [tasks.fix-markdown-all]
 description = "Corriger tous les fichiers Markdown du projet"
 run = "python scripts/fix-markdown.py --all"
+depends = ["install"]
+
+[tasks.fix-fence-endings]
+description = "Corriger spécifiquement les fins de blocs de code incorrectes (```text au lieu de ```)"
+run = "python scripts/fix-fence-endings.py"
 depends = ["install"]

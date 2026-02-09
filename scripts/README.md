@@ -12,8 +12,8 @@ Script de correction automatique des erreurs markdownlint.
 - **MD032** : Ajoute lignes vides autour des listes
 - **MD049** : Remplace `_emphase_` par `*emphase*`
 - **MD060** : Ajoute espaces autour des pipes dans les tableaux
-- **MD040** : Ajoute langage aux blocs de code sans langage
-- **MD013** : Détecte (mais ne corrige pas encore) les lignes trop longues
+- **MD040** : Ajoute langage aux blocs de code sans langage (`text` par défaut)
+- **Fins de blocs** : Corrige les fermetures incorrectes comme `\`\`\`text` au lieu de `\`\`\``
 
 ### Utilisation
 
@@ -61,17 +61,68 @@ mise run fix-markdown-all
 mise run lint
 ```
 
-### Dans CI/CD
+## fix-fence-endings.py
 
-Le workflow GitHub Actions `.github/workflows/lint.yml` exécute automatiquement ce script avant le linting pour corriger les erreurs courantes.
+Script spécialisé pour corriger les fins de blocs de code incorrectes.
 
-### Limitations
+### Problème corrigé
 
-- **MD013 (longueur de ligne)** : Détectée mais pas corrigée automatiquement, car la coupure intelligente de lignes est complexe
-- **Contexte** : Les corrections sont appliquées de manière conservative pour ne pas casser le contenu existant
-- **Blocs de code** : Tout le contenu entre \`\`\` est préservé tel quel
+Les blocs de code doivent se terminer par `\`\`\`` seul sur la ligne, sans texte additionnel.
 
-### Développement
+**Incorrect** :
+```markdown
+\`\`\`ini
+Requires=postgresql.service
+\`\`\`text
+```
+
+**Correct** :
+```markdown
+\`\`\`ini
+Requires=postgresql.service
+\`\`\`
+```
+
+### Utilisation
+
+```bash
+# Corriger tous les fichiers
+python scripts/fix-fence-endings.py
+
+# Dry-run avec détails
+python scripts/fix-fence-endings.py --dry-run --verbose
+
+# Avec mise
+mise run fix-fence-endings
+```
+
+**Note** : Ce script est déjà intégré dans `fix-markdown.py`, mais peut être exécuté séparément pour diagnostic.
+
+## Dans CI/CD
+
+Le workflow GitHub Actions `.github/workflows/lint.yml` exécute automatiquement `fix-markdown.py` avant le linting pour corriger les erreurs courantes, incluant les fins de blocs incorrectes.
+
+## Ordre d'exécution recommandé
+
+1. **fix-markdown.py** : Corrige toutes les erreurs communes
+2. **lint** : Vérifie qu'il ne reste pas d'erreurs
+3. **lint-fix** : Si nécessaire, correction manuelle avec markdownlint
+
+```bash
+mise run fix-markdown-all
+mise run lint
+# Si erreurs persistantes :
+mise run lint-fix
+```
+
+## Limitations
+
+- **MD013 (longueur de ligne)** : Désactivée dans `.markdownlint.yaml`
+- **MD036 (emphase comme en-tête)** : Désactivée dans `.markdownlint.yaml`
+- **Contexte** : Les corrections sont appliquées de manière conservative
+- **Blocs de code** : Le contenu entre \`\`\` est préservé tel quel
+
+## Développement
 
 Pour ajouter une nouvelle correction :
 
@@ -80,7 +131,7 @@ Pour ajouter une nouvelle correction :
 3. Tester avec `--dry-run` d'abord
 4. Documenter ici
 
-### Exemple de sortie
+## Exemple de sortie
 
 ```
 Correction de 4 fichier(s)...
