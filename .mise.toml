@@ -58,6 +58,11 @@ run = """
 """
 
 [tasks.fix-markdown]
-description = "Corriger le formatage Markdown (indentation, lignes vides)"
-run = "python scripts/fix_markdown.py"
+description = "Corriger automatiquement les erreurs Markdown (MD031, MD032, MD049, MD060, MD040)"
+run = "python scripts/fix-markdown.py"
+depends = ["install"]
+
+[tasks.fix-markdown-all]
+description = "Corriger tous les fichiers Markdown du projet"
+run = "python scripts/fix-markdown.py --all"
 depends = ["install"]
