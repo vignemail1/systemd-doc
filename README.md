@@ -84,9 +84,24 @@ mise run lint
 # Correction automatique avec markdownlint
 mise run lint-fix
 
-# Correction du formatage (indentation, lignes vides)
+# Correction automatique des erreurs courantes (MD031, MD032, MD049, MD060, MD040)
 mise run fix-markdown
+
+# Corriger tous les fichiers Markdown
+mise run fix-markdown-all
 ```
+
+### Erreurs corrigées automatiquement
+
+Le script `scripts/fix-markdown.py` corrige :
+
+- **MD031** : Lignes vides manquantes autour des blocs de code
+- **MD032** : Lignes vides manquantes autour des listes
+- **MD049** : Remplacement `_emphase_` par `*emphase*`
+- **MD060** : Espaces manquants autour des pipes dans tableaux
+- **MD040** : Langage manquant dans les blocs de code
+
+Voir [scripts/README.md](scripts/README.md) pour plus de détails.
 
 ### Règles de formatage
 
@@ -97,10 +112,10 @@ La documentation suit les règles MkDocs :
 - **Lignes vides** : Avant et après les blocs de code
 - **Pas d'espaces** en fin de ligne
 - **Une ligne vide** maximum entre les sections
+- **Emphase** : `*texte*` au lieu de `_texte_`
+- **Tableaux** : Espaces autour des `|`
 
-Le script `scripts/fix_markdown.py` corrige automatiquement ces problèmes.
-
-## 📝 Structure du projet
+## 📏 Structure du projet
 
 ```
 systemd-doc/
@@ -108,9 +123,12 @@ systemd-doc/
 │   ├── introduction/        # Introduction à systemd
 │   ├── unites/              # Types d'unités
 │   ├── outils/              # Outils systemd
+│   ├── cas-pratiques/       # Cas d'usage concrets
+│   ├── versions-systemd.md  # Référence versions
 │   └── index.md             # Page d'accueil
 ├── scripts/                # Scripts utilitaires
-│   └── fix_markdown.py      # Correction Markdown
+│   ├── fix-markdown.py      # Correction Markdown automatique
+│   └── README.md            # Documentation scripts
 ├── .github/workflows/      # GitHub Actions
 ├── mkdocs.yml              # Configuration MkDocs
 ├── .mise.toml              # Configuration mise
@@ -130,13 +148,15 @@ Gestionnaire d'environnement avec tâches prédéfinies :
 - `deploy` : Déploiement GitHub Pages
 - `clean` : Nettoyage
 - `lint` : Vérification Markdown
-- `lint-fix` : Correction automatique
-- `fix-markdown` : Formatage Markdown
+- `lint-fix` : Correction automatique markdownlint
+- `fix-markdown` : Correction erreurs courantes
+- `fix-markdown-all` : Correction tous fichiers
 
 ### MkDocs (mkdocs.yml)
 
 - Thème Material Design
 - Navigation automatique avec awesome-pages
+- Diagrammes Mermaid intégrés
 - Extensions Markdown (admonitions, tabs, code highlighting...)
 - Support multi-langue
 
@@ -148,7 +168,8 @@ Gestionnaire d'environnement avec tâches prédéfinies :
 2. Utiliser la syntaxe Markdown avec les extensions MkDocs
 3. Exécuter `mise run fix-markdown` pour formater
 4. Tester avec `mise run dev`
-5. Commiter et pusher
+5. Vérifier avec `mise run lint`
+6. Commiter et pusher
 
 ### Standards de qualité
 
@@ -156,12 +177,15 @@ Gestionnaire d'environnement avec tâches prédéfinies :
 - **Exemples** : Code fonctionnel et commenté
 - **Structure** : En-têtes hiérarchiques
 - **Format** : Respect des règles markdownlint
+- **Diagrammes** : Utiliser Mermaid pour les schémas
+- **Versions** : Indiquer versions minimums systemd si pertinent
 
 ## 📦 Déploiement
 
 Le déploiement est **automatique** via GitHub Actions :
 
 - Push sur `main` → Build et déploiement sur GitHub Pages
+- Le workflow lint exécute automatiquement `fix-markdown.py` avant le linting
 - Le site est accessible sur `https://vignemail1.github.io/systemd-doc/`
 
 Déploiement manuel possible avec `mise run deploy`.
@@ -177,3 +201,4 @@ Documentation sous licence libre (préciser la licence si nécessaire).
 - [Arch Wiki - systemd](https://wiki.archlinux.org/title/Systemd) - Excellente documentation
 - [MkDocs](https://www.mkdocs.org/) - Générateur de documentation
 - [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) - Thème utilisé
+- [Mermaid](https://mermaid.js.org/) - Diagrammes
