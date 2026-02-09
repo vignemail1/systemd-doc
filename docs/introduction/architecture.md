@@ -126,26 +126,53 @@ systemd utilise une structure de répertoires bien définie :
 
 ### Fichiers d'unités
 
-```
-/etc/systemd/system/          # Unités créées par l'administrateur (priorité haute)
-/run/systemd/system/          # Unités runtime volatiles
-/usr/lib/systemd/system/      # Unités fournies par les packages (priorité basse)
-```
+{% dot systemd_unit_directories.svg
+    digraph G {
+        rankdir=TB;
+        node [shape=folder, style=filled, fillcolor="#E3F2FD"];
+        
+        root [label="/", fillcolor="#BBDEFB"];
+        etc [label="/etc/systemd/system/", fillcolor="#64B5F6"];
+        run [label="/run/systemd/system/", fillcolor="#90CAF9"];
+        usr [label="/usr/lib/systemd/system/", fillcolor="#BBDEFB"];
+        
+        root -> etc [label="  Priorité haute", fontsize=10];
+        root -> run [label="  Priorité moyenne", fontsize=10];
+        root -> usr [label="  Priorité basse", fontsize=10];
+        
+        etc [label="/etc/systemd/system/\n(Config admin)"];
+        run [label="/run/systemd/system/\n(Runtime volatile)"];
+        usr [label="/usr/lib/systemd/system/\n(Packages système)"];
+    }
+%}
 
 **Ordre de priorité** : `/etc` > `/run` > `/usr/lib`
 
 ### Configuration
 
-```
-/etc/systemd/                 # Configuration principale
-  ├── system/                 # Unités système et overrides
-  ├── user/                   # Unités utilisateur
-  ├── journald.conf           # Configuration du journal
-  ├── logind.conf             # Configuration des sessions
-  ├── resolved.conf           # Configuration DNS
-  ├── networkd.conf           # Configuration réseau
-  └── timesyncd.conf          # Configuration NTP
-```
+{% dot systemd_config_tree.svg
+    digraph G {
+        rankdir=LR;
+        node [shape=folder, style=filled, fillcolor="#E8F5E9"];
+        
+        etc [label="/etc/systemd/", fillcolor="#81C784"];
+        system [label="system/"];
+        user [label="user/"];
+        journald [label="journald.conf", shape=note, fillcolor="#C8E6C9"];
+        logind [label="logind.conf", shape=note, fillcolor="#C8E6C9"];
+        resolved [label="resolved.conf", shape=note, fillcolor="#C8E6C9"];
+        networkd [label="networkd.conf", shape=note, fillcolor="#C8E6C9"];
+        timesyncd [label="timesyncd.conf", shape=note, fillcolor="#C8E6C9"];
+        
+        etc -> system;
+        etc -> user;
+        etc -> journald;
+        etc -> logind;
+        etc -> resolved;
+        etc -> networkd;
+        etc -> timesyncd;
+    }
+%}
 
 ### Données runtime
 
@@ -176,16 +203,33 @@ systemd organise tous les processus dans une hiérarchie de cgroups (control gro
 
 ### Hiérarchie typique
 
-```
-/sys/fs/cgroup/
-├── system.slice/              # Services système
-│   ├── sshd.service/
-│   ├── nginx.service/
-│   └── postgresql.service/
-├── user.slice/                # Services utilisateur
-│   └── user-1000.slice/
-└── machine.slice/             # Conteneurs et VMs
-```
+{% dot cgroups_hierarchy.svg
+    digraph G {
+        rankdir=TB;
+        node [shape=box, style="rounded,filled", fillcolor="#FFF3E0"];
+        
+        root [label="/sys/fs/cgroup/", fillcolor="#FFB74D"];
+        system [label="system.slice", fillcolor="#FFE0B2"];
+        user [label="user.slice", fillcolor="#FFE0B2"];
+        machine [label="machine.slice", fillcolor="#FFE0B2"];
+        
+        sshd [label="sshd.service"];
+        nginx [label="nginx.service"];
+        postgres [label="postgresql.service"];
+        
+        user1000 [label="user-1000.slice"];
+        
+        root -> system;
+        root -> user;
+        root -> machine;
+        
+        system -> sshd;
+        system -> nginx;
+        system -> postgres;
+        
+        user -> user1000;
+    }
+%}
 
 Chaque service systemd s'exécute dans son propre cgroup, permettant une isolation et un contrôle précis.
 
@@ -193,7 +237,7 @@ Chaque service systemd s'exécute dans son propre cgroup, permettant une isolati
 
 systemd utilise intensivement D-Bus pour la communication inter-processus.
 
-###Bus système
+### Bus système
 
 Le bus D-Bus système permet :
 
@@ -218,28 +262,46 @@ systemd s'appuie sur plusieurs fonctionnalités du noyau Linux :
 
 ## Schéma d'ensemble
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Noyau Linux                          │
-│  (cgroups, namespaces, capabilities, seccomp)           │
-└────────────────────┬────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│              systemd (PID 1)                            │
-│    Gestion des unités, dépendances, cgroups             │
-└──┬────────┬─────────┬──────────┬─────────┬─────────┬───┘
-   │        │         │          │         │         │
-   ▼        ▼         ▼          ▼         ▼         ▼
-┌──────┐ ┌──────┐ ┌────────┐ ┌───────┐ ┌───────┐ ┌──────┐
-│journal│ │logind│ │networkd│ │resolved│ │udevd │ │timesy│
-└──────┘ └──────┘ └────────┘ └───────┘ └───────┘ └──────┘
-   │        │         │          │         │         │
-   ▼        ▼         ▼          ▼         ▼         ▼
-┌─────────────────────────────────────────────────────────┐
-│             Utilisateurs et outils                      │
-│  (systemctl, journalctl, networkctl, loginctl, etc.)    │
-└─────────────────────────────────────────────────────────┘
-```
+{% dot systemd_architecture.svg
+    digraph G {
+        rankdir=TB;
+        node [shape=box, style="rounded,filled"];
+        
+        // Kernel
+        kernel [label="Noyau Linux\ncgroups, namespaces\ncapabilities, seccomp", fillcolor="#FFCDD2", shape=box, style="filled"];
+        
+        // systemd core
+        systemd [label="systemd (PID 1)\nGestion unités, dépendances, cgroups", fillcolor="#E1BEE7", shape=box, style="rounded,filled"];
+        
+        // Composants systemd
+        journald [label="systemd-\njournald", fillcolor="#C5CAE9"];
+        logind [label="systemd-\nlogind", fillcolor="#C5CAE9"];
+        networkd [label="systemd-\nnetworkd", fillcolor="#C5CAE9"];
+        resolved [label="systemd-\nresolved", fillcolor="#C5CAE9"];
+        udevd [label="systemd-\nudevd", fillcolor="#C5CAE9"];
+        timesyncd [label="systemd-\ntimesyncd", fillcolor="#C5CAE9"];
+        
+        // Outils utilisateur
+        tools [label="Outils utilisateur\nsystemctl, journalctl\nnetworkctl, loginctl, etc.", fillcolor="#B2DFDB", shape=box, style="filled"];
+        
+        // Relations
+        kernel -> systemd [dir=both, label="  API kernel"];
+        
+        systemd -> journald;
+        systemd -> logind;
+        systemd -> networkd;
+        systemd -> resolved;
+        systemd -> udevd;
+        systemd -> timesyncd;
+        
+        journald -> tools;
+        logind -> tools;
+        networkd -> tools;
+        resolved -> tools;
+        udevd -> tools;
+        timesyncd -> tools;
+        systemd -> tools [label="  systemctl", style=bold];
+    }
+%}
 
 Cette architecture modulaire et intégrée fait de systemd un système d'initialisation puissant et flexible, capable de gérer tous les aspects du cycle de vie d'un système Linux moderne.
