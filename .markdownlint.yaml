@@ -14,11 +14,8 @@ MD007:
 MD012:
   maximum: 1
 
-# MD013: Longueur de ligne (désactivé pour le code)
-MD013:
-  line_length: 120
-  code_blocks: false
-  tables: false
+# MD013: Longueur de ligne (désactivé)
+MD013: false
 
 # MD022: Les en-têtes doivent être entourés de lignes vides
 MD022:
@@ -63,6 +60,9 @@ MD033:
 
 # MD034: Liens nus (désactivé)
 MD034: false
+
+# MD036: Emphase utilisée pour les en-têtes (désactivé)
+MD036: false
 
 # MD040: Langage de bloc de code
 MD040: true
