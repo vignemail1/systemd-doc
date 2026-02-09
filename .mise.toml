@@ -1,0 +1,31 @@
+# Configuration mise pour le projet systemd-doc
+# https://mise.jdx.dev
+
+[tools]
+python = "3.12"
+
+[env]
+_.python.venv = { path = ".venv", create = true }
+
+[tasks.install]
+description = "Installer les dépendances Python"
+run = "pip install -r requirements.txt"
+
+[tasks.dev]
+description = "Démarrer le serveur de développement MkDocs"
+run = "mkdocs serve"
+depends = ["install"]
+
+[tasks.build]
+description = "Construire le site statique"
+run = "mkdocs build"
+depends = ["install"]
+
+[tasks.deploy]
+description = "Déployer sur GitHub Pages"
+run = "mkdocs gh-deploy --force"
+depends = ["install"]
+
+[tasks.clean]
+description = "Nettoyer les fichiers générés"
+run = "rm -rf site/"
