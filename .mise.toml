@@ -2,7 +2,7 @@
 # https://mise.jdx.dev
 
 [tools]
-python = "3.12"
+python = "3.14"
 
 [env]
 _.python.venv = { path = ".venv", create = true }
