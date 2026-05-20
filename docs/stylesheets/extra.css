@@ -17,3 +17,8 @@
 .md-typeset .admonition {
   border-left: 0.2rem solid;
 }
+
+/* Grille de contenu élargie */
+.md-grid {
+  max-width: 95vw;
+}
