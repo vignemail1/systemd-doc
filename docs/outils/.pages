@@ -1,4 +1,20 @@
-title: Outils
+title: Référence — outils
 arrange:
   - index.md
+  - systemctl.md
+  - systemd-analyze.md
+  - journalctl.md
+  - loginctl.md
+  - networkctl.md
+  - resolvectl.md
+  - timedatectl.md
+  - hostnamectl.md
+  - localectl.md
+  - bootctl.md
+  - coredumpctl.md
+  - systemd-cgls-cgtop.md
+  - systemd-nspawn.md
+  - systemd-tmpfiles.md
+  - systemd-sysusers.md
+  - udevadm.md
   - ...

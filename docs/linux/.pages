@@ -1,5 +1,6 @@
-title: Linux
+title: Linux internals
 arrange:
   - capabilities.md
   - cgroups.md
   - namespaces.md
+  - ...
