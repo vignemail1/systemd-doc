@@ -73,7 +73,7 @@ Chaque ligne montre le cgroup, ses sous-cgroups et les PIDs des processus qu'il 
 
 ### Syntaxe
 
-```
+```text
 systemd-cgtop [OPTIONS] [CGROUP]
 ```
 

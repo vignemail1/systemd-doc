@@ -17,7 +17,7 @@ localectl status
 
 Exemple de sortie :
 
-```
+```text
    System Locale: LANG=fr_FR.UTF-8
                   LC_TIME=fr_FR.UTF-8
        VC Keymap: fr

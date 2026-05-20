@@ -66,7 +66,7 @@ Les champs `-` indiquent "valeur par défaut" ou "non applicable".
 
 ### Utilisateur système simple
 
-```
+```bash
 # /usr/lib/sysusers.d/mon-daemon.conf
 u mon-daemon - "Mon Daemon" /var/lib/mon-daemon /usr/sbin/nologin
 ```
@@ -75,7 +75,7 @@ Crée l'utilisateur `mon-daemon` avec UID alloué automatiquement, commentaire G
 
 ### Groupe seul
 
-```
+```bash
 g ssl-cert - -
 ```
 
@@ -83,13 +83,13 @@ Crée uniquement le groupe `ssl-cert` sans utilisateur associé.
 
 ### Utilisateur avec UID fixe
 
-```
+```bash
 u nfsnobody 65534 "NFS Nobody" / /usr/sbin/nologin
 ```
 
 ### Ajout à un groupe
 
-```
+```bash
 m mon-daemon ssl-cert
 ```
 
@@ -97,7 +97,7 @@ Ajoute l'utilisateur `mon-daemon` au groupe `ssl-cert`. Les deux doivent exister
 
 ### Plage d'UIDs réservée
 
-```
+```bash
 r - 61184-65519
 ```
 
@@ -105,7 +105,7 @@ Déclare que la plage 61184-65519 est réservée à l'allocation dynamique de co
 
 ## Exemple complet pour un service
 
-```
+```bash
 # /usr/lib/sysusers.d/prometheus.conf
 u prometheus - "Prometheus monitoring" /var/lib/prometheus /usr/sbin/nologin
 g prometheus -

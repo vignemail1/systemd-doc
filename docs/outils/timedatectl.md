@@ -25,7 +25,7 @@ timedatectl show -p LocalRTC
 
 Exemple de sortie de `timedatectl status` :
 
-```
+```text
                Local time: Wed 2026-05-20 09:00:00 CEST
            Universal time: Wed 2026-05-20 07:00:00 UTC
                  RTC time: Wed 2026-05-20 07:00:00

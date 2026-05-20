@@ -10,7 +10,8 @@ systemd-analyze time
 ```
 
 Exemple de sortie :
-```
+
+```text
 Startup finished in 3.653s (firmware) + 1.500s (loader) + 2.122s (kernel)
   + 8.215s (initrd) + 12.447s (userspace) = 27.937s
 multi-user.target reached after 12.342s in userspace.
@@ -38,7 +39,8 @@ systemd-analyze critical-chain multi-user.target
 ```
 
 Lecture de la sortie :
-```
+
+```text
 graphical.target @12.442s
 └─multi-user.target @12.442s
   └─postgresql.service @8.213s +2.108s   # +2.108s = durée de démarrage
@@ -118,7 +120,8 @@ systemd-analyze security nginx.service | grep -E 'UNSAFE|MEDIUM|OK'
 ```
 
 Exemple de sortie :
-```
+
+```text
   NAME                         DESCRIPTION                              EXPOSURE
 ✗ PrivateNetwork=              Service has access to the host network    0.5
 ✗ User=/DynamicUser=           Service runs as root user                0.4
@@ -155,7 +158,8 @@ systemd-analyze calendar "*-*-* 00/6:00:00"  # toutes les 6 heures
 ```
 
 Exemple de sortie pour le calendrier :
-```
+
+```text
   Original form: Mon-Fri 09:00:00
 Normalized form: Mon..Fri *-*-* 09:00:00
     Next elapse: Mon 2026-05-25 09:00:00 CEST

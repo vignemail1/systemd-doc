@@ -9,7 +9,7 @@
 
 ## Syntaxe générale
 
-```
+```text
 systemd-tmpfiles [OPTIONS] [FICHIER_CONF...]
 ```
 
@@ -38,7 +38,7 @@ systemd-tmpfiles --create --dry-run
 
 Chaque ligne d'un fichier `.conf` suit le format :
 
-```
+```text
 TYPE  CHEMIN  MODE  UID  GID  AGE  ARGUMENT
 ```
 
@@ -82,7 +82,7 @@ L'AGE définit la durée de conservation avant nettoyage. Il est combinable :
 
 ### Répertoire temporaire applicatif
 
-```
+```bash
 # /etc/tmpfiles.d/mon-app.conf
 d /run/mon-app 0755 mon-app mon-app -
 d /var/cache/mon-app 0750 mon-app mon-app 30d
@@ -93,14 +93,14 @@ Nettoyage du cache après 30 jours.
 
 ### Fichier de configuration système
 
-```
+```bash
 # Crée /etc/mon-app/config.yaml s'il n'existe pas
 f /etc/mon-app/config.yaml 0640 root mon-app -
 ```
 
 ### Écriture dans un fichier pseudo-FS
 
-```
+```bash
 # Ajuster un paramètre sysctl via cgroup
 w /proc/sys/net/ipv4/ip_forward - - - - 1
 w /sys/kernel/mm/transparent_hugepage/enabled - - - - madvise
@@ -108,13 +108,13 @@ w /sys/kernel/mm/transparent_hugepage/enabled - - - - madvise
 
 ### Lien symbolique
 
-```
+```bash
 L /run/lock - - - - /var/lock
 ```
 
 ### Nettoyage du répertoire temporaire avec exclusion
 
-```
+```bash
 d /tmp 1777 root root 10d
 x /tmp/.X*
 x /tmp/.ICE*
@@ -171,7 +171,7 @@ systemctl start systemd-tmpfiles-clean.service
 
 Plutôt que de créer le répertoire dans l'unité `.service` avec `ExecStartPre`, la pratique recommandée est de le déclarer dans `tmpfiles.d` :
 
-```
+```bash
 # /etc/tmpfiles.d/mon-daemon.conf
 d /run/mon-daemon 0750 mon-daemon mon-daemon -
 Z /run/mon-daemon - mon-daemon mon-daemon -

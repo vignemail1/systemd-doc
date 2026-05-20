@@ -31,7 +31,7 @@ hostnamectl --json=short
 
 Exemple de sortie :
 
-```
+```text
  Static hostname: web-prod-01
  Pretty hostname: Serveur Web Production
        Icon name: computer-server

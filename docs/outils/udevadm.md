@@ -39,6 +39,7 @@ udevadm info --query=path --name=/dev/sda
 ```
 
 La sortie de `udevadm info` liste :
+
 - `P:` — chemin sysfs
 - `N:` — nœud de périphérique (`/dev/...`)
 - `L:` — priorité de lien symbolique
@@ -156,13 +157,13 @@ ls /etc/udev/rules.d/
 
 ### Syntaxe d'une règle
 
-```
+```ini
 CLÉ=="VALEUR", CLEF2=="VALEUR2", ACTION="valeur"
 ```
 
 Exemple — donner un nom stable à une clé USB série :
 
-```
+```ini
 # /etc/udev/rules.d/99-usb-serial.rules
 SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", \
   ATTRS{serial}=="A1B2C3D4", SYMLINK+="ttyArduino"
@@ -170,14 +171,14 @@ SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", \
 
 Exemple — appliquer des permissions sur un périphérique :
 
-```
+```ini
 # /etc/udev/rules.d/99-gpio.rules
 SUBSYSTEM=="gpio", GROUP="gpio", MODE="0660"
 ```
 
 Exemple — exécuter un script au branchement d'une clé USB :
 
-```
+```ini
 # /etc/udev/rules.d/99-usb-mount.rules
 ACTION=="add", KERNEL=="sd[b-z][0-9]", SUBSYSTEM=="block", \
   RUN+="/usr/local/bin/usb-mount.sh %k"
