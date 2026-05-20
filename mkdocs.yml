@@ -9,6 +9,7 @@ repo_url: https://github.com/vignemail1/systemd-doc
 theme:
   name: material
   logo: _assets/images/logo.png
+  favicon: _assets/images/logo.png
   language: fr
   palette:
     # Light mode
