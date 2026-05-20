@@ -5,5 +5,15 @@ arrange:
   - journalctl.md
   - loginctl.md
   - networkctl.md
+  - resolvectl.md
   - systemd-analyze.md
-  - ...
+  - systemd-cgls-cgtop.md
+  - systemd-nspawn.md
+  - systemd-tmpfiles.md
+  - systemd-sysusers.md
+  - bootctl.md
+  - coredumpctl.md
+  - hostnamectl.md
+  - localectl.md
+  - timedatectl.md
+  - udevadm.md
