@@ -8,6 +8,7 @@ repo_url: https://github.com/vignemail1/systemd-doc
 
 theme:
   name: material
+  logo: _assets/images/logo.jpg
   language: fr
   palette:
     # Light mode
@@ -26,7 +27,7 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Passer au mode clair
-  
+
   features:
     - navigation.instant
     - navigation.instant.progress
@@ -71,7 +72,7 @@ markdown_extensions:
   - toc:
       permalink: true
       toc_depth: 3
-  
+
   # PyMdown Extensions
   - pymdownx.arithmatex:
       generic: true
@@ -111,14 +112,14 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/vignemail1/systemd-doc
-  
+
   generator: false
 
 extra_css:
-  - stylesheets/extra.css
+  - _assets/stylesheets/extra.css
 
 extra_javascript:
-  - javascripts/mathjax.js
+  - _assets/javascripts/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 copyright: Copyright &copy; 2026 vignemail1
