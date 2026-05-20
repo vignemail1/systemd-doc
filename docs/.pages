@@ -5,6 +5,7 @@ arrange:
   - gestion-services
   - journal-logging
   - securite
+  - linux
   - outils
   - cas-pratiques
   - versions-systemd.md
