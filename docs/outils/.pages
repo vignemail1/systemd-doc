@@ -1,4 +1,9 @@
 title: Outils
 arrange:
   - index.md
+  - systemctl.md
+  - journalctl.md
+  - loginctl.md
+  - networkctl.md
+  - systemd-analyze.md
   - ...

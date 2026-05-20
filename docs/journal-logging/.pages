@@ -1,4 +1,6 @@
 title: Journal et logging
 arrange:
   - index.md
+  - journald-config.md
+  - journald-remote.md
   - ...
