@@ -1,12 +1,9 @@
-arrange:
-  - index.md
-  - introduction
-  - unites
+- Introduction
+- Services
   - gestion-services
-  - journal-logging
-  - securite
-  - linux
-  - outils
-  - cas-pratiques
-  - versions-systemd.md
-  - ...
+  - systemd-networkd
+- Unités
+- Outils
+- Journal
+- Sécurité et sandboxing
+- Le reste
