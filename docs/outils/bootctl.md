@@ -60,7 +60,7 @@ sudo bootctl remove
 
 Après installation, l'ESP contient :
 
-```
+```text
 /boot/efi/ (ou /efi/)
 ├── EFI/
 │   ├── systemd/

@@ -8,7 +8,7 @@
 
 ### Syntaxe
 
-```
+```bash
 systemd-cgls [OPTIONS] [CGROUP...]
 ```
 
@@ -35,7 +35,7 @@ systemd-cgls /sys/fs/cgroup/system.slice
 
 ### Lire la sortie
 
-```
+```text
 Control group /:
 -.slice
 ├─user.slice
@@ -58,14 +58,14 @@ Chaque ligne montre le cgroup, ses sous-cgroups et les PIDs des processus qu'il 
 
 ### Options principales
 
-| Option | Description |
-|--------|-------------|
-| `-l`, `--full` | Affiche les lignes de commande complètes (non tronquées) |
-| `-k`, `--kernel` | Inclut les threads noyau |
-| `--unit=UNIT` | Filtre sur une unité systemd |
-| `--user-unit=UNIT` | Filtre sur une unité utilisateur |
-| `--no-pager` | Désactive le pager |
-| `-M NAME`, `--machine=NAME` | Inspecte les cgroups d'une machine/conteneur |
+| Option                      | Description                                              |
+| --------------------------- | -------------------------------------------------------- |
+| `-l`, `--full`              | Affiche les lignes de commande complètes (non tronquées) |
+| `-k`, `--kernel`            | Inclut les threads noyau                                 |
+| `--unit=UNIT`               | Filtre sur une unité systemd                             |
+| `--user-unit=UNIT`          | Filtre sur une unité utilisateur                         |
+| `--no-pager`                | Désactive le pager                                       |
+| `-M NAME`, `--machine=NAME` | Inspecte les cgroups d'une machine/conteneur             |
 
 ## systemd-cgtop
 
@@ -105,42 +105,42 @@ systemd-cgtop --iterations=5
 
 ### Colonnes affichées
 
-| Colonne | Description |
-|---------|-------------|
-| `Path` | Chemin du cgroup dans la hiérarchie |
-| `Tasks` | Nombre de processus/threads |
-| `%CPU` | Utilisation CPU (cumulée sur tous les cœurs) |
-| `Memory` | Mémoire résidente (RSS) |
-| `Input/s` | Débit lecture I/O |
-| `Output/s` | Débit écriture I/O |
+| Colonne    | Description                                  |
+| ---------- | -------------------------------------------- |
+| `Path`     | Chemin du cgroup dans la hiérarchie          |
+| `Tasks`    | Nombre de processus/threads                  |
+| `%CPU`     | Utilisation CPU (cumulée sur tous les cœurs) |
+| `Memory`   | Mémoire résidente (RSS)                      |
+| `Input/s`  | Débit lecture I/O                            |
+| `Output/s` | Débit écriture I/O                           |
 
 !!! note
-    Les données I/O ne sont disponibles que si le contrôleur `io` est activé dans la hiérarchie cgroup v2. Sur cgroup v1, seuls CPU et mémoire sont disponibles.
+Les données I/O ne sont disponibles que si le contrôleur `io` est activé dans la hiérarchie cgroup v2. Sur cgroup v1, seuls CPU et mémoire sont disponibles.
 
 ### Raccourcis clavier (mode interactif)
 
-| Touche | Action |
-|--------|--------|
-| `p` | Trier par CPU |
-| `m` | Trier par mémoire |
-| `i` | Trier par I/O |
-| `t` | Trier par nombre de tâches |
-| `%` | Basculer entre valeurs absolues et pourcentages |
-| `q` | Quitter |
+| Touche    | Action                                              |
+| --------- | --------------------------------------------------- |
+| `p`       | Trier par CPU                                       |
+| `m`       | Trier par mémoire                                   |
+| `i`       | Trier par I/O                                       |
+| `t`       | Trier par nombre de tâches                          |
+| `%`       | Basculer entre valeurs absolues et pourcentages     |
+| `q`       | Quitter                                             |
 | `+` / `-` | Augmenter/diminuer l'intervalle de rafraîchissement |
 
 ### Options principales
 
-| Option | Description |
-|--------|-------------|
-| `-o ORDER`, `--order=ORDER` | Tri : `path`, `tasks`, `cpu`, `memory`, `io` |
-| `-d DELAY`, `--delay=DELAY` | Intervalle de rafraîchissement en secondes |
-| `-n N`, `--iterations=N` | Nombre d'itérations avant de quitter |
-| `-b`, `--batch` | Mode non interactif (compatible scripts) |
-| `-r`, `--raw` | Valeurs brutes sans unités humaines |
-| `-M NAME`, `--machine=NAME` | Inspecte les cgroups d'une machine/conteneur |
-| `--depth=N` | Profondeur maximale de l'arborescence affichée |
-| `--cpu=TYPE` | `time` (défaut) ou `percentage` |
+| Option                      | Description                                    |
+| --------------------------- | ---------------------------------------------- |
+| `-o ORDER`, `--order=ORDER` | Tri : `path`, `tasks`, `cpu`, `memory`, `io`   |
+| `-d DELAY`, `--delay=DELAY` | Intervalle de rafraîchissement en secondes     |
+| `-n N`, `--iterations=N`    | Nombre d'itérations avant de quitter           |
+| `-b`, `--batch`             | Mode non interactif (compatible scripts)       |
+| `-r`, `--raw`               | Valeurs brutes sans unités humaines            |
+| `-M NAME`, `--machine=NAME` | Inspecte les cgroups d'une machine/conteneur   |
+| `--depth=N`                 | Profondeur maximale de l'arborescence affichée |
+| `--cpu=TYPE`                | `time` (défaut) ou `percentage`                |
 
 ## Cas pratiques
 

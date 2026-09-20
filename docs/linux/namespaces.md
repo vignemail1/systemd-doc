@@ -95,7 +95,7 @@ Isole les UIDs et GIDs. Un processus peut être UID 0 (root) *à l'intérieur* d
 
 C'est le seul namespace créable sans `CAP_SYS_ADMIN` sur l'hôte (sous réserve que `kernel.unprivileged_userns_clone=1`).
 
-Voir la section [User namespaces en détail](#user-namespaces-en-detail) ci-dessous.
+Voir la section **User namespaces en détail** ci-dessous.
 
 ### `cgroup` — vue des cgroups
 

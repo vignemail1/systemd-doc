@@ -16,12 +16,12 @@ systemd-analyze cat-config systemd/journald.conf
 Storage=auto
 ```
 
-| Valeur | Comportement |
-| ------ | ------------ |
-| `auto` | Persistant si `/var/log/journal/` existe, volatile sinon (défaut) |
-| `persistent` | Toujours dans `/var/log/journal/`, crée le dossier si nécessaire |
-| `volatile` | Uniquement dans `/run/log/journal/` (RAM, perdu au reboot) |
-| `none` | Aucun stockage ; les messages sont quand même transmis aux sockets |
+| Valeur       | Comportement                                                       |
+| ------------ | ------------------------------------------------------------------ |
+| `auto`       | Persistant si `/var/log/journal/` existe, volatile sinon (défaut)  |
+| `persistent` | Toujours dans `/var/log/journal/`, crée le dossier si nécessaire   |
+| `volatile`   | Uniquement dans `/run/log/journal/` (RAM, perdu au reboot)         |
+| `none`       | Aucun stockage ; les messages sont quand même transmis aux sockets |
 
 ### Activer la persistance de façon propre
 
@@ -32,7 +32,7 @@ sudo systemctl restart systemd-journald
 ```
 
 !!! tip "Surcharge minimale recommandée"
-    Plutôt que de modifier le fichier principal, créer :
+Plutôt que de modifier le fichier principal, créer :
 
     ```bash
     sudo mkdir -p /etc/systemd/journald.conf.d
@@ -70,16 +70,16 @@ RuntimeMaxFiles=10
 ```
 
 !!! warning "Priorité des limites"
-    systemd-journald applique **la plus restrictive** entre `SystemMaxUse` et la taille laissée libre par `SystemKeepFree`. Si la partition est déjà bien remplie, le journal peut occuper moins que `SystemMaxUse`.
+systemd-journald applique **la plus restrictive** entre `SystemMaxUse` et la taille laissée libre par `SystemKeepFree`. Si la partition est déjà bien remplie, le journal peut occuper moins que `SystemMaxUse`.
 
 ### Calibrer les limites selon le contexte
 
-| Contexte | `SystemMaxUse` | `MaxRetentionSec` | Remarques |
-| -------- | -------------- | ----------------- | --------- |
-| Serveur de production | 4-8 G | 3 mois | Garder suffisamment pour les audits |
-| Container / VM légère | 128-256 M | 1 semaine | Espace disque limité |
-| Poste de travail | 1-2 G | 1 mois | Valeurs raisonnables par défaut |
-| Serveur de logs centralisé | 50-200 G | 1 an | Adapter à la rétention réglementaire |
+| Contexte                   | `SystemMaxUse` | `MaxRetentionSec` | Remarques                            |
+| -------------------------- | -------------- | ----------------- | ------------------------------------ |
+| Serveur de production      | 4-8 G          | 3 mois            | Garder suffisamment pour les audits  |
+| Container / VM légère      | 128-256 M      | 1 semaine         | Espace disque limité                 |
+| Poste de travail           | 1-2 G          | 1 mois            | Valeurs raisonnables par défaut      |
+| Serveur de logs centralisé | 50-200 G       | 1 an              | Adapter à la rétention réglementaire |
 
 ## Rotation et rétention
 
@@ -132,7 +132,7 @@ RateLimitIntervalSec=0
 ```
 
 !!! note "Rate-limiting par service"
-    Il est possible de surcharger le rate-limiting pour un service spécifique directement dans l'unité systemd :
+Il est possible de surcharger le rate-limiting pour un service spécifique directement dans l'unité systemd :
 
     ```ini
     [Service]
@@ -316,7 +316,7 @@ sudo systemctl reload systemd-journald
 ```
 
 !!! warning "Changement de `Storage=`"
-    Passer de `volatile` à `persistent` (ou l'inverse) nécessite de créer ou supprimer `/var/log/journal/` et de redémarrer `systemd-journald`. Un simple `reload` ne suffit pas.
+Passer de `volatile` à `persistent` (ou l'inverse) nécessite de créer ou supprimer `/var/log/journal/` et de redémarrer `systemd-journald`. Un simple `reload` ne suffit pas.
 
 ## Voir aussi
 

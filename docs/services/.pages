@@ -1,8 +1,6 @@
 title: Services systemd
-nav:
-  - Vue d'ensemble: index.md
-  - systemd-networkd: systemd-networkd
-  - systemd-resolved: systemd-resolved
-  - systemd-logind: systemd-logind
-  - systemd-timesyncd: systemd-timesyncd
-  - systemd-udevd: systemd-udevd
+arrange:
+  - index.md
+  - services-reseau
+  - gestion-systeme
+  - ...

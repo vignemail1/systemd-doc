@@ -9,7 +9,7 @@
 
 ## Syntaxe générale
 
-```
+```bash
 systemd-sysusers [OPTIONS] [FICHIER_CONF...]
 ```
 
@@ -41,7 +41,7 @@ systemd-sysusers --image=/path/to/image.raw
 
 Chaque ligne suit le format :
 
-```
+```text
 TYPE  NOM  ID  GECOS  RÉPERTOIRE  SHELL
 ```
 
@@ -49,12 +49,12 @@ Les champs `-` indiquent "valeur par défaut" ou "non applicable".
 
 ### Types
 
-| Type | Description |
-|------|-------------|
-| `u` | Crée un utilisateur système (et son groupe primaire si absent) |
-| `g` | Crée un groupe système |
-| `m` | Ajoute un utilisateur à un groupe (membership) |
-| `r` | Déclare une plage d'UIDs/GIDs réservée à l'allocation dynamique |
+| Type | Description                                                     |
+| ---- | --------------------------------------------------------------- |
+| `u`  | Crée un utilisateur système (et son groupe primaire si absent)  |
+| `g`  | Crée un groupe système                                          |
+| `m`  | Ajoute un utilisateur à un groupe (membership)                  |
+| `r`  | Déclare une plage d'UIDs/GIDs réservée à l'allocation dynamique |
 
 ### Champ ID
 

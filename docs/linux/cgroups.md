@@ -230,7 +230,7 @@ systemctl show mon-service.service -p MemoryMax -p CPUQuota -p TasksMax
 
 Les **slices** forment l'ossature de l'arbre cgroup de systemd. Elles regroupent des services partageant une même politique de ressources.
 
-```
+```text
 systemd (root)
 ├── system.slice      ← services système
 │   ├── nginx.service

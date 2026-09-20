@@ -6,20 +6,20 @@ Pour la configuration locale de journald, voir [Configuration avancée de journa
 
 ## Architecture de centralisation
 
-```
+```text
   Machine A (source)              Machine B (collecteur)
   ┌───────────────────┐         ┌───────────────────┐
-  │ systemd-journald    │         │ systemd-journald    │
-  │ systemd-journal-   │  HTTPS  │ systemd-journal-   │
-  │   upload           │ ──────→ │   remote           │
+  │ systemd-journald  │         │ systemd-journald  │
+  │ systemd-journal-  │  HTTPS  │ systemd-journal-  │
+  │   upload          │ ──────→ │   remote          │
   └───────────────────┘         └───────────────────┘
 
   Machine C (source)               Machine B (collecteur)
-  ┌───────────────────┐         ┌───────────────────┐
-  │ systemd-journald   │  HTTP   │ systemd-journal-   │
-  │ systemd-journal-   │ ──────→ │   gatewayd         │
-  │   gatewayd (pull)  │         │ (lecture SSE/JSON) │
-  └───────────────────┘         └───────────────────┘
+  ┌───────────────────┐         ┌────────────────────┐
+  │ systemd-journald  │  HTTP   │ systemd-journal-   │
+  │ systemd-journal-  │ ──────→ │   gatewayd         │
+  │   gatewayd (pull) │         │ (lecture SSE/JSON) │
+  └───────────────────┘         └────────────────────┘
 ```
 
 Le flux principal utilisé en production est **upload → remote** (push actif depuis chaque source vers le collecteur). `gatewayd` est utile pour la lecture à la demande via un navigateur ou des outils HTTP.
@@ -175,7 +175,7 @@ sudo systemctl start systemd-journal-upload
 ```
 
 !!! warning "Réinitialiser l’état avec précaution"
-    Supprimer le fichier `state` provoque un réenvoi de l’intégralité du journal local vers le collecteur. Sur un journal volumineux, cela peut générer un pic de trafic significatif.
+Supprimer le fichier `state` provoque un réenvoi de l’intégralité du journal local vers le collecteur. Sur un journal volumineux, cela peut générer un pic de trafic significatif.
 
 ## Mode HTTP sans TLS (lab uniquement)
 
@@ -195,7 +195,7 @@ URL=http://log-collector.example.com:19532
 ```
 
 !!! danger "HTTP en clair"
-    Ne jamais utiliser cette configuration sur un réseau non de confiance. Les logs peuvent contenir des données sensibles (tokens, mots de passe en variable d’environnement, etc.).
+Ne jamais utiliser cette configuration sur un réseau non de confiance. Les logs peuvent contenir des données sensibles (tokens, mots de passe en variable d’environnement, etc.).
 
 ## Lire les journaux centralisés sur le collecteur
 
@@ -242,13 +242,13 @@ sudo systemctl status systemd-journal-gatewayd.socket
 
 ### Endpoints disponibles
 
-| Endpoint | Description |
-| -------- | ----------- |
-| `GET /entries` | Flux d’entrées du journal (JSON, SSE ou export) |
-| `GET /entries?UNIT=nginx.service` | Filtrer par unité |
-| `GET /entries?PRIORITY=3` | Filtrer par priorité |
-| `GET /machine` | Informations sur la machine |
-| `GET /fields/FIELD_NAME` | Valeurs connues d’un champ |
+| Endpoint                          | Description                                     |
+| --------------------------------- | ----------------------------------------------- |
+| `GET /entries`                    | Flux d’entrées du journal (JSON, SSE ou export) |
+| `GET /entries?UNIT=nginx.service` | Filtrer par unité                               |
+| `GET /entries?PRIORITY=3`         | Filtrer par priorité                            |
+| `GET /machine`                    | Informations sur la machine                     |
+| `GET /fields/FIELD_NAME`          | Valeurs connues d’un champ                      |
 
 ```bash
 # Lire les 20 dernières entrées en JSON
