@@ -3,7 +3,7 @@
 `coredumpctl` est l'outil d'interrogation et d'analyse des core dumps collectés par `systemd-coredump`. Il permet de lister, inspecter et déboguer les crashs d'applications enregistrés dans le journal systemd.
 
 !!! note "Prérequis"
-    `systemd-coredump` doit être configuré comme gestionnaire de core dumps. Vérifier :
+`systemd-coredump` doit être configuré comme gestionnaire de core dumps. Vérifier :
 
     ```bash
     cat /proc/sys/kernel/core_pattern
@@ -42,14 +42,14 @@ coredumpctl list --since="yesterday"
 
 Colonnes de la sortie :
 
-| Colonne | Description |
-| ------- | ----------- |
-| `TIME` | Date et heure du crash |
-| `PID` | PID du processus crashé |
-| `UID` / `GID` | Identité du processus |
-| `SIGNAL` | Signal ayant provoqué le crash (`SIGSEGV`, `SIGABRT`…) |
-| `COREFILE` | `present` si le binaire du core est stocké, `missing` si purgé |
-| `EXE` | Chemin de l'exécutable |
+| Colonne       | Description                                                    |
+| ------------- | -------------------------------------------------------------- |
+| `TIME`        | Date et heure du crash                                         |
+| `PID`         | PID du processus crashé                                        |
+| `UID` / `GID` | Identité du processus                                          |
+| `SIGNAL`      | Signal ayant provoqué le crash (`SIGSEGV`, `SIGABRT`…)         |
+| `COREFILE`    | `present` si le binaire du core est stocké, `missing` si purgé |
+| `EXE`         | Chemin de l'exécutable                                         |
 
 ## Informations détaillées
 
@@ -146,11 +146,11 @@ sudo systemctl restart systemd-coredump.socket
 
 ### Modes de stockage
 
-| `Storage=` | Comportement |
-| ---------- | ------------ |
-| `external` | Fichier dans `/var/lib/systemd/coredump/` (défaut) |
-| `journal` | Embarqué dans le journal systemd (déconseillé pour gros binaires) |
-| `none` | Enregistré dans le journal sans stocker le binaire |
+| `Storage=` | Comportement                                                      |
+| ---------- | ----------------------------------------------------------------- |
+| `external` | Fichier dans `/var/lib/systemd/coredump/` (défaut)                |
+| `journal`  | Embarqué dans le journal systemd (déconseillé pour gros binaires) |
+| `none`     | Enregistré dans le journal sans stocker le binaire                |
 
 ## Nettoyage
 
@@ -212,17 +212,17 @@ coredumpctl debug nginx
 
 ## Options globales utiles
 
-| Option | Description |
-| ------ | ----------- |
-| `--no-pager` | Désactiver le paginateur |
-| `--no-legend` | Supprimer les en-têtes |
-| `-n <N>` | Limiter aux N derniers core dumps |
-| `--since=` | Filtrer depuis une date |
-| `--until=` | Filtrer jusqu'à une date |
-| `-o <fichier>` | Fichier de sortie pour `dump` |
-| `--debugger=` | Debugger alternatif (`lldb`, etc.) |
-| `--json=short` | Sortie JSON compacte |
-| `--json=pretty` | Sortie JSON formatée |
+| Option          | Description                        |
+| --------------- | ---------------------------------- |
+| `--no-pager`    | Désactiver le paginateur           |
+| `--no-legend`   | Supprimer les en-têtes             |
+| `-n <N>`        | Limiter aux N derniers core dumps  |
+| `--since=`      | Filtrer depuis une date            |
+| `--until=`      | Filtrer jusqu'à une date           |
+| `-o <fichier>`  | Fichier de sortie pour `dump`      |
+| `--debugger=`   | Debugger alternatif (`lldb`, etc.) |
+| `--json=short`  | Sortie JSON compacte               |
+| `--json=pretty` | Sortie JSON formatée               |
 
 ## Voir aussi
 

@@ -9,7 +9,7 @@
 
 ## Syntaxe générale
 
-```text
+```bash
 systemd-tmpfiles [OPTIONS] [FICHIER_CONF...]
 ```
 
@@ -46,27 +46,27 @@ Les champs `-` indiquent "valeur par défaut".
 
 ### Types courants
 
-| Type | Description |
-|------|-------------|
-| `d` | Crée un répertoire, nettoie son contenu selon l'AGE |
-| `D` | Comme `d`, mais supprime le répertoire lui-même si vide après nettoyage |
-| `f` | Crée un fichier vide s'il n'existe pas |
-| `F` | Crée ou tronque un fichier |
-| `w` | Écrit dans un fichier existant (utile pour sysctl, cgroups) |
-| `L` | Crée un lien symbolique |
-| `c` | Crée un fichier spécial (character device) |
-| `b` | Crée un fichier spécial (block device) |
-| `p` | Crée un FIFO (named pipe) |
-| `x` | Exclut un chemin du nettoyage récursif |
-| `X` | Exclut un chemin et ses sous-répertoires du nettoyage |
-| `r` | Supprime un fichier |
-| `R` | Supprime récursivement |
-| `z` | Restaure le contexte SELinux et les permissions |
-| `Z` | Restaure récursivement |
-| `t` | Applique des attributs xattr |
-| `T` | Supprime des attributs xattr |
-| `a` | Applique des ACL (mode additif) |
-| `A` | Applique des ACL récursivement |
+| Type | Description                                                             |
+| ---- | ----------------------------------------------------------------------- |
+| `d`  | Crée un répertoire, nettoie son contenu selon l'AGE                     |
+| `D`  | Comme `d`, mais supprime le répertoire lui-même si vide après nettoyage |
+| `f`  | Crée un fichier vide s'il n'existe pas                                  |
+| `F`  | Crée ou tronque un fichier                                              |
+| `w`  | Écrit dans un fichier existant (utile pour sysctl, cgroups)             |
+| `L`  | Crée un lien symbolique                                                 |
+| `c`  | Crée un fichier spécial (character device)                              |
+| `b`  | Crée un fichier spécial (block device)                                  |
+| `p`  | Crée un FIFO (named pipe)                                               |
+| `x`  | Exclut un chemin du nettoyage récursif                                  |
+| `X`  | Exclut un chemin et ses sous-répertoires du nettoyage                   |
+| `r`  | Supprime un fichier                                                     |
+| `R`  | Supprime récursivement                                                  |
+| `z`  | Restaure le contexte SELinux et les permissions                         |
+| `Z`  | Restaure récursivement                                                  |
+| `t`  | Applique des attributs xattr                                            |
+| `T`  | Supprime des attributs xattr                                            |
+| `a`  | Applique des ACL (mode additif)                                         |
+| `A`  | Applique des ACL récursivement                                          |
 
 ### Format de l'AGE
 
@@ -152,12 +152,12 @@ systemd-tmpfiles --clean --dry-run
 
 ## Services et timers associés
 
-| Unité | Rôle |
-|-------|------|
-| `systemd-tmpfiles-setup.service` | Exécute `--create --remove` au démarrage |
-| `systemd-tmpfiles-setup-dev-early.service` | Gère `/dev` très tôt au boot |
-| `systemd-tmpfiles-clean.service` | Exécute `--clean` (déclenché par le timer) |
-| `systemd-tmpfiles-clean.timer` | Déclenche le nettoyage périodique (défaut : 1 jour) |
+| Unité                                      | Rôle                                                |
+| ------------------------------------------ | --------------------------------------------------- |
+| `systemd-tmpfiles-setup.service`           | Exécute `--create --remove` au démarrage            |
+| `systemd-tmpfiles-setup-dev-early.service` | Gère `/dev` très tôt au boot                        |
+| `systemd-tmpfiles-clean.service`           | Exécute `--clean` (déclenché par le timer)          |
+| `systemd-tmpfiles-clean.timer`             | Déclenche le nettoyage périodique (défaut : 1 jour) |
 
 ```bash
 # Voir l'état du timer de nettoyage
@@ -186,7 +186,7 @@ RuntimeDirectoryMode=0750
 ```
 
 !!! note
-    La directive `RuntimeDirectory=` dans les unités systemd est souvent préférable à `tmpfiles.d` pour les répertoires de runtime, car elle lie automatiquement le cycle de vie du répertoire à celui du service.
+La directive `RuntimeDirectory=` dans les unités systemd est souvent préférable à `tmpfiles.d` pour les répertoires de runtime, car elle lie automatiquement le cycle de vie du répertoire à celui du service.
 
 ## Bonnes pratiques
 

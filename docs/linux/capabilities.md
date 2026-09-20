@@ -3,21 +3,21 @@
 Les **capabilities** Linux découpent les privilèges traditionnellement réservés à `root` en unités indépendantes, attribuables séparément à des threads ou à des binaires. Un processus ne détient ainsi que les privilèges strictement nécessaires à son fonctionnement, sans avoir à s'exécuter en root complet.
 
 !!! note "Historique"
-    Introduites par POSIX.1e (brouillon) et implémentées dans Linux 2.2, les capabilities ont été enrichies progressivement : capability sets sur les fichiers (Linux 2.6.24), bounding set par thread (2.6.25), ambient set (4.3), et `CAP_CHECKPOINT_RESTORE` (5.9) pour la derniière en date courante.
+Introduites par POSIX.1e (brouillon) et implémentées dans Linux 2.2, les capabilities ont été enrichies progressivement : capability sets sur les fichiers (Linux 2.6.24), bounding set par thread (2.6.25), ambient set (4.3), et `CAP_CHECKPOINT_RESTORE` (5.9) pour la derniière en date courante.
 
 ## Modèle général
 
 Chaque **thread** possède cinq ensembles (*sets*) de capabilities indépendants. Les vérifications de permission du kernel s'effectuent uniquement sur le set **effective** (`pE`).
 
-| Set | Abréviation | Rôle |
-| --- | ----------- | ---- |
-| Effective | `pE` | Capabilities actives — celles que le kernel vérifie pour autoriser une opération |
-| Permitted | `pP` | Superset maximal de `pE` — une capability peut être montée dans `pE` uniquement si elle est dans `pP` |
-| Inheritable | `pI` | Capabilities pouvant être transmises à un nouveau binaire via `execve` si le fichier les déclare également héritables |
-| Bounding | `pB` | Plafond global, décroissant seulement — aucune capability absente de `pB` ne peut jamais rejoindre `pP` |
-| Ambient | `pA` | Capabilities préservées à travers un `execve` vers un binaire non privilégié (non setuid, sans file capabilities) |
+| Set         | Abréviation | Rôle                                                                                                                  |
+| ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| Effective   | `pE`        | Capabilities actives — celles que le kernel vérifie pour autoriser une opération                                      |
+| Permitted   | `pP`        | Superset maximal de `pE` — une capability peut être montée dans `pE` uniquement si elle est dans `pP`                 |
+| Inheritable | `pI`        | Capabilities pouvant être transmises à un nouveau binaire via `execve` si le fichier les déclare également héritables |
+| Bounding    | `pB`        | Plafond global, décroissant seulement — aucune capability absente de `pB` ne peut jamais rejoindre `pP`               |
+| Ambient     | `pA`        | Capabilities préservées à travers un `execve` vers un binaire non privilégié (non setuid, sans file capabilities)     |
 
-```
+```text
            ┌──────────────┐
            │  pB (plafond) │  réductible, jamais augmenté
            └──────┬───────┘
@@ -37,17 +37,17 @@ Chaque **thread** possède cinq ensembles (*sets*) de capabilities indépendants
 
 En plus des sets par thread, les binaires exécutables peuvent porter des capabilities directement dans leurs **attributs étendus** (`security.capability`). Le kernel combine les sets du thread parent et ceux du fichier lors d'un `execve`.
 
-| Set fichier | Abréviation | Rôle |
-| ----------- | ----------- | ---- |
-| Permitted | `fP` | Capabilities ajoutées à `pP` du nouveau processus (intersectées avec `pB`) |
-| Inheritable | `fI` | Capabilities ajoutées à `pP` si elles sont aussi dans `pI` du thread |
-| Effective bit | `fE` | Bit unique — si positionné, `pP` est entièrement recopié dans `pE` après `execve` |
+| Set fichier   | Abréviation | Rôle                                                                              |
+| ------------- | ----------- | --------------------------------------------------------------------------------- |
+| Permitted     | `fP`        | Capabilities ajoutées à `pP` du nouveau processus (intersectées avec `pB`)        |
+| Inheritable   | `fI`        | Capabilities ajoutées à `pP` si elles sont aussi dans `pI` du thread              |
+| Effective bit | `fE`        | Bit unique — si positionné, `pP` est entièrement recopié dans `pE` après `execve` |
 
 ### Règle de transition à `execve` (simplifiée)
 
 Après un `execve`, les nouveaux sets du thread sont calculés ainsi :
 
-```
+```text
 pP' = (fP & pB) | (fI & pI) | pA
 pE' = pP'  si fE est positionné, sinon pE' = pA
 pI' = pI
@@ -55,7 +55,7 @@ pA' = pA  (perdu si le binaire est setuid ou porte des file capabilities)
 ```
 
 !!! warning "Interactions avec setuid"
-    Si le binaire est setuid root, les règles sont différentes : `pP'` devient le bounding set complet du processus parent. Les ambient capabilities sont également réinitialisées à zéro. Ne pas mélanger setuid et file capabilities.
+Si le binaire est setuid root, les règles sont différentes : `pP'` devient le bounding set complet du processus parent. Les ambient capabilities sont également réinitialisées à zéro. Ne pas mélanger setuid et file capabilities.
 
 ## Inspection et manipulation
 
@@ -106,15 +106,15 @@ sudo setcap -r /usr/bin/ping
 
 La syntaxe de `setcap` est :
 
-```
+```bash
 cap_nom[,cap_nom...]=(e|i|p)[+|-]
 ```
 
-| Lettre | Set ciblé |
-| ------ | --------- |
-| `e` | Effective bit (`fE`) |
-| `i` | Inheritable (`fI`) |
-| `p` | Permitted (`fP`) |
+| Lettre | Set ciblé            |
+| ------ | -------------------- |
+| `e`    | Effective bit (`fE`) |
+| `i`    | Inheritable (`fI`)   |
+| `p`    | Permitted (`fP`)     |
 
 Exemple : `cap_net_bind_service=+eip` active les trois sets pour ce fichier.
 
@@ -174,80 +174,82 @@ ExecStart=/usr/local/bin/mon-daemon
 ```
 
 !!! tip "Ordre des directives"
-    `CapabilityBoundingSet=` agit en premier (plafond), `AmbientCapabilities=` en second (ce qui est injecté). Toute capability dans `AmbientCapabilities=` absent du `CapabilityBoundingSet=` est ignorée silencieusement par systemd. Activer `NoNewPrivileges=yes` est fortement recommandé car il empêche tout retour en arrière via un binaire setuid.
+  `CapabilityBoundingSet=` agit en premier (plafond), `AmbientCapabilities=` en second (ce qui est injecté).  
+  Toute capability dans `AmbientCapabilities=` absent du `CapabilityBoundingSet=` est ignorée silencieusement par systemd.  
+  Activer `NoNewPrivileges=yes` est fortement recommandé car il empêche tout retour en arrière via un binaire setuid.
 
 ### Correspondance sets systemd → thread
 
-| Directive systemd | Set thread modifié |
-| ----------------- | ------------------ |
-| `CapabilityBoundingSet=` | `pB` |
-| `AmbientCapabilities=` | `pA` (et implicitement `pP`, `pI`) |
-| `SecureBits=` | Flags de sécurité (`SECBIT_*`) influençant les transitions |
+| Directive systemd        | Set thread modifié                                         |
+| ------------------------ | ---------------------------------------------------------- |
+| `CapabilityBoundingSet=` | `pB`                                                       |
+| `AmbientCapabilities=`   | `pA` (et implicitement `pP`, `pI`)                         |
+| `SecureBits=`            | Flags de sécurité (`SECBIT_*`) influençant les transitions |
 
 ## Référence des capabilities importantes
 
 !!! note
-    La liste complète (plus de 40 capabilities sur noyaux récents) est dans `man 7 capabilities`. Cette section détaille les plus courantes, classées par domaine.
+La liste complète (plus de 40 capabilities sur noyaux récents) est dans `man 7 capabilities`. Cette section détaille les plus courantes, classées par domaine.
 
 ### Système de fichiers
 
-| Capability | Description | Danger |
-| ---------- | ----------- | ------ |
-| `CAP_CHOWN` | Modifier le propriétaire d'un fichier | Moyen |
-| `CAP_DAC_OVERRIDE` | Ignorer les permissions de lecture/écriture/exécution | **Élevé** |
+| Capability            | Description                                                      | Danger    |
+| --------------------- | ---------------------------------------------------------------- | --------- |
+| `CAP_CHOWN`           | Modifier le propriétaire d'un fichier                            | Moyen     |
+| `CAP_DAC_OVERRIDE`    | Ignorer les permissions de lecture/écriture/exécution            | **Élevé** |
 | `CAP_DAC_READ_SEARCH` | Ignorer les permissions de lecture et de traversée de répertoire | **Élevé** |
-| `CAP_FOWNER` | Opérations sur les fichiers dont l'UID ne correspond pas | Moyen |
-| `CAP_FSETID` | Conserver les bits setuid/setgid lors d'une écriture | Faible |
-| `CAP_MKNOD` | Créer des fichiers spéciaux (`/dev/*`) | Moyen |
-| `CAP_LINUX_IMMUTABLE` | Positionner les attributs `FS_IMMUTABLE` et `FS_APPEND` | Faible |
+| `CAP_FOWNER`          | Opérations sur les fichiers dont l'UID ne correspond pas         | Moyen     |
+| `CAP_FSETID`          | Conserver les bits setuid/setgid lors d'une écriture             | Faible    |
+| `CAP_MKNOD`           | Créer des fichiers spéciaux (`/dev/*`)                           | Moyen     |
+| `CAP_LINUX_IMMUTABLE` | Positionner les attributs `FS_IMMUTABLE` et `FS_APPEND`          | Faible    |
 
 ### Processus et utilisateurs
 
-| Capability | Description | Danger |
-| ---------- | ----------- | ------ |
-| `CAP_SETUID` | Modifier l'UID réel/effectif/sauvegardé | **Élevé** |
-| `CAP_SETGID` | Modifier le GID réel/effectif/sauvegardé | **Élevé** |
-| `CAP_SETPCAP` | Modifier les capability sets d'autres processus ou le bounding set propre | **Élevé** |
-| `CAP_KILL` | Envoyer des signaux à des processus d'autres utilisateurs | Moyen |
-| `CAP_SYS_NICE` | Modifier les priorités d'ordonnancement | Faible |
-| `CAP_SYS_RESOURCE` | Ignorer les limites de ressources (`ulimit`) | Moyen |
-| `CAP_SYS_PTRACE` | `ptrace()` de n'importe quel processus | **Élevé** |
+| Capability         | Description                                                               | Danger    |
+| ------------------ | ------------------------------------------------------------------------- | --------- |
+| `CAP_SETUID`       | Modifier l'UID réel/effectif/sauvegardé                                   | **Élevé** |
+| `CAP_SETGID`       | Modifier le GID réel/effectif/sauvegardé                                  | **Élevé** |
+| `CAP_SETPCAP`      | Modifier les capability sets d'autres processus ou le bounding set propre | **Élevé** |
+| `CAP_KILL`         | Envoyer des signaux à des processus d'autres utilisateurs                 | Moyen     |
+| `CAP_SYS_NICE`     | Modifier les priorités d'ordonnancement                                   | Faible    |
+| `CAP_SYS_RESOURCE` | Ignorer les limites de ressources (`ulimit`)                              | Moyen     |
+| `CAP_SYS_PTRACE`   | `ptrace()` de n'importe quel processus                                    | **Élevé** |
 
 ### Réseau
 
-| Capability | Description | Danger |
-| ---------- | ----------- | ------ |
-| `CAP_NET_BIND_SERVICE` | Écouter sur des ports < 1024 | Faible |
-| `CAP_NET_ADMIN` | Configuration réseau (interfaces, routes, firewall, namespaces réseau) | **Élevé** |
-| `CAP_NET_RAW` | Sockets `AF_PACKET` et `SOCK_RAW` (ping, tcpdump, scapy) | Moyen |
-| `CAP_NET_BROADCAST` | Envoi et réception de broadcast/multicast | Faible |
+| Capability             | Description                                                            | Danger    |
+| ---------------------- | ---------------------------------------------------------------------- | --------- |
+| `CAP_NET_BIND_SERVICE` | Écouter sur des ports < 1024                                           | Faible    |
+| `CAP_NET_ADMIN`        | Configuration réseau (interfaces, routes, firewall, namespaces réseau) | **Élevé** |
+| `CAP_NET_RAW`          | Sockets `AF_PACKET` et `SOCK_RAW` (ping, tcpdump, scapy)               | Moyen     |
+| `CAP_NET_BROADCAST`    | Envoi et réception de broadcast/multicast                              | Faible    |
 
 ### Kernel et système
 
-| Capability | Description | Danger |
-| ---------- | ----------- | ------ |
-| `CAP_SYS_ADMIN` | Fourre-tout : montage FS, namespaces, BPF, quotas, audit, keyrings… | **Critique** |
-| `CAP_SYS_BOOT` | `reboot()` et `kexec_load()` | **Élevé** |
-| `CAP_SYS_MODULE` | Charger/décharger des modules noyau | **Critique** |
-| `CAP_SYS_TIME` | Modifier l'horloge système | Moyen |
-| `CAP_SYS_CHROOT` | `chroot()` | Moyen |
-| `CAP_SYSLOG` | Accès aux logs noyau (`dmesg`) | Faible |
-| `CAP_BPF` | Charger des programmes BPF privilégiés | **Élevé** |
-| `CAP_PERFMON` | Accès aux compteurs de performance noyau | Moyen |
-| `CAP_CHECKPOINT_RESTORE` | CRIU — checkpoint/restore de processus | Moyen |
+| Capability               | Description                                                         | Danger       |
+| ------------------------ | ------------------------------------------------------------------- | ------------ |
+| `CAP_SYS_ADMIN`          | Fourre-tout : montage FS, namespaces, BPF, quotas, audit, keyrings… | **Critique** |
+| `CAP_SYS_BOOT`           | `reboot()` et `kexec_load()`                                        | **Élevé**    |
+| `CAP_SYS_MODULE`         | Charger/décharger des modules noyau                                 | **Critique** |
+| `CAP_SYS_TIME`           | Modifier l'horloge système                                          | Moyen        |
+| `CAP_SYS_CHROOT`         | `chroot()`                                                          | Moyen        |
+| `CAP_SYSLOG`             | Accès aux logs noyau (`dmesg`)                                      | Faible       |
+| `CAP_BPF`                | Charger des programmes BPF privilégiés                              | **Élevé**    |
+| `CAP_PERFMON`            | Accès aux compteurs de performance noyau                            | Moyen        |
+| `CAP_CHECKPOINT_RESTORE` | CRIU — checkpoint/restore de processus                              | Moyen        |
 
 ### Sécurité et audit
 
-| Capability | Description | Danger |
-| ---------- | ----------- | ------ |
-| `CAP_SETFCAP` | Modifier les file capabilities de n'importe quel fichier | **Élevé** |
-| `CAP_AUDIT_WRITE` | Écrire dans le journal d'audit noyau | Faible |
-| `CAP_AUDIT_CONTROL` | Configurer l'audit noyau | Moyen |
-| `CAP_MAC_ADMIN` | Modifier les politiques MAC (SELinux, AppArmor) | **Élevé** |
-| `CAP_MAC_OVERRIDE` | Ignorer les politiques MAC | **Critique** |
+| Capability          | Description                                              | Danger       |
+| ------------------- | -------------------------------------------------------- | ------------ |
+| `CAP_SETFCAP`       | Modifier les file capabilities de n'importe quel fichier | **Élevé**    |
+| `CAP_AUDIT_WRITE`   | Écrire dans le journal d'audit noyau                     | Faible       |
+| `CAP_AUDIT_CONTROL` | Configurer l'audit noyau                                 | Moyen        |
+| `CAP_MAC_ADMIN`     | Modifier les politiques MAC (SELinux, AppArmor)          | **Élevé**    |
+| `CAP_MAC_OVERRIDE`  | Ignorer les politiques MAC                               | **Critique** |
 
 !!! warning "`CAP_SYS_ADMIN` et `CAP_SYS_MODULE`"
-    Ces deux capabilities sont quasi-équivalentes à root complet. `CAP_SYS_ADMIN` couvre plus de 200 opérations noyau distinctes ; un binaire portant cette capability peut sortir de la plupart des sandboxes. Les éviter impérativement dans un service — préférer une capability spécifique.
+Ces deux capabilities sont quasi-équivalentes à root complet. `CAP_SYS_ADMIN` couvre plus de 200 opérations noyau distinctes ; un binaire portant cette capability peut sortir de la plupart des sandboxes. Les éviter impérativement dans un service — préférer une capability spécifique.
 
 ## Capabilities et namespaces (containers)
 
@@ -263,7 +265,7 @@ capsh --print
 ```
 
 !!! note "systemd-nspawn"
-    `systemd-nspawn` retire par défaut plusieurs capabilities dangereuses (`CAP_SYS_MODULE`, `CAP_SYS_BOOT`, `CAP_MAC_ADMIN`…) et crée un user namespace isolé. La directive `--capability=` permet d'en ajouter explicitement. Voir [systemd-nspawn](../outils/systemd-nspawn.md).
+`systemd-nspawn` retire par défaut plusieurs capabilities dangereuses (`CAP_SYS_MODULE`, `CAP_SYS_BOOT`, `CAP_MAC_ADMIN`…) et crée un user namespace isolé. La directive `--capability=` permet d'en ajouter explicitement. Voir [systemd-nspawn](../outils/systemd-nspawn.md).
 
 ## Diagnostics courants
 

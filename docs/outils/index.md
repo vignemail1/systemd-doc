@@ -70,6 +70,8 @@ Gestion de la configuration réseau.
 
 **Commande associée** : `networkctl`
 
+Plus d'infos : [services / systemd-networkd](../services/services-reseau/systemd-networkd/index.md)
+
 ### systemd-resolved
 
 Résolution DNS avec cache.
@@ -82,6 +84,8 @@ Résolution DNS avec cache.
 - Gestion de `/etc/resolv.conf`
 
 **Commandes associées** : `resolvectl`, `systemd-resolve`
+
+Plus d'infos : [services / systemd-resolved](../services/services-reseau/systemd-resolved/index.md)
 
 ## Outils de gestion système
 
@@ -98,6 +102,8 @@ Gestion des sessions utilisateur.
 
 **Commande associée** : `loginctl`
 
+Plus d'infos : [services / systemd-logind](../services/gestion-systeme/systemd-logind/index.md)
+
 ### systemd-timesyncd
 
 Synchronisation horaire SNTP.
@@ -109,6 +115,8 @@ Synchronisation horaire SNTP.
 - Alternative à ntpd/chrony
 
 **Commande associée** : `timedatectl`
+
+Plus d'infos : [services / systemd-logind](../services/gestion-systeme/systemd-timesyncd/index.md)
 
 ### systemd-udevd
 
@@ -122,6 +130,8 @@ Gestion des périphériques.
 - Application de règles
 
 **Commande associée** : `udevadm`
+
+Plus d'infos : [services / systemd-udevd](../services/gestion-systeme/systemd-udevd/index.md)
 
 ## Outils de configuration
 

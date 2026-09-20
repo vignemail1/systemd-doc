@@ -3,7 +3,7 @@
 `networkctl` est l'outil de gestion et d'inspection de `systemd-networkd`. Il permet d'afficher l'état des interfaces réseau, de forcer leur reconfiguration, et d'interroger les liens, adresses et routes gérés par `systemd-networkd`.
 
 !!! note "Prérequis"
-    `networkctl` nécessite que `systemd-networkd` soit actif. Sur une machine utilisant NetworkManager ou un autre gestionnaire réseau, les informations affichées seront partielles ou absentes.
+`networkctl` nécessite que `systemd-networkd` soit actif. Sur une machine utilisant NetworkManager ou un autre gestionnaire réseau, les informations affichées seront partielles ou absentes.
 
     ```bash
     sudo systemctl enable --now systemd-networkd
@@ -32,15 +32,15 @@ networkctl --no-pager list
 
 La colonne `SETUP` indique l’état de configuration par `systemd-networkd` :
 
-| Valeur | Signification |
-| ------ | ------------- |
-| `configured` | Interface configurée avec succès |
-| `configuring` | Configuration en cours |
-| `degraded` | Configurée mais au moins un paramètre manquant (ex. pas d’adresse IPv6) |
-| `unmanaged` | Non gérée par `systemd-networkd` |
-| `pending` | En attente d’un événement (lien physique absent) |
-| `failed` | Échec de configuration |
-| `linger` | Lien supprimé mais encore référencé |
+| Valeur        | Signification                                                           |
+| ------------- | ----------------------------------------------------------------------- |
+| `configured`  | Interface configurée avec succès                                        |
+| `configuring` | Configuration en cours                                                  |
+| `degraded`    | Configurée mais au moins un paramètre manquant (ex. pas d’adresse IPv6) |
+| `unmanaged`   | Non gérée par `systemd-networkd`                                        |
+| `pending`     | En attente d’un événement (lien physique absent)                        |
+| `failed`      | Échec de configuration                                                  |
+| `linger`      | Lien supprimé mais encore référencé                                     |
 
 ### Détail d’un lien
 
@@ -148,7 +148,7 @@ networkctl status   # section "Address" de la vue globale
 ```
 
 !!! tip "Complémentarité avec `ip`"
-    `networkctl` se concentre sur ce que `systemd-networkd` gère (configuration, fichiers `.network`, bail DHCP). La commande `ip` reste l’outil de référence pour inspecter l’état noyau des adresses, routes et règles en temps réel.
+`networkctl` se concentre sur ce que `systemd-networkd` gère (configuration, fichiers `.network`, bail DHCP). La commande `ip` reste l’outil de référence pour inspecter l’état noyau des adresses, routes et règles en temps réel.
 
 ## Diagnostics courants
 
@@ -199,17 +199,17 @@ networkctl status eth0
 
 ## Options globales utiles
 
-| Option | Description |
-| ------ | ----------- |
-| `--no-pager` | Désactiver le paginateur |
-| `--no-legend` | Supprimer les en-têtes de colonnes |
-| `-a`, `--all` | Inclure les interfaces sans fichier `.network` |
-| `--brief` | Affichage résumé pour `status` |
-| `-n <lignes>` | Limiter le nombre de lignes de journal affichées dans `status` |
-| `-H <hôte>` | Hôte distant (via SSH) |
-| `-M <machine>` | Machine / conteneur systemd-nspawn |
-| `--json=short` | Sortie JSON compact (utile pour scripts) |
-| `--json=pretty` | Sortie JSON formatée |
+| Option          | Description                                                    |
+| --------------- | -------------------------------------------------------------- |
+| `--no-pager`    | Désactiver le paginateur                                       |
+| `--no-legend`   | Supprimer les en-têtes de colonnes                             |
+| `-a`, `--all`   | Inclure les interfaces sans fichier `.network`                 |
+| `--brief`       | Affichage résumé pour `status`                                 |
+| `-n <lignes>`   | Limiter le nombre de lignes de journal affichées dans `status` |
+| `-H <hôte>`     | Hôte distant (via SSH)                                         |
+| `-M <machine>`  | Machine / conteneur systemd-nspawn                             |
+| `--json=short`  | Sortie JSON compact (utile pour scripts)                       |
+| `--json=pretty` | Sortie JSON formatée                                           |
 
 ```bash
 # Exemple : sortie JSON pour parsing

@@ -44,7 +44,7 @@ loginctl terminate-session 3
 ```
 
 !!! warning "Attention"
-    Terminer une session tue tous les processus qui y sont rattachés, y compris les applications graphiques.
+Terminer une session tue tous les processus qui y sont rattachés, y compris les applications graphiques.
 
 ### Tuer un processus dans une session
 
@@ -121,7 +121,7 @@ ls /var/lib/systemd/linger/
 La présence du fichier `/var/lib/systemd/linger/<username>` indique que le lingering est activé.
 
 !!! tip "Démarrage automatique d'un service utilisateur"
-    Pour qu'un service utilisateur (`~/.config/systemd/user/monservice.service`) démarre au boot :
+Pour qu'un service utilisateur (`~/.config/systemd/user/monservice.service`) démarre au boot :
 
     ```bash
     # 1. Activer le lingering
@@ -148,14 +148,14 @@ loginctl seat-status seat0
 
 ## Options courantes
 
-| Option | Description |
-| ------ | ----------- |
-| `-H <host>` | Opérer sur un hôte distant via SSH |
+| Option           | Description                             |
+| ---------------- | --------------------------------------- |
+| `-H <host>`      | Opérer sur un hôte distant via SSH      |
 | `-M <container>` | Opérer dans un conteneur systemd-nspawn |
-| `--no-pager` | Désactiver le paginateur |
-| `--no-legend` | Supprimer les en-têtes de tableaux |
-| `-p <propriété>` | Afficher une propriété spécifique |
-| `--signal=<SIG>` | Signal à envoyer avec `kill-*` |
+| `--no-pager`     | Désactiver le paginateur                |
+| `--no-legend`    | Supprimer les en-têtes de tableaux      |
+| `-p <propriété>` | Afficher une propriété spécifique       |
+| `--signal=<SIG>` | Signal à envoyer avec `kill-*`          |
 
 ## Exemples pratiques
 
@@ -199,24 +199,24 @@ done
 
 ## Propriétés clés de `show-session`
 
-| Propriété | Description |
-| --------- | ----------- |
-| `Id` | Identifiant de la session |
-| `User` | Nom d'utilisateur |
-| `Name` | Nom affiché |
-| `Timestamp` | Date/heure de connexion |
-| `Remote` | Session locale ou distante |
-| `RemoteHost` | Hôte distant (si SSH) |
-| `Service` | Service d'origine (ssh, gdm, getty…) |
-| `Scope` | Scope cgroup (`session-N.scope`) |
-| `Leader` | PID du processus leader |
-| `Seat` | Siège associé |
-| `TTY` | Terminal |
-| `Display` | Variable DISPLAY |
-| `Active` | Session active ou en arrière-plan |
-| `State` | online, active, closing |
-| `Type` | tty, x11, wayland, mir, unspecified |
-| `Class` | user, greeter, lock-screen, background |
+| Propriété    | Description                            |
+| ------------ | -------------------------------------- |
+| `Id`         | Identifiant de la session              |
+| `User`       | Nom d'utilisateur                      |
+| `Name`       | Nom affiché                            |
+| `Timestamp`  | Date/heure de connexion                |
+| `Remote`     | Session locale ou distante             |
+| `RemoteHost` | Hôte distant (si SSH)                  |
+| `Service`    | Service d'origine (ssh, gdm, getty…)   |
+| `Scope`      | Scope cgroup (`session-N.scope`)       |
+| `Leader`     | PID du processus leader                |
+| `Seat`       | Siège associé                          |
+| `TTY`        | Terminal                               |
+| `Display`    | Variable DISPLAY                       |
+| `Active`     | Session active ou en arrière-plan      |
+| `State`      | online, active, closing                |
+| `Type`       | tty, x11, wayland, mir, unspecified    |
+| `Class`      | user, greeter, lock-screen, background |
 
 ## Voir aussi
 

@@ -16,8 +16,8 @@ Une unité est une ressource gérée par systemd. Chaque type d'unité possède 
 
 ## Unités liées au réseau
 
-Les fichiers `.network`, `.netdev` et `.link` ne sont pas des types d'unités systemd. Ils sont lus par `systemd-networkd` et sont documentés dans la section [systemd-networkd](../services/systemd-networkd/index.md) :
+Les fichiers `.network`, `.netdev` et `.link` ne sont pas des types d'unités systemd. Ils sont lus par `systemd-networkd` et sont documentés dans la section [systemd-networkd](../services/services-reseau/systemd-networkd/index.md) :
 
-- [Fichiers `.network`](../services/systemd-networkd/network.md)
-- [Fichiers `.netdev`](../services/systemd-networkd/netdev.md)
-- [Fichiers `.link`](../services/systemd-networkd/link.md)
+- [Fichiers `.network`](../services/services-reseau/systemd-networkd/network.md)
+- [Fichiers `.netdev`](../services/services-reseau/systemd-networkd/netdev.md)
+- [Fichiers `.link`](../services/services-reseau/systemd-networkd/link.md)

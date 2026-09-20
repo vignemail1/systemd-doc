@@ -1,0 +1,6 @@
+title: systemd-udevd
+nav:
+  - Vue d'ensemble: index.md
+  - Règles udev: rules.md
+  - Configuration: configuration.md
+  - Diagnostic: diagnostic.md

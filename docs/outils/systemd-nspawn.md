@@ -10,7 +10,7 @@
 
 ## Syntaxe générale
 
-```
+```bash
 systemd-nspawn [OPTIONS] [COMMANDE [ARGS...]]
 ```
 
@@ -43,26 +43,26 @@ sudo systemd-nspawn -D /var/lib/machines/debian12 apt-get update
 
 ## Options principales
 
-| Option | Description |
-|--------|-------------|
-| `-D DIR`, `--directory=DIR` | Répertoire racine du conteneur |
-| `-b`, `--boot` | Démarre le processus init (démarrage complet) |
-| `-M NAME`, `--machine=NAME` | Nom de la machine (pour `machinectl`) |
-| `--bind=SRC:DST` | Monte un répertoire hôte dans le conteneur |
-| `--bind-ro=SRC:DST` | Montage en lecture seule |
-| `--overlay=SRC:DST` | Overlay filesystem (OverlayFS) |
-| `--network-veth` | Crée une interface réseau virtuelle dédiée |
-| `--network-bridge=BR` | Connecte le conteneur à un bridge réseau |
-| `--private-network` | Isole complètement le réseau du conteneur |
-| `--private-users` | Active le mapping d'UIDs (user namespaces) |
-| `--private-users-ownership` | Ajuste la propriété des fichiers pour les user namespaces |
-| `--resolv-conf=MODE` | Gère `/etc/resolv.conf` du conteneur |
-| `-u USER`, `--user=USER` | Lance la commande en tant qu'utilisateur donné |
-| `--capability=CAP` | Ajoute une capability Linux |
-| `--drop-capability=CAP` | Retire une capability |
-| `--read-only` | Monte la racine en lecture seule |
-| `--ephemeral` | Copie temporaire ; les modifications sont perdues à l'arrêt |
-| `--image=IMAGE` | Utilise une image disque raw ou GPT directement |
+| Option                      | Description                                                 |
+| --------------------------- | ----------------------------------------------------------- |
+| `-D DIR`, `--directory=DIR` | Répertoire racine du conteneur                              |
+| `-b`, `--boot`              | Démarre le processus init (démarrage complet)               |
+| `-M NAME`, `--machine=NAME` | Nom de la machine (pour `machinectl`)                       |
+| `--bind=SRC:DST`            | Monte un répertoire hôte dans le conteneur                  |
+| `--bind-ro=SRC:DST`         | Montage en lecture seule                                    |
+| `--overlay=SRC:DST`         | Overlay filesystem (OverlayFS)                              |
+| `--network-veth`            | Crée une interface réseau virtuelle dédiée                  |
+| `--network-bridge=BR`       | Connecte le conteneur à un bridge réseau                    |
+| `--private-network`         | Isole complètement le réseau du conteneur                   |
+| `--private-users`           | Active le mapping d'UIDs (user namespaces)                  |
+| `--private-users-ownership` | Ajuste la propriété des fichiers pour les user namespaces   |
+| `--resolv-conf=MODE`        | Gère `/etc/resolv.conf` du conteneur                        |
+| `-u USER`, `--user=USER`    | Lance la commande en tant qu'utilisateur donné              |
+| `--capability=CAP`          | Ajoute une capability Linux                                 |
+| `--drop-capability=CAP`     | Retire une capability                                       |
+| `--read-only`               | Monte la racine en lecture seule                            |
+| `--ephemeral`               | Copie temporaire ; les modifications sont perdues à l'arrêt |
+| `--image=IMAGE`             | Utilise une image disque raw ou GPT directement             |
 
 ## Intégration avec machinectl
 
