@@ -262,7 +262,7 @@ journalctl -M monconteneur -u apache2 -f
 
 ## Voir aussi
 
-- [Configuration de journald](journald-config.md) — `journald.conf`, rotation, stockage persistant
-- [Journal centralisé](journald-remote.md) — `systemd-journal-remote` et `systemd-journal-gatewayd`
+- [Configuration de journald](../journal-logging/journald-config.md) — `journald.conf`, rotation, stockage persistant
+- [Journal centralisé](../journal-logging/journald-remote.md) — `systemd-journal-remote` et `systemd-journal-gatewayd`
 - `man journalctl`
 - `man systemd.journal-fields` — liste complète des champs
