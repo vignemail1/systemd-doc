@@ -1,20 +1,15 @@
-title: Référence — outils
-arrange:
-  - index.md
-  - systemctl.md
-  - systemd-analyze.md
-  - journalctl.md
-  - loginctl.md
-  - networkctl.md
-  - resolvectl.md
-  - timedatectl.md
-  - hostnamectl.md
-  - localectl.md
-  - bootctl.md
-  - coredumpctl.md
-  - systemd-cgls-cgtop.md
-  - systemd-nspawn.md
-  - systemd-tmpfiles.md
-  - systemd-sysusers.md
-  - udevadm.md
-  - ...
+title: Outils
+nav:
+  - Accueil: index.md
+  - systemctl: systemctl.md
+  - journalctl: journalctl.md
+  - networkctl: networkctl.md
+  - systemd-cat: systemd-cat.md
+  - systemd-run: systemd-run.md
+  - systemd-notify: systemd-notify.md
+  - systemd-analyze: systemd-analyze.md
+  - systemd-delta: systemd-delta.md
+  - systemd-path: systemd-path.md
+  - systemd-escape: systemd-escape.md
+  - systemd-machine-id-setup: systemd-machine-id-setup.md
+  - Autres outils: "*"
