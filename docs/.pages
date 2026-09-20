@@ -2,7 +2,7 @@ arrange:
   - index.md
   - introduction
   - unites
-  - gestion-services
+  - services
   - journal-logging
   - securite
   - linux

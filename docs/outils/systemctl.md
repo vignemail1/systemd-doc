@@ -257,7 +257,7 @@ systemctl get-default
 
 ## Voir aussi
 
-- [Gestion des services](../gestion-services/index.md)
+- [Gestion des services](../services/index.md)
 - [Unités systemd](../unites/index.md)
 - [systemd-analyze](systemd-analyze.md) — performances et débogage
 - `man systemctl`

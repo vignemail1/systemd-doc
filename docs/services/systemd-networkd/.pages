@@ -1,0 +1,6 @@
+title: systemd-networkd
+nav:
+  - Présentation: index.md
+  - Fichiers .network: network.md
+  - Fichiers .netdev: netdev.md
+  - Fichiers .link: link.md
