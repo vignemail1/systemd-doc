@@ -1,15 +1,26 @@
 title: Outils
 nav:
-  - Accueil: index.md
-  - systemctl: systemctl.md
-  - journalctl: journalctl.md
-  - networkctl: networkctl.md
-  - systemd-cat: systemd-cat.md
-  - systemd-run: systemd-run.md
-  - systemd-notify: systemd-notify.md
-  - systemd-analyze: systemd-analyze.md
-  - systemd-delta: systemd-delta.md
-  - systemd-path: systemd-path.md
-  - systemd-escape: systemd-escape.md
-  - systemd-machine-id-setup: systemd-machine-id-setup.md
-  - Autres outils: "*"
+  - index.md
+  - bootctl.md
+  - coredumpctl.md
+  - hostnamectl.md
+  - journalctl.md
+  - localectl.md
+  - loginctl.md
+  - networkctl.md
+  - resolvectl.md
+  - systemctl.md
+  - systemd-analyze.md
+  - systemd-cat.md
+  - systemd-cgls-cgtop.md
+  - systemd-delta.md
+  - systemd-escape.md
+  - systemd-machine-id-setup.md
+  - systemd-notify.md
+  - systemd-nspawn.md
+  - systemd-path.md
+  - systemd-run.md
+  - systemd-sysusers.md
+  - systemd-tmpfiles.md
+  - timedatectl.md
+  - udevadm.md
