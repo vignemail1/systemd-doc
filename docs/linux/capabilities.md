@@ -3,7 +3,7 @@
 Les **capabilities** Linux découpent les privilèges traditionnellement réservés à `root` en unités indépendantes, attribuables séparément à des threads ou à des binaires. Un processus ne détient ainsi que les privilèges strictement nécessaires à son fonctionnement, sans avoir à s'exécuter en root complet.
 
 !!! note "Historique"
-Introduites par POSIX.1e (brouillon) et implémentées dans Linux 2.2, les capabilities ont été enrichies progressivement : capability sets sur les fichiers (Linux 2.6.24), bounding set par thread (2.6.25), ambient set (4.3), et `CAP_CHECKPOINT_RESTORE` (5.9) pour la derniière en date courante.
+    Introduites par POSIX.1e (brouillon) et implémentées dans Linux 2.2, les capabilities ont été enrichies progressivement : capability sets sur les fichiers (Linux 2.6.24), bounding set par thread (2.6.25), ambient set (4.3), et `CAP_CHECKPOINT_RESTORE` (5.9) pour la derniière en date courante.
 
 ## Modèle général
 
@@ -55,7 +55,7 @@ pA' = pA  (perdu si le binaire est setuid ou porte des file capabilities)
 ```
 
 !!! warning "Interactions avec setuid"
-Si le binaire est setuid root, les règles sont différentes : `pP'` devient le bounding set complet du processus parent. Les ambient capabilities sont également réinitialisées à zéro. Ne pas mélanger setuid et file capabilities.
+    Si le binaire est setuid root, les règles sont différentes : `pP'` devient le bounding set complet du processus parent. Les ambient capabilities sont également réinitialisées à zéro. Ne pas mélanger setuid et file capabilities.
 
 ## Inspection et manipulation
 
@@ -174,9 +174,9 @@ ExecStart=/usr/local/bin/mon-daemon
 ```
 
 !!! tip "Ordre des directives"
-  `CapabilityBoundingSet=` agit en premier (plafond), `AmbientCapabilities=` en second (ce qui est injecté).  
-  Toute capability dans `AmbientCapabilities=` absent du `CapabilityBoundingSet=` est ignorée silencieusement par systemd.  
-  Activer `NoNewPrivileges=yes` est fortement recommandé car il empêche tout retour en arrière via un binaire setuid.
+    `CapabilityBoundingSet=` agit en premier (plafond), `AmbientCapabilities=` en second (ce qui est injecté).  
+    Toute capability dans `AmbientCapabilities=` absent du `CapabilityBoundingSet=` est ignorée silencieusement par systemd.  
+    Activer `NoNewPrivileges=yes` est fortement recommandé car il empêche tout retour en arrière via un binaire setuid.
 
 ### Correspondance sets systemd → thread
 
@@ -189,7 +189,7 @@ ExecStart=/usr/local/bin/mon-daemon
 ## Référence des capabilities importantes
 
 !!! note
-La liste complète (plus de 40 capabilities sur noyaux récents) est dans `man 7 capabilities`. Cette section détaille les plus courantes, classées par domaine.
+    La liste complète (plus de 40 capabilities sur noyaux récents) est dans `man 7 capabilities`. Cette section détaille les plus courantes, classées par domaine.
 
 ### Système de fichiers
 
@@ -249,7 +249,7 @@ La liste complète (plus de 40 capabilities sur noyaux récents) est dans `man 7
 | `CAP_MAC_OVERRIDE`  | Ignorer les politiques MAC                               | **Critique** |
 
 !!! warning "`CAP_SYS_ADMIN` et `CAP_SYS_MODULE`"
-Ces deux capabilities sont quasi-équivalentes à root complet. `CAP_SYS_ADMIN` couvre plus de 200 opérations noyau distinctes ; un binaire portant cette capability peut sortir de la plupart des sandboxes. Les éviter impérativement dans un service — préférer une capability spécifique.
+    Ces deux capabilities sont quasi-équivalentes à root complet. `CAP_SYS_ADMIN` couvre plus de 200 opérations noyau distinctes ; un binaire portant cette capability peut sortir de la plupart des sandboxes. Les éviter impérativement dans un service — préférer une capability spécifique.
 
 ## Capabilities et namespaces (containers)
 
@@ -265,7 +265,7 @@ capsh --print
 ```
 
 !!! note "systemd-nspawn"
-`systemd-nspawn` retire par défaut plusieurs capabilities dangereuses (`CAP_SYS_MODULE`, `CAP_SYS_BOOT`, `CAP_MAC_ADMIN`…) et crée un user namespace isolé. La directive `--capability=` permet d'en ajouter explicitement. Voir [systemd-nspawn](../outils/systemd-nspawn.md).
+    `systemd-nspawn` retire par défaut plusieurs capabilities dangereuses (`CAP_SYS_MODULE`, `CAP_SYS_BOOT`, `CAP_MAC_ADMIN`…) et crée un user namespace isolé. La directive `--capability=` permet d'en ajouter explicitement. Voir [systemd-nspawn](../outils/systemd-nspawn.md).
 
 ## Diagnostics courants
 

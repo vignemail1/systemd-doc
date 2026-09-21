@@ -44,7 +44,7 @@ loginctl terminate-session 3
 ```
 
 !!! warning "Attention"
-Terminer une session tue tous les processus qui y sont rattachés, y compris les applications graphiques.
+    Terminer une session tue tous les processus qui y sont rattachés, y compris les applications graphiques.
 
 ### Tuer un processus dans une session
 
@@ -121,7 +121,7 @@ ls /var/lib/systemd/linger/
 La présence du fichier `/var/lib/systemd/linger/<username>` indique que le lingering est activé.
 
 !!! tip "Démarrage automatique d'un service utilisateur"
-Pour qu'un service utilisateur (`~/.config/systemd/user/monservice.service`) démarre au boot :
+    Pour qu'un service utilisateur (`~/.config/systemd/user/monservice.service`) démarre au boot :
 
     ```bash
     # 1. Activer le lingering

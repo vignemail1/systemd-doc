@@ -32,7 +32,7 @@ sudo systemctl restart systemd-journald
 ```
 
 !!! tip "Surcharge minimale recommandée"
-Plutôt que de modifier le fichier principal, créer :
+    Plutôt que de modifier le fichier principal, créer :
 
     ```bash
     sudo mkdir -p /etc/systemd/journald.conf.d
@@ -70,7 +70,7 @@ RuntimeMaxFiles=10
 ```
 
 !!! warning "Priorité des limites"
-systemd-journald applique **la plus restrictive** entre `SystemMaxUse` et la taille laissée libre par `SystemKeepFree`. Si la partition est déjà bien remplie, le journal peut occuper moins que `SystemMaxUse`.
+    systemd-journald applique **la plus restrictive** entre `SystemMaxUse` et la taille laissée libre par `SystemKeepFree`. Si la partition est déjà bien remplie, le journal peut occuper moins que `SystemMaxUse`.
 
 ### Calibrer les limites selon le contexte
 
@@ -132,7 +132,7 @@ RateLimitIntervalSec=0
 ```
 
 !!! note "Rate-limiting par service"
-Il est possible de surcharger le rate-limiting pour un service spécifique directement dans l'unité systemd :
+    Il est possible de surcharger le rate-limiting pour un service spécifique directement dans l'unité systemd :
 
     ```ini
     [Service]
@@ -316,7 +316,7 @@ sudo systemctl reload systemd-journald
 ```
 
 !!! warning "Changement de `Storage=`"
-Passer de `volatile` à `persistent` (ou l'inverse) nécessite de créer ou supprimer `/var/log/journal/` et de redémarrer `systemd-journald`. Un simple `reload` ne suffit pas.
+    Passer de `volatile` à `persistent` (ou l'inverse) nécessite de créer ou supprimer `/var/log/journal/` et de redémarrer `systemd-journald`. Un simple `reload` ne suffit pas.
 
 ## Voir aussi
 

@@ -148,7 +148,7 @@ networkctl status   # section "Address" de la vue globale
 ```
 
 !!! tip "Complémentarité avec `ip`"
-`networkctl` se concentre sur ce que `systemd-networkd` gère (configuration, fichiers `.network`, bail DHCP). La commande `ip` reste l’outil de référence pour inspecter l’état noyau des adresses, routes et règles en temps réel.
+    `networkctl` se concentre sur ce que `systemd-networkd` gère (configuration, fichiers `.network`, bail DHCP). La commande `ip` reste l’outil de référence pour inspecter l’état noyau des adresses, routes et règles en temps réel.
 
 ## Diagnostics courants
 
