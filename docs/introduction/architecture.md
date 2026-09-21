@@ -137,10 +137,10 @@ graph TB
     root --> run
     root --> usr
     
-    style etc fill:#64B5F6
-    style run fill:#90CAF9
-    style usr fill:#BBDEFB
-    style root fill:#E3F2FD
+    style etc fill:#64B5F6 color:#1b1b1b
+    style run fill:#90CAF9 color:#1b1b1b
+    style usr fill:#BBDEFB color:#1b1b1b
+    style root fill:#E3F2FD color:#1b1b1b
 ```
 
 **Ordre de priorité** : `/etc` > `/run` > `/usr/lib`
@@ -166,14 +166,14 @@ graph LR
     etc --> networkd
     etc --> timesyncd
     
-    style etc fill:#81C784
-    style system fill:#C8E6C9
-    style user fill:#C8E6C9
-    style journald fill:#C8E6C9
-    style logind fill:#C8E6C9
-    style resolved fill:#C8E6C9
-    style networkd fill:#C8E6C9
-    style timesyncd fill:#C8E6C9
+    style etc fill:#81C784 color:#1b1b1b
+    style system fill:#C8E6C9 color:#1b1b1b
+    style user fill:#C8E6C9 color:#1b1b1b
+    style journald fill:#C8E6C9 color:#1b1b1b
+    style logind fill:#C8E6C9 color:#1b1b1b
+    style resolved fill:#C8E6C9 color:#1b1b1b
+    style networkd fill:#C8E6C9 color:#1b1b1b
+    style timesyncd fill:#C8E6C9 color:#1b1b1b
 ```
 
 ### Données runtime
@@ -228,14 +228,14 @@ graph TB
     
     user --> user1000
     
-    style root fill:#FFB74D
-    style system fill:#FFE0B2
-    style user fill:#FFE0B2
-    style machine fill:#FFE0B2
-    style sshd fill:#FFF3E0
-    style nginx fill:#FFF3E0
-    style postgres fill:#FFF3E0
-    style user1000 fill:#FFF3E0
+    style root fill:#FFB74D color:#1b1b1b
+    style system fill:#FFE0B2 color:#1b1b1b
+    style user fill:#FFE0B2 color:#1b1b1b
+    style machine fill:#FFE0B2 color:#1b1b1b
+    style sshd fill:#FFF3E0 color:#1b1b1b
+    style nginx fill:#FFF3E0 color:#1b1b1b
+    style postgres fill:#FFF3E0 color:#1b1b1b
+    style user1000 fill:#FFF3E0 color:#1b1b1b
 ```
 
 Chaque service systemd s'exécute dans son propre cgroup, permettant une isolation et un contrôle précis.
@@ -300,15 +300,15 @@ graph TB
     timesyncd --> tools
     systemd ==> tools
     
-    style kernel fill:#FFCDD2
-    style systemd fill:#E1BEE7
-    style journald fill:#C5CAE9
-    style logind fill:#C5CAE9
-    style networkd fill:#C5CAE9
-    style resolved fill:#C5CAE9
-    style udevd fill:#C5CAE9
-    style timesyncd fill:#C5CAE9
-    style tools fill:#B2DFDB
+    style kernel fill:#FFCDD2 color:#1b1b1b
+    style systemd fill:#E1BEE7 color:#1b1b1b
+    style journald fill:#C5CAE9 color:#1b1b1b
+    style logind fill:#C5CAE9 color:#1b1b1b
+    style networkd fill:#C5CAE9 color:#1b1b1b
+    style resolved fill:#C5CAE9 color:#1b1b1b
+    style udevd fill:#C5CAE9 color:#1b1b1b
+    style timesyncd fill:#C5CAE9 color:#1b1b1b
+    style tools fill:#B2DFDB color:#1b1b1b
 ```
 
 Cette architecture modulaire et intégrée fait de systemd un système d'initialisation puissant et flexible, capable de gérer tous les aspects du cycle de vie d'un système Linux moderne.

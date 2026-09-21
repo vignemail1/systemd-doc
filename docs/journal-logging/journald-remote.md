@@ -175,7 +175,7 @@ sudo systemctl start systemd-journal-upload
 ```
 
 !!! warning "Réinitialiser l’état avec précaution"
-Supprimer le fichier `state` provoque un réenvoi de l’intégralité du journal local vers le collecteur. Sur un journal volumineux, cela peut générer un pic de trafic significatif.
+    Supprimer le fichier `state` provoque un réenvoi de l’intégralité du journal local vers le collecteur. Sur un journal volumineux, cela peut générer un pic de trafic significatif.
 
 ## Mode HTTP sans TLS (lab uniquement)
 
@@ -195,7 +195,7 @@ URL=http://log-collector.example.com:19532
 ```
 
 !!! danger "HTTP en clair"
-Ne jamais utiliser cette configuration sur un réseau non de confiance. Les logs peuvent contenir des données sensibles (tokens, mots de passe en variable d’environnement, etc.).
+    Ne jamais utiliser cette configuration sur un réseau non de confiance. Les logs peuvent contenir des données sensibles (tokens, mots de passe en variable d’environnement, etc.).
 
 ## Lire les journaux centralisés sur le collecteur
 

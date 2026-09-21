@@ -115,7 +115,7 @@ systemd-cgtop --iterations=5
 | `Output/s` | Débit écriture I/O                           |
 
 !!! note
-Les données I/O ne sont disponibles que si le contrôleur `io` est activé dans la hiérarchie cgroup v2. Sur cgroup v1, seuls CPU et mémoire sont disponibles.
+    Les données I/O ne sont disponibles que si le contrôleur `io` est activé dans la hiérarchie cgroup v2. Sur cgroup v1, seuls CPU et mémoire sont disponibles.
 
 ### Raccourcis clavier (mode interactif)
 

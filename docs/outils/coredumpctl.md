@@ -3,7 +3,7 @@
 `coredumpctl` est l'outil d'interrogation et d'analyse des core dumps collectés par `systemd-coredump`. Il permet de lister, inspecter et déboguer les crashs d'applications enregistrés dans le journal systemd.
 
 !!! note "Prérequis"
-`systemd-coredump` doit être configuré comme gestionnaire de core dumps. Vérifier :
+    `systemd-coredump` doit être configuré comme gestionnaire de core dumps. Vérifier :
 
     ```bash
     cat /proc/sys/kernel/core_pattern
