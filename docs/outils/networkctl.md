@@ -3,7 +3,7 @@
 `networkctl` est l'outil de gestion et d'inspection de `systemd-networkd`. Il permet d'afficher l'état des interfaces réseau, de forcer leur reconfiguration, et d'interroger les liens, adresses et routes gérés par `systemd-networkd`.
 
 !!! note "Prérequis"
-`networkctl` nécessite que `systemd-networkd` soit actif. Sur une machine utilisant NetworkManager ou un autre gestionnaire réseau, les informations affichées seront partielles ou absentes.
+    `networkctl` nécessite que `systemd-networkd` soit actif. Sur une machine utilisant NetworkManager ou un autre gestionnaire réseau, les informations affichées seront partielles ou absentes.
 
     ```bash
     sudo systemctl enable --now systemd-networkd
