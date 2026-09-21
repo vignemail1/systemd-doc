@@ -68,8 +68,7 @@ MD036: false
 MD040: true
 
 # MD046: Style de bloc de code
-MD046:
-  style: fenced
+MD046: false
 
 # MD049: Style d'emphase
 MD049:
