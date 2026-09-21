@@ -25,13 +25,13 @@ graph TB
     bob --> session2
     charlie --> session3
     
-    style userslice fill:#E1BEE7 color:#1b1b1b
-    style alice fill:#C5CAE9 color:#1b1b1b
-    style bob fill:#C5CAE9 color:#1b1b1b
-    style charlie fill:#C5CAE9 color:#1b1b1b
-    style session1 fill:#E8EAF6 color:#1b1b1b
-    style session2 fill:#E8EAF6 color:#1b1b1b
-    style session3 fill:#E8EAF6 color:#1b1b1b
+    style userslice fill:#E1BEE7
+    style alice fill:#C5CAE9
+    style bob fill:#C5CAE9
+    style charlie fill:#C5CAE9
+    style session1 fill:#E8EAF6
+    style session2 fill:#E8EAF6
+    style session3 fill:#E8EAF6
 ```
 
 Chaque `user-UID.slice` peut avoir des limites de ressources.

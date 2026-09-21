@@ -3,7 +3,9 @@
 :root {
   --md-primary-fg-color: #3f51b5;
   --md-accent-fg-color: #3f51b5;
+  --md-mermaid-label-fg-color: #000;
 }
+
 
 .md-typeset code {
   font-size: 0.85em;
@@ -21,4 +23,10 @@
 /* Grille de contenu élargie */
 .md-grid {
   max-width: 95vw;
+}
+
+/* On verrouille le theme pour les schéma mermaid */
+
+[data-md-color-scheme="slate"] {
+  --md-mermaid-label-fg-color: #000;
 }
